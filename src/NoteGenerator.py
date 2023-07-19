@@ -1,8 +1,8 @@
 
 
 
-
-def get_midi(spectrum, chroma):
+## Takes in spectrum, chroma and onset and returns a list of (pitch,duration) tuples, in the MIDI format
+def get_midi(spectrum, chroma, onset):
     pass
 
 
