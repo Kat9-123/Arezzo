@@ -1,4 +1,8 @@
+import Main
+
 import matplotlib.pyplot as plt
+import time
+
 
 
 
@@ -18,7 +22,8 @@ def create_plot(rows=2,sharex=True):
 
 
 
-
+def save_plot():
+    plt.savefig("screenshots\\{}_{}.png".format(str(int(time.time())),Main.AUDIO_TO_ANALYSE))
 
 def show_plot():
     plt.show()

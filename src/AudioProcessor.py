@@ -16,8 +16,10 @@ def process_audio(audioPath):
 
     __get_spectrum(y,samplingRate,ax)
     __get_chroma(y,samplingRate,ax)
-    Utils.debug(__get_pulse(y, samplingRate,ax))
 
+
+    Utils.debug(__get_pulse(y, samplingRate,ax))
+    Utils.save_plot()
     Utils.show_plot()
 
 
