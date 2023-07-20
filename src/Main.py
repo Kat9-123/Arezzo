@@ -15,7 +15,7 @@ AUDIO_TO_ANALYSE = r"PWS_TEST_0.wav"
 AUDIO_BASE_PATH = "audio"
 
 def start():
-    AudioProcessor.process_audio(AUDIO_BASE_PATH + "\\" + AUDIO_TO_ANALYSE)
+    AudioProcessor.process_audio("{}\\{}...".format(AUDIO_BASE_PATH,AUDIO_TO_ANALYSE))
 
 
 if __name__ == "__main__":
