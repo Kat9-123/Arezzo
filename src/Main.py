@@ -10,10 +10,16 @@ import Graphing
 import AudioProcessor
 
 import curses
+import time
 
 
-AUDIO_TO_ANALYSE = r"PWS_TEST_2.wav"
+AUDIO_TO_ANALYSE = r"PWS_TEST_4.wav"
 
+
+
+
+
+outputName = "{}_{}".format(str(int(time.time())),AUDIO_TO_ANALYSE)
 
 AUDIO_BASE_PATH = "audio"
 
@@ -51,6 +57,7 @@ def start():
     #curses.wrapper(test)
 
    # return
+
 
     Graphing.create_plot(rows=4)
 

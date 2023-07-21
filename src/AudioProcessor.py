@@ -9,7 +9,7 @@ import numpy as np
 
 samplingRate = 0
 
-SPECTRUM_DB_CUTOFF = 5
+SPECTRUM_DB_CUTOFF = 10
 CHROMA_CUTOFF = 0.9
 
 
@@ -36,7 +36,7 @@ def process_audio(audioPath):
     print(pointCount,duration/pointCount)
     pointDuration = duration/pointCount
 
-    tempo = __get_tempo(y,samplingRate) //2 
+    tempo = __get_tempo(y,samplingRate)
     print(tempo)
 
     NoteGenerator.get_midi(spectrum,chroma,onset,tempo)
@@ -88,6 +88,7 @@ def __get_tempo(y,sampleRate):
 def __get_onset(y,sampleRate):
 
     D = np.abs(librosa.stft(y))
+    D[D < SPECTRUM_DB_CUTOFF] = 0
     times = librosa.times_like(D,sr=sampleRate)
     onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
     onset_frames = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sampleRate)

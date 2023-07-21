@@ -1,6 +1,7 @@
 import Graphing
 import AudioProcessor
 import Note
+import Main
 
 import librosa
 import numpy as np
@@ -17,9 +18,9 @@ def get_midi(spectrum, chroma, onsets,tempo):
     octaves =__get_octaves(spectrum,onsets)
     print(chroma.shape)
 
-    start = onsets[0]
-    for x in range(len(onsets)):
-        onsets[x] -= start
+    #start = onsets[0]
+   # for x in range(len(onsets)):
+    #    onsets[x] -= start
 
 
     notes = []
@@ -40,7 +41,7 @@ def get_midi(spectrum, chroma, onsets,tempo):
         #note = Note()
 
 
-    MIDI(notes)
+    MIDI(notes,tempo)
 
         #print((onsets[x+1]-onsets[x]) * AudioProcessor.pointDuration * (tempo/60))
    # print(4)
@@ -99,7 +100,7 @@ def __get_time_signature():
 
 
 
-def MIDI(notes):
+def MIDI(notes,tempo):
     
 
     # create your MIDI object
@@ -108,7 +109,7 @@ def MIDI(notes):
 
     time = 0    # start at the beginning
     mf.addTrackName(track, time, "Sample Track")
-    mf.addTempo(track, time, 120)
+    mf.addTempo(track, time, tempo)
 
     # add some notes
     channel = 0
@@ -118,5 +119,6 @@ def MIDI(notes):
         mf.addNote(track, channel, note.midi, note.start, note.duration, volume)
 
     # write it to disk
-    with open("output.mid", 'wb') as outf:
+
+    with open("output/{}.mid".format(Main.outputName), 'wb') as outf:
         mf.writeFile(outf)

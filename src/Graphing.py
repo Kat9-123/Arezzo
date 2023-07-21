@@ -41,8 +41,8 @@ def onset(times,onset_env,onset_frames,location):
 
 
 def save_plot():
-
-    plt.savefig("screenshots\\{}_{}.png".format(str(int(time.time())),Main.AUDIO_TO_ANALYSE),dpi=1200)
+    print(Main.outputName)
+    plt.savefig("screenshots\\{}.png".format(Main.outputName),dpi=1200)
 
 def show_plot():
 
