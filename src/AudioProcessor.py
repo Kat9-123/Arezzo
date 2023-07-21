@@ -1,6 +1,7 @@
 import Utils
 import Graphing
 import NoteGenerator
+import ui.UI as UI
 
 import librosa
 import numpy as np
@@ -9,8 +10,11 @@ import numpy as np
 
 samplingRate = 0
 
-SPECTRUM_DB_CUTOFF = 10
-CHROMA_CUTOFF = 0.9
+SPECTRUM_DB_CUTOFF = 0
+CHROMA_CUTOFF = 0.0#0.9
+ONSET_TEMPORAL_LAG = 2
+
+
 
 
 pointCount = 0
@@ -26,20 +30,22 @@ def process_audio(audioPath):
 
     duration = librosa.get_duration(y=y, sr=samplingRate)
 
-    #print(duration/y.sha1])
-    #print(round(duration * ))
 
     spectrum, pointCount = __get_spectrum(y,samplingRate)
     chroma = __get_chroma(y,samplingRate)
     onset = __get_onset(y, samplingRate)
 
-    print(pointCount,duration/pointCount)
     pointDuration = duration/pointCount
 
     tempo = __get_tempo(y,samplingRate)
-    print(tempo)
+    UI.diagnostic("Est. Tempo",tempo, "bpm")
+    UI.diagnostic("Sample Count",pointCount)
+    UI.diagnostic("Duration",duration, "s")
+    UI.diagnostic("Sample Duration",pointDuration * 1000, "ms")
 
-    NoteGenerator.get_midi(spectrum,chroma,onset,tempo)
+
+
+    return (spectrum,chroma,onset,tempo)
 
    # ax[3].set(xlabel="Time (seconds)",ylabel="Octave")
     #ax[3].set_yticks([0,1,2,3,4,5,6,7,8,9])
@@ -65,7 +71,6 @@ def __get_spectrum(y,samplingRate):
 def __get_chroma(y, samplingRate):
 
     chroma = librosa.feature.chroma_cqt(y=y,sr=samplingRate)
-    print(chroma.shape)
 
     chroma[chroma < CHROMA_CUTOFF] = 0
 
@@ -92,8 +97,15 @@ def __get_onset(y,sampleRate):
     times = librosa.times_like(D,sr=sampleRate)
     onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
     onset_frames = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sampleRate)
-
     Graphing.onset(times,onset_env,onset_frames,location=2)
+    Graphing.vLine(times,onset_frames,onset_env,location=2,colour="b")
+
+
+    for x in range(len(onset_frames)):
+        onset_frames[x] += ONSET_TEMPORAL_LAG
+
+    
+    Graphing.vLine(times,onset_frames,onset_env,location=2,colour="r")
     
     return onset_frames
 

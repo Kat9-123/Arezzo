@@ -1,3 +1,5 @@
+import ui.UI as UI
+
 import librosa
 class Note:
     duration: int
@@ -16,5 +18,12 @@ class Note:
 
         self.midi = librosa.note_to_midi(self.note + str(self.octave))
 
-        print(self.note + str(self.octave), self.start, self.duration)
+
+        debugNote = self.note
+        if len(self.note) == 1:
+            debugNote += " "
+        
+        debugNote += str(self.octave)
+
+        UI.print_colour("{} {} {}\n".format(debugNote, round(self.start,4), round(self.duration,4)),UI.CYAN)
 

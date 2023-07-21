@@ -2,31 +2,41 @@ import Graphing
 import AudioProcessor
 import Note
 import Main
+import ui.UI as UI
 
 import librosa
 import numpy as np
-from midiutil.MidiFile import MIDIFile
 
+
+
+TEMPO_BOUNDRY = 140
 
 NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
 
-def get_midi(spectrum, chroma, onsets,tempo):
+def get_notes_voices(spectrum, chroma, onsets,rawTempo):
     """Takes in spectrum, chroma and onsets and returns a list of (pitch,duration) tuples, in the MIDI format"""
 
 
+    tempo = __fix_tempo(rawTempo)
+
+
     octaves =__get_octaves(spectrum,onsets)
-    print(chroma.shape)
+
 
     #start = onsets[0]
    # for x in range(len(onsets)):
     #    onsets[x] -= start
 
+    voices = []
 
-    notes = []
+
     for x,onset in enumerate(onsets):
         octave = octaves[:,onset].argmax(axis=0)
-        note = NOTES[chroma[:,onset].argmax(axis=0)]
+        
+        
+
+
 
         start = onset * AudioProcessor.pointDuration * (tempo/60)
 
@@ -35,13 +45,16 @@ def get_midi(spectrum, chroma, onsets,tempo):
         else:
             duration = (onsets[x+1]-onsets[x]) * AudioProcessor.pointDuration * (tempo/60)
 
-        note = Note.Note(note,octave,start,duration)
+        notes = np.argsort(chroma[:,onset])[::-1][:Main.voiceCount]
+        for i in range(Main.voiceCount):
+            voices.append([])
 
-        notes.append(note)
+            
+            note = Note.Note(NOTES[notes[i]],octave,start,duration)
+
+            voices[i].append(note)
         #note = Note()
 
-
-    MIDI(notes,tempo)
 
         #print((onsets[x+1]-onsets[x]) * AudioProcessor.pointDuration * (tempo/60))
    # print(4)
@@ -50,9 +63,18 @@ def get_midi(spectrum, chroma, onsets,tempo):
 
 
 
-    return
+    return (voices,tempo)
 
 
+
+def __fix_tempo(rawTempo):
+    tempo = rawTempo
+
+    while tempo > TEMPO_BOUNDRY:
+        tempo //= 2
+    
+    UI.diagnostic("Corrected Tempo",tempo, "bpm")
+    return tempo
 
 
 def __get_octaves(spectrum,onsets):
@@ -100,25 +122,3 @@ def __get_time_signature():
 
 
 
-def MIDI(notes,tempo):
-    
-
-    # create your MIDI object
-    mf = MIDIFile(1)     # only 1 track
-    track = 0   # the only track
-
-    time = 0    # start at the beginning
-    mf.addTrackName(track, time, "Sample Track")
-    mf.addTempo(track, time, tempo)
-
-    # add some notes
-    channel = 0
-    volume = 100
-
-    for note in notes:
-        mf.addNote(track, channel, note.midi, note.start, note.duration, volume)
-
-    # write it to disk
-
-    with open("output/{}.mid".format(Main.outputName), 'wb') as outf:
-        mf.writeFile(outf)
