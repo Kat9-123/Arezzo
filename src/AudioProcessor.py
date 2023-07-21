@@ -1,94 +1,98 @@
-import librosa
 import Utils
+import Graphing
+import NoteGenerator
+
+import librosa
 import numpy as np
 
+
+
+samplingRate = 0
 
 SPECTRUM_DB_CUTOFF = 5
 CHROMA_CUTOFF = 0.9
 
+
+pointCount = 0
+pointDuration = 0
+
+
 ## Turns a path to an audio file into spectrum and chroma
 def process_audio(audioPath):
+    global samplingRate,pointDuration,pointCount
     Utils.debug("Processing {}...".format(audioPath))
 
     y, samplingRate = librosa.load(audioPath)
 
-    ax = Utils.create_plot(rows=4)
+    duration = librosa.get_duration(y=y, sr=samplingRate)
 
-    bins = __get_spectrum(y,samplingRate,ax)
-    __get_chroma(y,samplingRate,ax)
+    #print(duration/y.sha1])
+    #print(round(duration * ))
 
-    freqs = np.arange(0, 1 + 2048 / 2) * samplingRate / 2048
-    pulse = __get_pulse(y, samplingRate,ax)
+    spectrum, pointCount = __get_spectrum(y,samplingRate)
+    chroma = __get_chroma(y,samplingRate)
+    onset = __get_onset(y, samplingRate)
 
-    arr = np.zeros(shape=[10,819])
-    for x,i in enumerate(bins):
-        if i == 0:
-            continue
-        arr[int(librosa.hz_to_note(freqs[i])[-1:]),x] = 1
-        #print()
-    img = librosa.display.specshow(arr,ax=ax[3],x_axis="s")
-    ax[3].set(xlabel="Time (seconds)",ylabel="Octave")
-    ax[3].set_yticks([0,1,2,3,4,5,6,7,8,9])
-    Utils.save_plot()
+    print(pointCount,duration/pointCount)
+    pointDuration = duration/pointCount
 
-    Utils.show_plot()
+    tempo = __get_tempo(y,samplingRate) //2 
+    print(tempo)
 
+    NoteGenerator.get_midi(spectrum,chroma,onset,tempo)
+
+   # ax[3].set(xlabel="Time (seconds)",ylabel="Octave")
+    #ax[3].set_yticks([0,1,2,3,4,5,6,7,8,9])
 
 
-def __get_octave():
-    pass
 
-def __get_spectrum(y,samplingRate,ax):
+
+
+
+def __get_spectrum(y,samplingRate):
     X = librosa.stft(y)
-    Xdb = librosa.amplitude_to_db(abs(X))
+    spectrum = librosa.amplitude_to_db(abs(X))
 
 
-    Xdb[Xdb < SPECTRUM_DB_CUTOFF] = 0
-    print(Xdb.shape)
+    spectrum[spectrum < SPECTRUM_DB_CUTOFF] = 0
 
 
-
-    bins = Xdb.argmax(axis=0)
-    print(bins)
 
     #print(librosa.hz_to_note(freqs[bin]))
-   
-    img = librosa.display.specshow(Xdb, sr = samplingRate, y_axis = 'log',ax=ax[0],x_axis="s")
+    Graphing.specshow(spectrum,samplingRate,location=0,xType="s",yType="log")
 
-    ax[0].set(xlabel="")
-    return bins
-def __get_chroma(y, samplingRate,ax):
-    #librosa.filters.chroma(samplingRate,
-    chromafb = librosa.feature.chroma_cqt(y=y,sr=samplingRate)
-   # print(chromafb)
+    return (spectrum,spectrum.shape[1])
+def __get_chroma(y, samplingRate):
 
-    chromafb[chromafb < CHROMA_CUTOFF] = 0
+    chroma = librosa.feature.chroma_cqt(y=y,sr=samplingRate)
+    print(chroma.shape)
 
-    #print(chromafb.shape)
-    #print(chromafb[:,87])
-    img = librosa.display.specshow(chromafb, y_axis='chroma',ax=ax[1],x_axis="s")
-    #ax.set(ylabel='Chroma filter', title='Chroma filter bank')
-    ax[1].set(xlabel="",ylabel="Note")
+    chroma[chroma < CHROMA_CUTOFF] = 0
+
+
+    Graphing.specshow(chroma,samplingRate,location=1,xType="s",yType="chroma",yLabel="Note")
+
+    return chroma
 
 
 
 
-def __show_pulse():
-    pass
+def __get_tempo(y,sampleRate):
+    """Estimate tempo"""
+    onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
+    tempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sampleRate)
+    
+    return round(tempo[0])
 
 ## Gets the onsets
-def __get_pulse(y,sampleRate,ax):
+def __get_onset(y,sampleRate):
 
     D = np.abs(librosa.stft(y))
     times = librosa.times_like(D,sr=sampleRate)
     onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
-    ax[2].plot(times, 2 + onset_env / onset_env.max(), alpha=0.8,
-            label='Mean (mel)',color='r')
     onset_frames = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sampleRate)
 
-    ax[2].vlines(times[onset_frames], 0, onset_env.max(), color='g', alpha=0.9,
-           linestyle='dotted', label='Onsets')
-    ax[2].set(xlabel="", ylabel='Strength & Onsets', yticks=[])
+    Graphing.onset(times,onset_env,onset_frames,location=2)
     
     return onset_frames
 
