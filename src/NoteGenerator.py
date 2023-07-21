@@ -66,8 +66,8 @@ def get_notes_voices(spectrum, chroma, onsets,rawTempo):
     return (voices,tempo)
 
 
-
 def __fix_tempo(rawTempo):
+    """Correctly reduces tempo, based on TEMPO_BOUNDRY."""
     tempo = rawTempo
 
     while tempo > TEMPO_BOUNDRY:
