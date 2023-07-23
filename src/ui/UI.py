@@ -17,6 +17,10 @@ def init():
     
 
 
+def warning(value):
+    print_colour("{}\n".format(str(value)),RED)
+
+
 def print_colour(text,colour):
     print("{}{}{}".format(colour,text,WHITE),end="")
 

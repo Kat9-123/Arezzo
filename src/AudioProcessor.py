@@ -11,10 +11,11 @@ import numpy as np
 samplingRate = 0
 
 SPECTRUM_DB_CUTOFF = 0
-CHROMA_CUTOFF = 0.0#0.9
-ONSET_TEMPORAL_LAG = 2
+CHROMA_CUTOFF = 0.2#0.9
+ONSET_TEMPORAL_LAG = 4
 
 
+N_FFT = 2048
 
 
 pointCount = 0
@@ -56,7 +57,7 @@ def process_audio(audioPath):
 
 
 def __get_spectrum(y,samplingRate):
-    X = librosa.stft(y)
+    X = librosa.stft(y,n_fft=N_FFT)
     spectrum = librosa.amplitude_to_db(abs(X))
 
 
