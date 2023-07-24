@@ -18,6 +18,9 @@ def init():
     
 
 
+def set_colour(colour):
+    print(colour,end="")
+
 def warning(value):
     print_colour("{}\n".format(str(value)),RED)
 

@@ -26,6 +26,7 @@ MAX_NOTE_DURATION = 4
 
 def get_notes_voices(spectrum, chroma, onsets, rawTempo):
     """Takes in spectrum, chroma, onsets and tempo and returns all of the voices with their respective notes."""
+    global finishedNotes
     UI.progress("Generating Notes")
     
     spectrumRowCache = __cache_note_to_spectrum_row()
@@ -43,6 +44,13 @@ def get_notes_voices(spectrum, chroma, onsets, rawTempo):
 
     voices = []
 
+    for i in range(spectrum.shape[1]):
+        __process_info_at_sample(spectrum,chroma,i,onsets,spectrumRowCache,tempo)
+
+    print()
+    for i in finishedNotes:
+        print(i.note,i.octave)
+    return ([finishedNotes],tempo)
 
     for x,onset in enumerate(onsets):
         #octave = octaves[:,onset].argmax(axis=0)
@@ -114,9 +122,9 @@ def __get_octave(note,onset,spectrum,spectrumRowCache):
         if val > strongest:
             strongest = val
             strongestI = i
-       # print(val)
+
        # if val > LOWEST_OCTAVE_DB:
-        #    return i
+       #     return i
 
     if strongestI == -1:
         UI.warning("Octave not found!")
@@ -179,8 +187,63 @@ def __get_time_signature():
 
 
 
-currentNotes = []
+currentNotes = {}
 finishedNotes = []
 
-def __process_info_at_sample():
-    pass
+
+
+def __process_info_at_sample(spectrum,chroma,sample,onsets,spectrumRowCache,tempo):
+    global currentNotes,finishedNotes
+    #for x,row in enumerate(spectrum[:,sample]):
+    if sample in onsets:
+        for x,row in enumerate(chroma[:,sample]):
+            if row < 0.3:
+                continue
+
+                
+            octave = __get_octave(CHROMA[x],sample,spectrum,spectrumRowCache)
+
+            note = CHROMA[x] + str(octave)
+            if note not in currentNotes:
+                currentNotes[note] = Note.Note(CHROMA[x],octave,sample,tempo)
+
+            
+            print(sample, note)
+
+    
+    notesToRemove = []
+
+    for note in currentNotes.keys():
+        if spectrum[spectrumRowCache[note],sample] == 0:
+            currentNotes[note].set_duration(sample)
+            notesToRemove.append(note)
+
+    for note in notesToRemove:
+        finishedNotes.append(currentNotes[note])
+        currentNotes.pop(note)
+
+    return
+    freqs = np.arange(1, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
+
+    sampleExpectedNotes = {}
+
+    for x,row in enumerate(spectrum[:,sample]):
+        if row <= 0:
+            continue
+            
+        if sample in onsets:
+            UI.set_colour(UI.BLUE)
+        note = librosa.hz_to_note(freqs[x],unicode=False)
+        print(sample, note, row)
+
+        if note in sampleExpectedNotes:
+            if row > sampleExpectedNotes[note]:
+                sampleExpectedNotes[note] = row
+        else:
+            sampleExpectedNotes[note] = row
+
+        UI.set_colour(UI.WHITE)
+    UI.set_colour(UI.YELLOW)
+    print(sampleExpectedNotes)
+    UI.set_colour(UI.WHITE)
+    

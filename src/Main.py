@@ -29,9 +29,9 @@ MUSECORE4_PATH = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 EXPORT_TYPE = "pdf" # PNG or PDF
 
 
-voiceCount = 2
+voiceCount = 1
 
-AUDIO_TO_ANALYSE = r"PWS_TEST_6.wav"
+AUDIO_TO_ANALYSE = r"PWS_TEST_4.wav"
 
 
 
