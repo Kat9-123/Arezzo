@@ -8,6 +8,7 @@ WHITE = "\x1b[0;37m"
 RED = "\x1b[0;31m"
 BLUE = "\x1b[0;34m"
 CYAN = "\x1b[0;36m"
+GREEN = "\x1b[0;32m"
 
 BOLD_RED = "\x1b[1;31m"
 
@@ -29,3 +30,10 @@ def print_colour(text,colour):
 def diagnostic(name,value,suffix=""):
     print_colour("{}: {} {}\n".format(name,str(value),suffix),YELLOW)
 
+
+
+def progress(value,prefixNewline=True):
+    string = "{}...\n".format(str(value))
+    if prefixNewline:
+        string = "\n" + string
+    print_colour(string,GREEN)

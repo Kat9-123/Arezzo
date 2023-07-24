@@ -22,10 +22,16 @@ import time
 
 
 
+#"C:\Program Files\MuseScore 4\bin\MuseScore4.exe" -o "Test.pdf" C:\Users\trist\Documents\transcription\output\1690117354_PWS_TEST_7.wav.mid
 
-voiceCount = 1
+MUSECORE4_PATH = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 
-AUDIO_TO_ANALYSE = r"Octaves.wav"
+EXPORT_TYPE = "pdf" # PNG or PDF
+
+
+voiceCount = 2
+
+AUDIO_TO_ANALYSE = r"PWS_TEST_6.wav"
 
 
 
@@ -55,6 +61,8 @@ def start():
     voices, correctedTempo = NoteGenerator.get_notes_voices(spectrum,chroma,onset,rawTempo)
 
     SheetMusicGenerator.midi(voices,correctedTempo)
+
+
 
 
     Graphing.save_plot()

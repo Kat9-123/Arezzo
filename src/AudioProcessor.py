@@ -25,7 +25,7 @@ pointDuration = 0
 ## Turns a path to an audio file into spectrum and chroma
 def process_audio(audioPath):
     global samplingRate,pointDuration,pointCount
-    Utils.debug("Processing {}...".format(audioPath))
+    UI.progress("Processing {}".format(audioPath),prefixNewline=False)
 
     y, samplingRate = librosa.load(audioPath)
 

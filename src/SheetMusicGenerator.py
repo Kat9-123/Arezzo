@@ -1,13 +1,17 @@
 from midiutil.MidiFile import MIDIFile
 import Main
-
+import os
+import subprocess
+import time
+import ui.UI as UI
 
 SAVE_AUDIO = True
 
 def midi(voices,tempo):
+    
     if not SAVE_AUDIO:
         return
-    
+    UI.progress("Generating MIDI")
     earliestStartTime = __get_earliest_start_time(voices)
 
     # create your MIDI object
@@ -27,8 +31,24 @@ def midi(voices,tempo):
 
     # write it to disk
 
-    with open("output/{}.mid".format(Main.outputName), 'wb') as outf:
+    midiPath = "output\\midi\\{}.mid".format(Main.outputName)
+    UI.diagnostic("MIDI:",midiPath)
+    with open(midiPath, 'wb') as outf:
         mf.writeFile(outf)
+
+
+    musescore(midiPath)
+
+
+def musescore(midiPath):
+    UI.progress("Generating Sheet music")
+    
+    # Help
+    command = 'src\\MusescoreCaller.bat "{}" "output\\sheet music\\{}.{}" "{}"'.format(Main.MUSECORE4_PATH,Main.outputName,Main.EXPORT_TYPE,midiPath)
+    UI.diagnostic("MuseScore Call",command)
+
+    os.system(command)
+
 
 
 

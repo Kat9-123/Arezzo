@@ -21,9 +21,13 @@ LOWEST_OCTAVE_DB = 10
 
 HARMONIC_OCTAVE_MAX_DIFFERENCE_DB = 2
 
+
+MAX_NOTE_DURATION = 4
+
 def get_notes_voices(spectrum, chroma, onsets, rawTempo):
     """Takes in spectrum, chroma, onsets and tempo and returns all of the voices with their respective notes."""
-
+    UI.progress("Generating Notes")
+    
     spectrumRowCache = __cache_note_to_spectrum_row()
     UI.diagnostic("Cached Spectrum Rows", str(spectrumRowCache))
     UI.diagnostic("Onsets", str(onsets))
@@ -174,5 +178,9 @@ def __get_time_signature():
 
 
 
-def __process_info_at_onset():
+
+currentNotes = []
+finishedNotes = []
+
+def __process_info_at_sample():
     pass
