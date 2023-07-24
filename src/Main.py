@@ -48,7 +48,6 @@ AUDIO_BASE_PATH = "audio"
 def start():
 
     
-    #curses.wrapper(test)
     UI.init()
 
 
