@@ -17,3 +17,7 @@ def debug(x):
 
 
 
+
+
+def sample_to_seconds():
+    pass

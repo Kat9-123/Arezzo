@@ -10,12 +10,12 @@ import numpy as np
 
 samplingRate = 0
 
-SPECTRUM_DB_CUTOFF = 10
+SPECTRUM_DB_CUTOFF = -50
 CHROMA_CUTOFF = 0.2#0.9
-ONSET_TEMPORAL_LAG = 5
+ONSET_TEMPORAL_LAG = 2
 
 
-N_FFT = 2048
+N_FFT = 2048#4096*4
 
 
 pointCount = 0
@@ -61,7 +61,7 @@ def __get_spectrum(y,samplingRate):
     spectrum = librosa.amplitude_to_db(abs(X))
 
 
-    spectrum[spectrum < SPECTRUM_DB_CUTOFF] = 0
+    #spectrum[spectrum < SPECTRUM_DB_CUTOFF] = 0
 
 
 
@@ -103,7 +103,9 @@ def __get_onset(y,sampleRate):
 
 
     for x in range(len(onset_frames)):
-        onset_frames[x] += ONSET_TEMPORAL_LAG
+        val = onset_frames[x] + ONSET_TEMPORAL_LAG
+        if val < pointCount:
+            onset_frames[x] = val
 
     
     Graphing.vLine(times,onset_frames,onset_env,location=2,colour="r")

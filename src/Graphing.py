@@ -52,7 +52,11 @@ def vLine(times, onset_frames,onset_env,location,colour):
         return
 
     ax[location].vlines(times[onset_frames], 0, onset_env.max(), color=colour, alpha=0.9,
-           linestyle='dotted')
+       linestyle='dotted')
+    
+
+
+
 
 
 def save_plot():

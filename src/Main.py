@@ -31,7 +31,7 @@ EXPORT_TYPE = "pdf" # PNG or PDF
 
 voiceCount = 1
 
-AUDIO_TO_ANALYSE = r"PWS_TEST_4.wav"
+AUDIO_TO_ANALYSE = r"Invention.mp3"
 
 
 
