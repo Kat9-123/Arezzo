@@ -2,13 +2,28 @@ import ui.UI as UI
 import AudioProcessor
 
 import librosa
+
+
+NOTE_DURATONS = [
+    8, # Breve
+    4, # Semibreve
+    2, # Minim
+    1, # Crotchet
+    0.5, # Quaver
+    0.25, # Semiquaver
+  #  0.125 # Demisemiquaver
+
+]
+
+
+
 class Note:
-    duration: int
+    duration: float
     note: str
     octave: int
 
     midi: int
-    start: int
+    start: float
     tempo: int
 
 
@@ -26,13 +41,25 @@ class Note:
 
 
 
+    def snap_time_to_grid(self,time):
+        initialTime = time
+        for duration in NOTE_DURATONS:
+            while time >= duration:
+                time -= duration
+
+        result = initialTime - time
+        if result == 0.0:
+            result = 0.25
+        return result
+
+
 
 
 
     def set_duration(self,endSample):
 
-        self.start = self.startSample * AudioProcessor.pointDuration * (self.tempo/60)
-        self.duration = (endSample - self.startSample) * AudioProcessor.pointDuration * (self.tempo/60)
+        self.start = self.snap_time_to_grid(self.startSample * AudioProcessor.pointDuration * (self.tempo/60))
+        self.duration = self.snap_time_to_grid((endSample - self.startSample) * AudioProcessor.pointDuration * (self.tempo/60))
 
 
         debugNote = self.note

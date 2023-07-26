@@ -52,9 +52,7 @@ def get_notes_voices(spectrum, chroma, onsets, rawTempo):
         for i in range(spectrum.shape[1]):
             __process_info_at_sample(spectrum,chroma,i,onsets,spectrumRowCache,tempo)
 
-        print()
-        for i in finishedNotes:
-            print(i.note,i.octave)
+
         return ([finishedNotes],tempo)
 
     notes = []
@@ -236,12 +234,24 @@ finishedNotes = []
 
 
 
+def __guess_voice_count_at_sample(spectrum,sample):
+  
+    nVoices = 0
+    strongestSpectrum = np.sort(spectrum[:,sample])
+    for row in spectrum[:,sample]:
+        if row > 25:
+            nVoices += 1
+    UI.diagnostic("Voice count",nVoices)
+    return nVoices
+    
+
+
 def __process_info_at_sample(spectrum,chroma,sample,onsets,spectrumRowCache,tempo):
     global currentNotes,finishedNotes
     #for x,row in enumerate(spectrum[:,sample]):
     if sample in onsets:
 
-        
+        __guess_voice_count_at_sample(spectrum,sample)
         strongestChromas = np.argsort(chroma[:,sample])[::-1][:MAX_N_VOICES]
         for x in strongestChromas:
             row = chroma[x,sample]
