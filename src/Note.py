@@ -1,6 +1,7 @@
 import ui.UI as UI
 import AudioProcessor
 
+import math
 import librosa
 
 
@@ -44,12 +45,16 @@ class Note:
     def snap_time_to_grid(self,time):
         initialTime = time
         for duration in NOTE_DURATONS:
+            #1.2
             while time >= duration:
                 time -= duration
+            if abs(duration - time) < (duration / 5):
+                pass
 
         result = initialTime - time
         if result == 0.0:
             result = 0.25
+        print(time, "=>", result)
         return result
 
 
