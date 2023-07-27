@@ -48,10 +48,12 @@ AUDIO_BASE_PATH = "audio"
 def start():
 
     
+    
     UI.init()
 
+   
 
-
+    return
     Graphing.create_plot(rows=4)
 
 

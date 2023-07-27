@@ -1,4 +1,6 @@
-import curses
+import ui.Spinner as Spinner
+
+
 import threading
 import os
 
@@ -13,9 +15,27 @@ GREEN = "\x1b[0;32m"
 BOLD_RED = "\x1b[1;31m"
 
 ## https://stackoverflow.com/questions/12492810/python-how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows
+
+
+spinner = None
+hasSpinner = False
+
+
+def setY(y):
+    print("\033[{};{}H".format(y,1))
+
 def init():
     os.system("")
-    
+    # Hide console cursor
+    #print('\033[?25l', end="")
+
+
+def stop_spinner():
+    global spinner
+    if not spinner is None:
+        spinner.stop()
+        spinner = None
+
 
 
 def set_colour(colour):
@@ -26,6 +46,7 @@ def warning(value):
 
 
 def print_colour(text,colour):
+    stop_spinner()
     print("{}{}{}".format(colour,text,WHITE),end="")
 
 
@@ -36,6 +57,12 @@ def diagnostic(name,value,suffix=""):
 
 
 def progress(value,prefixNewline=True):
+    global spinner
+    set_colour(GREEN)
+    spinner = Spinner.Spinner(value)
+    hasSpinner = True
+
+    return
     string = "{}...\n".format(str(value))
     if prefixNewline:
         string = "\n" + string
