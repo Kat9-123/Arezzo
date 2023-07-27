@@ -17,7 +17,7 @@ TEMPO_BOUNDRY = 140
 
 CHROMA = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
-LOWEST_OCTAVE_DB = 10
+LOWEST_OCTAVE_DB = 5
 
 HARMONIC_OCTAVE_MAX_DIFFERENCE_DB = 2
 
@@ -235,7 +235,36 @@ finishedNotes = []
 
 
 def __guess_voice_count_at_sample(spectrum,sample):
-  
+    nVoices = 0
+    strongest = []
+    for octave in range(1,7):
+        for chroma in CHROMA:
+            note = chroma + str(octave)
+            row = spectrum[__note_to_row(note),sample]
+
+            strongest.append(row)
+
+    strongestSorted = np.sort(np.array(strongest))[::-1]
+    for i in range(MAX_N_VOICES):
+        if strongestSorted[i] > 15:
+            nVoices += 1
+
+    UI.diagnostic("Voice count",nVoices)
+    return nVoices
+    nVoices = 0
+    strongest = np.array()
+    for octave in range(1,7):
+        for chroma in CHROMA:
+            note = chroma + str(octave)
+            row = spectrum[__note_to_row(note),sample]
+            if row > 15:
+                strongest.append(row)
+                print("NOTE",note,row)
+                nVoices += 1
+    
+
+    UI.diagnostic("Voice count",nVoices)
+    return nVoices
     nVoices = 0
     strongestSpectrum = np.sort(spectrum[:,sample])
     for row in spectrum[:,sample]:
@@ -251,14 +280,19 @@ def __process_info_at_sample(spectrum,chroma,sample,onsets,spectrumRowCache,temp
     #for x,row in enumerate(spectrum[:,sample]):
     if sample in onsets:
 
-        __guess_voice_count_at_sample(spectrum,sample)
+        voices = __guess_voice_count_at_sample(spectrum,sample)
         strongestChromas = np.argsort(chroma[:,sample])[::-1][:MAX_N_VOICES]
+        found = 0
         for x in strongestChromas:
+            if found >= voices:
+                continue
+            
+            
             row = chroma[x,sample]
             if row < 0:
                 continue
             
-
+            found += 1
                 
             octave = __get_octave(CHROMA[x],sample,spectrum)
 
