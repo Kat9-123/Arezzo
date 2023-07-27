@@ -235,19 +235,80 @@ finishedNotes = []
 
 
 def __guess_voice_count_at_sample(spectrum,sample):
-    nVoices = 0
-    strongest = []
+
+
+
+    notes = {}
     for octave in range(1,7):
         for chroma in CHROMA:
+            
             note = chroma + str(octave)
             row = spectrum[__note_to_row(note),sample]
 
-            strongest.append(row)
+            if row < 15:
+                continue
+            
+            notes[note] = row
 
-    strongestSorted = np.sort(np.array(strongest))[::-1]
-    for i in range(MAX_N_VOICES):
-        if strongestSorted[i] > 15:
-            nVoices += 1
+
+    print(notes)
+
+    # Check for chromatic neighbours
+    keys = notes.keys()
+    print(keys)
+    notesDeletionQueue = []
+    skipNeighbour = False
+    for note in keys:
+        if skipNeighbour:
+            skipNeighbour = False
+            continue
+        
+        chroma = note[:-1]
+        octave = int(note[-1:])
+        for i in range(octave+1,7):
+            octaveNote = chroma + str(i)
+            if octaveNote in notes:
+                notesDeletionQueue.append(octaveNote)
+
+        # Check fifth
+        
+
+        noteIndex = CHROMA.index(chroma)
+        
+        # B4 => C5
+        if noteIndex == 11:
+            noteIndex = -1
+            octave += 1
+        
+        chromaticNextNeighbour = CHROMA[noteIndex+1] + str(octave)
+
+        print(note,chromaticNextNeighbour)
+
+        
+        if not chromaticNextNeighbour in notes:
+            continue
+        row = notes[note]
+        neighbourRow = notes[chromaticNextNeighbour]
+    
+        difference = row - neighbourRow
+
+        # Neighbour is greater
+        if difference < -2.5:
+            notesDeletionQueue.append(note)
+
+        # Row is greater
+        if difference > 2.5:
+            notesDeletionQueue.append(chromaticNextNeighbour)
+                
+
+    print("Deleted", notesDeletionQueue)
+    for note in notesDeletionQueue:
+        notes.pop(note)
+
+
+    nVoices = 0
+    for note in notes:
+        nVoices += 1
 
     UI.diagnostic("Voice count",nVoices)
     return nVoices
@@ -304,16 +365,17 @@ def __process_info_at_sample(spectrum,chroma,sample,onsets,spectrumRowCache,temp
 
         
     
-    notesToRemove = []
+        notesToRemove = []
 
-    for note in currentNotes.keys():
-        if spectrum[__note_to_row(note),sample] <= 15 and currentNotes[note].startSample != sample:
-            currentNotes[note].set_duration(sample)
-            notesToRemove.append(note)
+        for note in currentNotes.keys():
+            # spectrum[__note_to_row(note),sample] <= 23 and 
+            if currentNotes[note].startSample != sample:
+                currentNotes[note].set_duration(sample)
+                notesToRemove.append(note)
 
-    for note in notesToRemove:
-        finishedNotes.append(currentNotes[note])
-        currentNotes.pop(note)
+        for note in notesToRemove:
+            finishedNotes.append(currentNotes[note])
+            currentNotes.pop(note)
 
     return
     freqs = np.arange(1, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
