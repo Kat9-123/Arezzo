@@ -54,7 +54,7 @@ class Note:
         result = initialTime - time
         if result == 0.0:
             result = 0.25
-        print(time, "=>", result)
+        #print(time, "=>", result)
         return result
 
 

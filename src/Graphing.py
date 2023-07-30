@@ -1,5 +1,5 @@
 import Main
-
+import ui.UI as UI
 
 import librosa
 import matplotlib.pyplot as plt
@@ -24,6 +24,7 @@ def specshow(data,samplingRate:int, location:int, xType:str = None, yType:str = 
 
 
 def create_plot(rows=2,sharex=True):
+    "Initialise the matplotlib plot"
     global ax
     if not SHOW_PLOT:
         return
@@ -62,8 +63,11 @@ def vLine(times, onset_frames,onset_env,location,colour):
 def save_plot():
     if not SHOW_PLOT:
         return
-    print(Main.outputName)
-    plt.savefig("screenshots/{}.png".format(Main.outputName),dpi=1200)
+    
+    
+    path = "screenshots/{}.png".format(Main.outputName)
+    UI.diagnostic("Saving screenshot to",path)
+    plt.savefig(path,dpi=1200)
 
 def show_plot():
     if not SHOW_PLOT:

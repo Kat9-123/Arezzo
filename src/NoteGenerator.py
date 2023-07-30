@@ -10,6 +10,7 @@ import numpy as np
 
 #https://en.wikipedia.org/wiki/Chroma_feature
 # {C, C♯, D, D♯, E , F, F♯, G, G♯, A, A♯, B} => chroma
+# 1, 5, 2, 7 => octave
 # C4, A5, Db2 => note
 
 
@@ -52,16 +53,13 @@ def get_notes_voices(spectrum, chroma, onsets, rawTempo):
         for i in range(spectrum.shape[1]):
             __process_info_at_sample(spectrum,chroma,i,onsets,spectrumRowCache,tempo)
 
-
+        UI.stop_spinner()
         return ([finishedNotes],tempo)
 
+
+    # IF HOMOPHONIC
     notes = []
     for x,onset in enumerate(onsets):
-        #octave = octaves[:,onset].argmax(axis=0)
-        
-        
-        # Find doubled octaves
-
 
 
 
@@ -80,17 +78,8 @@ def get_notes_voices(spectrum, chroma, onsets, rawTempo):
         note.set_duration(endSample)
 
         notes.append(note)
-        #currentNotes[note] = Note.Note(CHROMA[x],octave,sample,tempo)
-
-   
-        #note = Note()
-
-
-        #print((onsets[x+1]-onsets[x]) * AudioProcessor.pointDuration * (tempo/60))
-   # print(4)
     
-    
-
+    UI.stop_spinner()
     return ([notes],tempo)
 
 
@@ -190,7 +179,7 @@ def __get_octaves(spectrum,onsets):
             continue
         octaves[int(librosa.hz_to_note(freqs[i])[-1:]),x] = 1
         #print()
-    Graphing.specshow(octaves,AudioProcessor.samplingRate,location=3,xType="s",yLabel="Octave")
+    #Graphing.specshow(octaves,AudioProcessor.samplingRate,location=3,xType="s",yLabel="Octave")
 
 
     return octaves
@@ -251,11 +240,11 @@ def __guess_voice_count_at_sample(spectrum,sample):
             notes[note] = row
 
 
-    print(notes)
+    #print(notes)
 
     # Check for chromatic neighbours
     keys = notes.keys()
-    print(keys)
+    #print(keys)
     notesDeletionQueue = []
     skipNeighbour = False
     for note in keys:
@@ -282,7 +271,7 @@ def __guess_voice_count_at_sample(spectrum,sample):
         
         chromaticNextNeighbour = CHROMA[noteIndex+1] + str(octave)
 
-        print(note,chromaticNextNeighbour)
+        #print(note,chromaticNextNeighbour)
 
         
         if not chromaticNextNeighbour in notes:
@@ -301,7 +290,7 @@ def __guess_voice_count_at_sample(spectrum,sample):
             notesDeletionQueue.append(chromaticNextNeighbour)
                 
 
-    print("Deleted", notesDeletionQueue)
+    #print("Deleted", notesDeletionQueue)
     for note in notesDeletionQueue:
         notes.pop(note)
 
@@ -310,7 +299,7 @@ def __guess_voice_count_at_sample(spectrum,sample):
     for note in notes:
         nVoices += 1
 
-    UI.diagnostic("Voice count",nVoices)
+    #UI.diagnostic("Voice count",nVoices)
     return nVoices
     nVoices = 0
     strongest = np.array()

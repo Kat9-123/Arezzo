@@ -5,7 +5,7 @@ import subprocess
 import time
 import ui.UI as UI
 
-SAVE_AUDIO = True
+SAVE_AUDIO = False
 
 def midi(voices,tempo):
     

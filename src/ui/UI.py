@@ -14,20 +14,26 @@ GREEN = "\x1b[0;32m"
 
 BOLD_RED = "\x1b[1;31m"
 
-## https://stackoverflow.com/questions/12492810/python-how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows
+
+
+HIDE_CONSOLE_CURSOR = "\033[?25l"
 
 
 spinner = None
-hasSpinner = False
 
 
 def setY(y):
     print("\033[{};{}H".format(y,1))
 
+
+
 def init():
+    ## https://stackoverflow.com/questions/12492810/python-how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows
     os.system("")
+
+
     # Hide console cursor
-    #print('\033[?25l', end="")
+    print(HIDE_CONSOLE_CURSOR, end="")
 
 
 def stop_spinner():
@@ -41,29 +47,29 @@ def stop_spinner():
 def set_colour(colour):
     print(colour,end="")
 
+
+
 def warning(value):
     print_colour("{}\n".format(str(value)),RED)
 
 
 def print_colour(text,colour):
-    stop_spinner()
+    #stop_spinner()
     print("{}{}{}".format(colour,text,WHITE),end="")
 
 
 
 def diagnostic(name,value,suffix=""):
-    print_colour("{}: {} {}\n".format(name,str(value),suffix),YELLOW)
+    print_colour("{}: {} {}                                                     \n".format(name,str(value),suffix),YELLOW)
+
+
+
 
 
 
 def progress(value,prefixNewline=True):
     global spinner
+    if prefixNewline:
+        print()
     set_colour(GREEN)
     spinner = Spinner.Spinner(value)
-    hasSpinner = True
-
-    return
-    string = "{}...\n".format(str(value))
-    if prefixNewline:
-        string = "\n" + string
-    print_colour(string,GREEN)

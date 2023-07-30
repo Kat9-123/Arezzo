@@ -43,13 +43,11 @@ def process_audio(audioPath):
     UI.diagnostic("Sample Count",pointCount)
     UI.diagnostic("Duration",duration, "s")
     UI.diagnostic("Sample Duration",pointDuration * 1000, "ms")
-
+    UI.stop_spinner()
 
 
     return (spectrum,chroma,onset,tempo)
 
-   # ax[3].set(xlabel="Time (seconds)",ylabel="Octave")
-    #ax[3].set_yticks([0,1,2,3,4,5,6,7,8,9])
 
 
 
@@ -64,8 +62,6 @@ def __get_spectrum(y,samplingRate):
     #spectrum[spectrum < SPECTRUM_DB_CUTOFF] = 0
 
 
-
-    #print(librosa.hz_to_note(freqs[bin]))
     Graphing.specshow(spectrum,samplingRate,location=0,xType="s",yType="log")
 
     return (spectrum,spectrum.shape[1])
@@ -86,7 +82,7 @@ def __get_chroma(y, samplingRate):
 def __get_tempo(y,sampleRate):
     """Estimate tempo"""
     onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
-    tempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sampleRate)
+    tempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate)
     
     return round(tempo[0])
 

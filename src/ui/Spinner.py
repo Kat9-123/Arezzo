@@ -1,6 +1,6 @@
 import time
 import threading
-
+import ui.UI as UI
 
 
 class Spinner:
@@ -44,8 +44,9 @@ class Spinner:
         while True:
             time.sleep(0.06)
 
+            UI.set_colour(UI.GREEN)
             print("[{}] {}".format(self.FRAMES[i],self.text),end="\r")
-
+            UI.set_colour(UI.WHITE)
             i += 1
             if i >= len(self.FRAMES):
                 i = 0
@@ -55,6 +56,9 @@ class Spinner:
     def stop(self):
         self.stopEvent.set()
         self.thread.join()
-        print("[  V  ] {}".format(self.text))
+
+        UI.set_colour(UI.GREEN)
+        print("[=====] {}\n".format(self.text))
+        UI.set_colour(UI.WHITE)
         
 
