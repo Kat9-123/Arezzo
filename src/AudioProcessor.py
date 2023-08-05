@@ -1,6 +1,7 @@
 import Utils
 import Graphing
 import NoteGenerator
+from ProcessedAudioData import ProcessedAudioData
 import ui.UI as UI
 
 import librosa
@@ -8,7 +9,7 @@ import numpy as np
 
 
 
-samplingRate = 0
+
 
 SPECTRUM_DB_CUTOFF = -50
 CHROMA_CUTOFF = 0.2#0.9
@@ -17,14 +18,15 @@ ONSET_TEMPORAL_LAG = 2
 
 N_FFT = 2048#4096*4
 
-
-pointCount = 0
-pointDuration = 0
+samplingRate = 0
 
 
-## Turns a path to an audio file into spectrum and chroma
+
+
 def process_audio(audioPath):
-    global samplingRate,pointDuration,pointCount
+    """Takes the audio at the path and returns a spectrum, chroma classification, onsets, 
+       estimated tempo and the duration of the file."""
+    global samplingRate
     UI.progress("Processing {}".format(audioPath),prefixNewline=False)
 
     y, samplingRate = librosa.load(audioPath)
@@ -32,21 +34,29 @@ def process_audio(audioPath):
     duration = librosa.get_duration(y=y, sr=samplingRate)
 
 
-    spectrum, pointCount = __get_spectrum(y,samplingRate)
-    chroma = __get_chroma(y,samplingRate)
-    onset = __get_onset(y, samplingRate)
+    spectrum = __get_spectrum(y,samplingRate)
 
-    pointDuration = duration/pointCount
+    frameCount = spectrum.shape[1]
+
+    chroma = __get_chroma(y,samplingRate)
+    onsets = __get_onset(y, samplingRate,frameCount)
+
+    pointDuration = duration/frameCount
 
     tempo = __get_tempo(y,samplingRate)
     UI.diagnostic("Est. Tempo",tempo, "bpm")
-    UI.diagnostic("Sample Count",pointCount)
+    UI.diagnostic("Frame Count",frameCount)
     UI.diagnostic("Duration",duration, "s")
-    UI.diagnostic("Sample Duration",pointDuration * 1000, "ms")
+    UI.diagnostic("Frame Duration",pointDuration * 1000, "ms")
     UI.stop_spinner()
 
+    processedAudioData = ProcessedAudioData(spectrum=spectrum,
+                                            chroma=chroma,
+                                            onsets=onsets,
+                                            tempo=tempo,
+                                            duration=duration)
 
-    return (spectrum,chroma,onset,tempo)
+    return processedAudioData
 
 
 
@@ -64,7 +74,7 @@ def __get_spectrum(y,samplingRate):
 
     Graphing.specshow(spectrum,samplingRate,location=0,xType="s",yType="log")
 
-    return (spectrum,spectrum.shape[1])
+    return spectrum
 def __get_chroma(y, samplingRate):
 
     chroma = librosa.feature.chroma_cqt(y=y,sr=samplingRate)
@@ -87,7 +97,7 @@ def __get_tempo(y,sampleRate):
     return round(tempo[0])
 
 ## Gets the onsets
-def __get_onset(y,sampleRate):
+def __get_onset(y,sampleRate,frameCount):
 
     D = np.abs(librosa.stft(y))
     D[D < SPECTRUM_DB_CUTOFF] = 0
@@ -100,7 +110,7 @@ def __get_onset(y,sampleRate):
 
     for x in range(len(onset_frames)):
         val = onset_frames[x] + ONSET_TEMPORAL_LAG
-        if val < pointCount:
+        if val < frameCount:
             onset_frames[x] = val
 
     

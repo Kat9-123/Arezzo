@@ -30,12 +30,15 @@ class Note:
 
     startSample: int
 
-    def __init__(self,_note,_octave,_startSample,_tempo) -> None:
+    frameCount: int
+
+    def __init__(self,_note,_octave,_startSample,_tempo,_frameCount) -> None:
 
         self.note = _note
         self.octave = _octave
         self.startSample = _startSample
         self.tempo = _tempo
+        self.frameCount = _frameCount
 
         self.midi = librosa.note_to_midi(self.note + str(self.octave))
 
@@ -63,8 +66,8 @@ class Note:
 
     def set_duration(self,endSample):
 
-        self.start = self.snap_time_to_grid(self.startSample * AudioProcessor.pointDuration * (self.tempo/60))
-        self.duration = self.snap_time_to_grid((endSample - self.startSample) * AudioProcessor.pointDuration * (self.tempo/60))
+        self.start = self.snap_time_to_grid(self.startSample * self.frameCount * (self.tempo/60))
+        self.duration = self.snap_time_to_grid((endSample - self.startSample) * self.frameCount * (self.tempo/60))
 
 
         debugNote = self.note
@@ -73,4 +76,4 @@ class Note:
         
         debugNote += str(self.octave)
 
-        UI.print_colour("{} {} {}\n".format(debugNote, round(self.start,4), round(self.duration,4)),UI.CYAN)
+        UI.print_colour("{} {} {}                                   \n".format(debugNote, round(self.start,4), round(self.duration,4)),UI.CYAN)

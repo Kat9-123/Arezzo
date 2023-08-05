@@ -30,18 +30,19 @@ MAX_N_VOICES = 2
 
 IS_POLYPHONIC = True
 
-def get_notes_voices(spectrum, chroma, onsets, rawTempo):
+def get_notes_voices(processedAudioData):
     """Takes in spectrum, chroma, onsets and tempo and returns all of the voices with their respective notes."""
     global finishedNotes
     UI.progress("Generating Notes")
     
     spectrumRowCache = __cache_note_to_spectrum_row()
     UI.diagnostic("Cached Spectrum Rows", str(spectrumRowCache))
-    UI.diagnostic("Onsets", str(onsets))
-    tempo = __fix_tempo(rawTempo)
+    UI.diagnostic("Onsets", str(processedAudioData.onsets))
+    tempo = __fix_tempo(processedAudioData.tempo)
 
+    frameCount = processedAudioData.spectrum.shape[1]
 
-    octaves = __get_octaves(spectrum,onsets)
+    octaves = __get_octaves(processedAudioData.spectrum,processedAudioData.onsets)
 
 
     #start = onsets[0]
@@ -50,8 +51,8 @@ def get_notes_voices(spectrum, chroma, onsets, rawTempo):
 
 
     if IS_POLYPHONIC:
-        for i in range(spectrum.shape[1]):
-            __process_info_at_sample(spectrum,chroma,i,onsets,spectrumRowCache,tempo)
+        for i in range(frameCount):
+            __process_info_at_sample(processedAudioData.spectrum,processedAudioData.chroma,i,processedAudioData.onsets,spectrumRowCache,tempo,frameCount)
 
         UI.stop_spinner()
         return ([finishedNotes],tempo)
@@ -59,22 +60,22 @@ def get_notes_voices(spectrum, chroma, onsets, rawTempo):
 
     # IF HOMOPHONIC
     notes = []
-    for x,onset in enumerate(onsets):
+    for x,onset in enumerate(processedAudioData.onsets):
 
 
 
-        strongestChroma = np.argsort(chroma[:,onset])[::-1][:1]
+        strongestChroma = np.argsort(processedAudioData.chroma[:,onset])[::-1][:1]
 
         
 
-        octave = __get_octave(CHROMA[strongestChroma[0]],onset,spectrum)
+        octave = __get_octave(CHROMA[strongestChroma[0]],onset,processedAudioData.spectrum)
 
-        note = Note.Note(CHROMA[strongestChroma[0]],octave,onset,tempo)
+        note = Note.Note(CHROMA[strongestChroma[0]],octave,onset,tempo,frameCount)
     
-        if x == len(onsets) -1:
-            endSample = onsets[-1] + 2
+        if x == len(processedAudioData.onsets) -1:
+            endSample = processedAudioData.onsets[-1] + 2
         else:
-            endSample = onsets[x+1]
+            endSample = processedAudioData.onsets[x+1]
         note.set_duration(endSample)
 
         notes.append(note)
@@ -170,10 +171,11 @@ def __get_octave(note,onset,spectrum):
 
 def __get_octaves(spectrum,onsets):
     """Deprecated"""
+    frameCount = spectrum.shape[1]
     spectrum = spectrum.argmax(axis=0)
     freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
     print(freqs)
-    octaves = np.zeros(shape=[10,AudioProcessor.pointCount])
+    octaves = np.zeros(shape=[10,frameCount])
     for x,i in enumerate(spectrum):
         if i == 0:
             continue
@@ -325,7 +327,7 @@ def __guess_voice_count_at_sample(spectrum,sample):
     
 
 
-def __process_info_at_sample(spectrum,chroma,sample,onsets,spectrumRowCache,tempo):
+def __process_info_at_sample(spectrum,chroma,sample,onsets,spectrumRowCache,tempo,frameCount):
     global currentNotes,finishedNotes
     #for x,row in enumerate(spectrum[:,sample]):
     if sample in onsets:
@@ -350,7 +352,7 @@ def __process_info_at_sample(spectrum,chroma,sample,onsets,spectrumRowCache,temp
 
 
             if note not in currentNotes:
-                currentNotes[note] = Note.Note(CHROMA[x],octave,sample,tempo)
+                currentNotes[note] = Note.Note(CHROMA[x],octave,sample,tempo,frameCount)
 
         
     

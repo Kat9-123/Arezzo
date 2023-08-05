@@ -34,7 +34,7 @@ AUDIO_TO_ANALYSE = r"PWS_TEST_4.wav"
 
 
 
-outputName = "{}_{}".format(str(int(time.time())),AUDIO_TO_ANALYSE)
+outputName = f"{str(int(time.time()))}_{AUDIO_TO_ANALYSE}"
 
 AUDIO_BASE_PATH = "audio"
 
@@ -44,7 +44,7 @@ AUDIO_BASE_PATH = "audio"
 
 def start():
 
-    
+    startTime = time.perf_counter()
     
     UI.init()
 
@@ -53,17 +53,24 @@ def start():
     Graphing.create_plot(rows=3)
 
 
-    spectrum,chroma,onset,rawTempo = AudioProcessor.process_audio("{}/{}".format(AUDIO_BASE_PATH,AUDIO_TO_ANALYSE)) 
+    processedAudioData = AudioProcessor.process_audio(f"{AUDIO_BASE_PATH}\\{AUDIO_TO_ANALYSE}") 
 
-    voices, correctedTempo = NoteGenerator.get_notes_voices(spectrum,chroma,onset,rawTempo)
+    voices, correctedTempo = NoteGenerator.get_notes_voices(processedAudioData)
 
     SheetMusicGenerator.midi(voices,correctedTempo)
 
 
     Graphing.save_plot()
 
-    UI.print_colour("\nDone, showing plots.\n",UI.GREEN)
 
+    duration = time.perf_counter() - startTime
+    perSecondOfAudioDuration = duration/processedAudioData.duration
+
+
+    UI.diagnostic("Processing time per second of audio",round(perSecondOfAudioDuration,3), "seconds")
+    UI.print_colour(f"\nDone. Processing {round(processedAudioData.duration,3)} seconds of audio took {round(duration, 3)} seconds. Showing plots.\n",UI.GREEN)
+
+    
     Graphing.show_plot()
 
 

@@ -23,7 +23,7 @@ def specshow(data,samplingRate:int, location:int, xType:str = None, yType:str = 
 
 
 
-def create_plot(rows=2,sharex=True):
+def create_plot(rows):
     "Initialise the matplotlib plot"
     global ax
     if not SHOW_PLOT:
@@ -65,7 +65,7 @@ def save_plot():
         return
     
     
-    path = "screenshots/{}.png".format(Main.outputName)
+    path = f"screenshots\\{Main.outputName}.png"
     UI.diagnostic("Saving screenshot to",path)
     plt.savefig(path,dpi=1200)
 
