@@ -1,3 +1,4 @@
 librosa==0.10.0.post2
 matplotlib==3.7.2
-numpy==1.25.1
+MIDIUtil==1.2.1
+numpy==1.24.4
