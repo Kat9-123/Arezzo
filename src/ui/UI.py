@@ -53,9 +53,9 @@ def warning(value):
     print_colour("{}\n".format(str(value)),RED)
 
 
-def print_colour(text,colour):
+def print_colour(text,colour,end=""):
     #stop_spinner()
-    print("{}{}{}".format(colour,text,WHITE),end="")
+    print("{}{}{}".format(colour,text,WHITE),end=end)
 
 
 

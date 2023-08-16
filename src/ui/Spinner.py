@@ -44,12 +44,12 @@ class Spinner:
         while True:
             time.sleep(0.06)
 
-            UI.set_colour(UI.GREEN)
-            print("[{}] {}".format(self.FRAMES[i],self.text),end="\r")
-            UI.set_colour(UI.WHITE)
+            UI.print_colour(f"[{self.FRAMES[i]}] {self.text}", UI.GREEN, end="\r")
+
             i += 1
             if i >= len(self.FRAMES):
                 i = 0
+
             if self.stopEvent.is_set():
                 return
     
@@ -58,7 +58,7 @@ class Spinner:
         self.thread.join()
 
         UI.set_colour(UI.GREEN)
-        print("[=====] {}\n".format(self.text))
+        print(f"[  √  ] {self.text}\n")
         UI.set_colour(UI.WHITE)
         
 
