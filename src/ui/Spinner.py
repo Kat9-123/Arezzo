@@ -36,7 +36,7 @@ class Spinner:
         self.stopEvent = threading.Event()
         self.text = _text
 
-        
+        return
         self.thread.start()
     
     def __run(self):
@@ -54,6 +54,7 @@ class Spinner:
                 return
     
     def stop(self):
+        return
         self.stopEvent.set()
         self.thread.join()
 

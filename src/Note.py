@@ -1,4 +1,5 @@
 import ui.UI as UI
+from ProcessedAudioData import ProcessedAudioData
 import AudioProcessor
 
 import math
@@ -25,27 +26,35 @@ class Note:
 
     midi: int
     start: float
-    tempo: int
 
 
-    startSample: int
+    startFrame: int
 
-    frameCount: int
+    processedAudioData: ProcessedAudioData
 
-    def __init__(self,_note,_octave,_startSample,_tempo,_frameCount) -> None:
+
+    def __init__(self,_note,_octave,_startFrame,_processedAudioData) -> None:
 
         self.note = _note
         self.octave = _octave
-        self.startSample = _startSample
-        self.tempo = _tempo
-        self.frameCount = _frameCount
+        self.startFrame = _startFrame
+        self.processedAudioData = _processedAudioData
+
+
 
         self.midi = librosa.note_to_midi(self.note + str(self.octave))
 
 
 
 
-    def snap_time_to_grid(self,time):
+    def snap_time_to_beat(self,time):
+        #print(time, "=>", round(time,5))
+       # return round(time,5)
+        integerTime,decimalTime = divmod(time,1)
+        result = 1.0/pow(2,round(math.log2(1/decimalTime))) + integerTime
+       # print(time, "=>", result)
+        return result
+
         initialTime = time
         for duration in NOTE_DURATONS:
             #1.2
@@ -57,17 +66,19 @@ class Note:
         result = initialTime - time
         if result == 0.0:
             result = 0.25
-        #print(time, "=>", result)
+        print(time, "=>", result)
         return result
 
 
 
 
 
-    def set_duration(self,endSample):
+    def set_duration(self,endFrame):
+        tempo = self.processedAudioData.tempo
+        frameDuration = self.processedAudioData.frameDuration
 
-        self.start = self.snap_time_to_grid(self.startSample * self.frameCount * (self.tempo/60))
-        self.duration = self.snap_time_to_grid((endSample - self.startSample) * self.frameCount * (self.tempo/60))
+        self.start = self.snap_time_to_beat(self.startFrame * (tempo/60) * frameDuration)
+        self.duration = self.snap_time_to_beat((endFrame - self.startFrame)  * (tempo/60) * frameDuration)
 
 
         debugNote = self.note
@@ -76,4 +87,4 @@ class Note:
         
         debugNote += str(self.octave)
 
-        #UI.print_colour("{} {} {}                                   \n".format(debugNote, round(self.start,4), round(self.duration,4)),UI.CYAN)
+        UI.print_colour("{} {} {}                                   \n".format(debugNote, round(self.start,4), round(self.duration,4)),UI.CYAN)

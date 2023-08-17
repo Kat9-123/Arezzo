@@ -14,6 +14,8 @@ import numpy as np
 # C4, A5, Db2 => note
 
 
+# Rows, Frames
+
 TEMPO_BOUNDRY = 140
 
 CHROMA = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
@@ -25,12 +27,12 @@ HARMONIC_OCTAVE_MAX_DIFFERENCE_DB = 2
 
 MAX_NOTE_DURATION = 4
 
-MAX_N_VOICES = 2
+MAX_N_VOICES = 4
 
 
 IS_POLYPHONIC = True
 
-def get_notes_voices(processedAudioData):
+def get_notes(processedAudioData):
     """Takes in spectrum, chroma, onsets and tempo and returns all of the voices with their respective notes."""
     global finishedNotes
     UI.progress("Generating Notes")
@@ -42,7 +44,6 @@ def get_notes_voices(processedAudioData):
 
     frameCount = processedAudioData.spectrum.shape[1]
 
-    octaves = __get_octaves(processedAudioData.spectrum,processedAudioData.onsets)
 
 
     #start = onsets[0]
@@ -51,14 +52,14 @@ def get_notes_voices(processedAudioData):
 
 
     if IS_POLYPHONIC:
-        for i in range(frameCount):
-            __process_info_at_sample(processedAudioData.spectrum,processedAudioData.chroma,i,processedAudioData.onsets,spectrumRowCache,tempo,frameCount)
+        for currentFrame in range(frameCount):
+            __process_info_at_sample(currentFrame,processedAudioData)
 
         UI.stop_spinner()
-        return ([finishedNotes],tempo)
+        return (finishedNotes,tempo)
 
 
-    # IF HOMOPHONIC
+    # IF HOMOPHONIC. Legacy
     notes = []
     for x,onset in enumerate(processedAudioData.onsets):
 
@@ -81,7 +82,7 @@ def get_notes_voices(processedAudioData):
         notes.append(note)
     
     UI.stop_spinner()
-    return ([notes],tempo)
+    return (notes,tempo)
 
 
 def __fix_tempo(rawTempo):
@@ -105,7 +106,7 @@ def __row_to_note(row):
 
 def __note_to_row(note):
     freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
-    hz=   librosa.note_to_hz(note)
+    hz = librosa.note_to_hz(note)
     smallestDist = 10000
     smallestRow = -1
 
@@ -151,8 +152,8 @@ def __get_octave(note,onset,spectrum):
     strongestI = -1
     for i in range(1,9):
         val = spectrum[__note_to_row(note + str(i)),onset]
-        #if val > strongest:
-        #    strongest = val
+       # if val > strongest:
+         #   strongest = val
         #    strongestI = i
 
         if val > LOWEST_OCTAVE_DB:
@@ -167,41 +168,6 @@ def __get_octave(note,onset,spectrum):
         #   strongestI = i
         
     #return strongestI
-
-
-def __get_octaves(spectrum,onsets):
-    """Deprecated"""
-    frameCount = spectrum.shape[1]
-    spectrum = spectrum.argmax(axis=0)
-    freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
-    print(freqs)
-    octaves = np.zeros(shape=[10,frameCount])
-    for x,i in enumerate(spectrum):
-        if i == 0:
-            continue
-        octaves[int(librosa.hz_to_note(freqs[i])[-1:]),x] = 1
-        #print()
-    #Graphing.specshow(octaves,AudioProcessor.samplingRate,location=3,xType="s",yLabel="Octave")
-
-
-    return octaves
-    bins = spectrum.argmax(axis=0)
-    print(bins)
-    freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
-    
-
-    arr = np.zeros(shape=[10,len(onsets)])
-    for x,i in enumerate(bins):
-        if i == 0:
-            continue
-        arr[int(librosa.hz_to_note(freqs[i])[-1:]),x] = 1
-        #print()
-
-    return arr
-    #img = librosa.display.specshow(arr,ax=ax[3],x_axis="s")
-   # 
-
-
 
 
 
@@ -303,93 +269,54 @@ def __guess_voice_count_at_sample(spectrum,sample):
 
     #UI.diagnostic("Voice count",nVoices)
     return nVoices
-    nVoices = 0
-    strongest = np.array()
-    for octave in range(1,7):
-        for chroma in CHROMA:
-            note = chroma + str(octave)
-            row = spectrum[__note_to_row(note),sample]
-            if row > 15:
-                strongest.append(row)
-                print("NOTE",note,row)
-                nVoices += 1
-    
-
-    UI.diagnostic("Voice count",nVoices)
-    return nVoices
-    nVoices = 0
-    strongestSpectrum = np.sort(spectrum[:,sample])
-    for row in spectrum[:,sample]:
-        if row > 25:
-            nVoices += 1
-    UI.diagnostic("Voice count",nVoices)
-    return nVoices
-    
 
 
-def __process_info_at_sample(spectrum,chroma,sample,onsets,spectrumRowCache,tempo,frameCount):
+
+
+def __process_info_at_sample(frame,processedAudioData):
     global currentNotes,finishedNotes
+    spectrum = processedAudioData.spectrum
+    chroma = processedAudioData.chroma
+    onsets = processedAudioData.onsets
     #for x,row in enumerate(spectrum[:,sample]):
-    if sample in onsets:
-
-        voices = __guess_voice_count_at_sample(spectrum,sample)
-        strongestChromas = np.argsort(chroma[:,sample])[::-1][:MAX_N_VOICES]
+    if frame in processedAudioData.onsets:
+       
+        voices = __guess_voice_count_at_sample(spectrum,frame)
+        if voices == 0:
+            UI.warning("No voices found at onset!")
+        print(frame,voices)
+        strongestChromas = np.argsort(chroma[:,frame])[::-1][:MAX_N_VOICES]
         found = 0
         for x in strongestChromas:
             if found >= voices:
                 continue
             
             
-            row = chroma[x,sample]
+            row = chroma[x,frame]
             if row < 0:
                 continue
-            
+
             found += 1
                 
-            octave = __get_octave(CHROMA[x],sample,spectrum)
+            octave = __get_octave(CHROMA[x],frame,spectrum)
 
             note = CHROMA[x] + str(octave)
 
 
             if note not in currentNotes:
-                currentNotes[note] = Note.Note(CHROMA[x],octave,sample,tempo,frameCount)
+                currentNotes[note] = Note.Note(CHROMA[x],octave,frame,processedAudioData)
 
         
     
-        notesToRemove = []
+    notesToRemove = []
 
-        for note in currentNotes.keys():
-            # spectrum[__note_to_row(note),sample] <= 23 and 
-            if currentNotes[note].startSample != sample:
-                currentNotes[note].set_duration(sample)
-                notesToRemove.append(note)
+    for note in currentNotes.keys():
+        if spectrum[__note_to_row(note),frame] <= 13 and currentNotes[note].startFrame != frame:
+            currentNotes[note].set_duration(frame)
+            notesToRemove.append(note)
 
-        for note in notesToRemove:
-            finishedNotes.append(currentNotes[note])
-            currentNotes.pop(note)
 
-    return
-    freqs = np.arange(1, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
+    for note in notesToRemove:
+        finishedNotes.append(currentNotes[note])
+        currentNotes.pop(note)
 
-    sampleExpectedNotes = {}
-
-    for x,row in enumerate(spectrum[:,sample]):
-        if row <= 0:
-            continue
-            
-        if sample in onsets:
-            UI.set_colour(UI.BLUE)
-        note = librosa.hz_to_note(freqs[x],unicode=False)
-        print(sample, note, row)
-
-        if note in sampleExpectedNotes:
-            if row > sampleExpectedNotes[note]:
-                sampleExpectedNotes[note] = row
-        else:
-            sampleExpectedNotes[note] = row
-
-        UI.set_colour(UI.WHITE)
-    UI.set_colour(UI.YELLOW)
-    print(sampleExpectedNotes)
-    UI.set_colour(UI.WHITE)
-    

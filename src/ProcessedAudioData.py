@@ -8,4 +8,6 @@ class ProcessedAudioData(NamedTuple):
     onsets: array
     tempo: float
     duration: float
+    frameCount: int
+    frameDuration: float
 

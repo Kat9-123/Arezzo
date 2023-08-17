@@ -48,13 +48,22 @@ def process_audio(audioPath):
     UI.diagnostic("Frame Count",frameCount)
     UI.diagnostic("Duration",duration, "s")
     UI.diagnostic("Frame Duration",pointDuration * 1000, "ms")
+    UI.diagnostic("Softest",spectrum.min(), "db")
+    UI.diagnostic("Loudest",spectrum.max(),"db")
+
+
+
     UI.stop_spinner()
 
     processedAudioData = ProcessedAudioData(spectrum=spectrum,
                                             chroma=chroma,
                                             onsets=onsets,
                                             tempo=tempo,
-                                            duration=duration)
+                                            duration=duration,
+                                            frameCount=frameCount,
+                                            frameDuration=pointDuration)
+
+
 
     return processedAudioData
 

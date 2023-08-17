@@ -21,14 +21,12 @@ import time
 
 
 
-#"C:\Program Files\MuseScore 4\bin\MuseScore4.exe" -o "Test.pdf" C:\Users\trist\Documents\transcription\output\1690117354_PWS_TEST_7.wav.mid
-
 MUSECORE4_PATH = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 
 EXPORT_TYPE = "pdf" # PNG or PDF
 
 
-AUDIO_TO_ANALYSE = r"PWS_TEST_4.wav"
+AUDIO_TO_ANALYSE = r"PWS_TEST_6.wav"
 
 
 
@@ -44,7 +42,7 @@ AUDIO_BASE_PATH = "audio"
 
 def start():
 
-    startTime = time.perf_counter()
+    startTime = time.perf_counter() 
     
     UI.init()
 
@@ -55,9 +53,9 @@ def start():
 
     processedAudioData = AudioProcessor.process_audio(f"{AUDIO_BASE_PATH}\\{AUDIO_TO_ANALYSE}") 
 
-    voices, correctedTempo = NoteGenerator.get_notes_voices(processedAudioData)
+    notes, correctedTempo = NoteGenerator.get_notes(processedAudioData)
 
-    SheetMusicGenerator.midi(voices,correctedTempo)
+    SheetMusicGenerator.midi(notes,correctedTempo)
 
 
     Graphing.save_plot()

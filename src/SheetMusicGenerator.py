@@ -5,17 +5,18 @@ import subprocess
 import time
 import ui.UI as UI
 
-SAVE_AUDIO = False
+SAVE_AUDIO = True
 
-def midi(voices,tempo):
+def midi(notes,tempo):
     
     if not SAVE_AUDIO:
         return
     UI.progress("Generating MIDI")
-    earliestStartTime = __get_earliest_start_time(voices)
+    print(notes)
+    earliestStartTime = __get_earliest_start_time(notes)
 
     # create your MIDI object
-    mf = MIDIFile(len(voices))     # only 1 track
+    mf = MIDIFile(len(notes))     # only 1 track
     track = 0   # the only track
 
     time = 0    # start at the beginning
@@ -25,9 +26,9 @@ def midi(voices,tempo):
     # add some notes
     channel = 0
     volume = 100
-    for x,voice in enumerate(voices):
-        for note in voice:
-            mf.addNote(x, channel, note.midi, note.start -  earliestStartTime, note.duration, volume)
+
+    for note in notes:
+        mf.addNote(0, channel, note.midi, note.start - earliestStartTime, note.duration, volume)
 
     # write it to disk
 
@@ -48,15 +49,16 @@ def musescore(midiPath):
     UI.diagnostic("MuseScore Call",command)
 
     os.system(command)
+    #os.system(f'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe "output\\sheet music\\{Main.outputName}.{Main.EXPORT_TYPE}"')
 
 
 
 
 
-def __get_earliest_start_time(voices):
-    earliest = 1000
-    for voice in voices:
-        for note in voice:
-            if note.start < earliest:
-                earliest = note.start
+def __get_earliest_start_time(notes):
+    earliest = 10_000
+
+    for note in notes:
+        if note.start < earliest:
+            earliest = note.start
     return earliest
