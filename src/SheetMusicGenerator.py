@@ -4,6 +4,7 @@ import os
 import subprocess
 import time
 import ui.UI as UI
+import Utils
 
 SAVE_AUDIO = True
 
@@ -46,9 +47,9 @@ def musescore(midiPath):
     
     # Help
     command = 'src\\MusescoreCaller.bat "{}" "output\\sheet music\\{}.{}" "{}"'.format(Main.MUSECORE4_PATH,Main.outputName,Main.EXPORT_TYPE,midiPath)
-    UI.diagnostic("MuseScore Call",command)
+  
 
-    os.system(command)
+    Utils.sys_call(command)
     #os.system(f'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe "output\\sheet music\\{Main.outputName}.{Main.EXPORT_TYPE}"')
 
 

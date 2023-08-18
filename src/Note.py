@@ -21,7 +21,7 @@ NOTE_DURATONS = [
 
 class Note:
     duration: float
-    note: str
+    chroma: str
     octave: int
 
     midi: int
@@ -33,16 +33,16 @@ class Note:
     processedAudioData: ProcessedAudioData
 
 
-    def __init__(self,_note,_octave,_startFrame,_processedAudioData) -> None:
+    def __init__(self,_chroma,_octave,_startFrame,_processedAudioData) -> None:
 
-        self.note = _note
+        self.chroma = _chroma
         self.octave = _octave
         self.startFrame = _startFrame
         self.processedAudioData = _processedAudioData
 
 
 
-        self.midi = librosa.note_to_midi(self.note + str(self.octave))
+        self.midi = librosa.note_to_midi(self.chroma + str(self.octave))
 
 
 
@@ -51,6 +51,7 @@ class Note:
         #print(time, "=>", round(time,5))
        # return round(time,5)
         integerTime,decimalTime = divmod(time,1)
+        print(time,math.log2(1/decimalTime))
         result = 1.0/pow(2,round(math.log2(1/decimalTime))) + integerTime
        # print(time, "=>", result)
         return result
@@ -81,8 +82,8 @@ class Note:
         self.duration = self.snap_time_to_beat((endFrame - self.startFrame)  * (tempo/60) * frameDuration)
 
 
-        debugNote = self.note
-        if len(self.note) == 1:
+        debugNote = self.chroma
+        if len(self.chroma) == 1:
             debugNote += " "
         
         debugNote += str(self.octave)

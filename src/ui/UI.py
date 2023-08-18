@@ -4,11 +4,13 @@ import ui.Spinner as Spinner
 import threading
 import os
 
+
 ## https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124
 YELLOW = "\x1b[0;33m"
 WHITE = "\x1b[0;37m"
 RED = "\x1b[0;31m"
 BLUE = "\x1b[0;34m"
+PURPLE = "\x1b[0;35m"
 CYAN = "\x1b[0;36m"
 GREEN = "\x1b[0;32m"
 
@@ -26,10 +28,10 @@ def setY(y):
     print("\033[{};{}H".format(y,1))
 
 
-
 def init():
     ## https://stackoverflow.com/questions/12492810/python-how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows
     os.system("")
+
 
 
     # Hide console cursor
@@ -53,7 +55,7 @@ def warning(value):
     print_colour("{}\n".format(str(value)),RED)
 
 
-def print_colour(text,colour,end=""):
+def print_colour(text,colour,*,end=""):
     #stop_spinner()
     print("{}{}{}".format(colour,text,WHITE),end=end)
 

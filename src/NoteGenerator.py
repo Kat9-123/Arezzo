@@ -53,7 +53,8 @@ def get_notes(processedAudioData):
 
     if IS_POLYPHONIC:
         for currentFrame in range(frameCount):
-            __process_info_at_sample(currentFrame,processedAudioData)
+            #__get_notes_at_frame(currentFrame,processedAudioData)
+            __process_info_at_frame(currentFrame,processedAudioData)
 
         UI.stop_spinner()
         return (finishedNotes,tempo)
@@ -152,12 +153,12 @@ def __get_octave(note,onset,spectrum):
     strongestI = -1
     for i in range(1,9):
         val = spectrum[__note_to_row(note + str(i)),onset]
-       # if val > strongest:
-         #   strongest = val
-        #    strongestI = i
+        if val > strongest:
+            strongest = val
+            strongestI = i
 
-        if val > LOWEST_OCTAVE_DB:
-            return i
+       # if val > LOWEST_OCTAVE_DB:
+        #    return i
 
     if strongestI == -1:
         UI.warning("Octave not found!")
@@ -273,50 +274,77 @@ def __guess_voice_count_at_sample(spectrum,sample):
 
 
 
-def __process_info_at_sample(frame,processedAudioData):
+def __process_info_at_frame(frame,processedAudioData):
     global currentNotes,finishedNotes
     spectrum = processedAudioData.spectrum
     chroma = processedAudioData.chroma
     onsets = processedAudioData.onsets
     #for x,row in enumerate(spectrum[:,sample]):
+    notes = __get_notes_at_frame(frame,processedAudioData)
     if frame in processedAudioData.onsets:
        
-        voices = __guess_voice_count_at_sample(spectrum,frame)
-        if voices == 0:
-            UI.warning("No voices found at onset!")
-        print(frame,voices)
-        strongestChromas = np.argsort(chroma[:,frame])[::-1][:MAX_N_VOICES]
-        found = 0
-        for x in strongestChromas:
-            if found >= voices:
-                continue
+        #voices = __guess_voice_count_at_sample(spectrum,frame)
+        #if voices == 0:
+        #    UI.warning("No voices found at onset!")
+        #print(frame,voices)
+    #    strongestChromas = np.argsort(chroma[:,frame])[::-1][:MAX_N_VOICES]
+     #   found = 0
+     #   for x in strongestChromas:
+     #       if found >= voices:
+     #           continue
             
             
-            row = chroma[x,frame]
-            if row < 0:
-                continue
+    #        row = chroma[x,frame]
+    #        if row < 0:
+     #          continue
 
-            found += 1
+     #       found += 1
                 
-            octave = __get_octave(CHROMA[x],frame,spectrum)
+     #       octave = __get_octave(CHROMA[x],frame,spectrum)
 
-            note = CHROMA[x] + str(octave)
+      #      note = CHROMA[x] + str(octave)
 
 
+       
+        for note in notes:
             if note not in currentNotes:
-                currentNotes[note] = Note.Note(CHROMA[x],octave,frame,processedAudioData)
+                chroma = note[:-1]
+                octave = int(note[-1:])
+                currentNotes[note] = Note.Note(chroma,octave,frame,processedAudioData)
 
         
     
     notesToRemove = []
 
     for note in currentNotes.keys():
-        if spectrum[__note_to_row(note),frame] <= 13 and currentNotes[note].startFrame != frame:
-            currentNotes[note].set_duration(frame)
+        if note not in notes and currentNotes[note].startFrame != frame:
             notesToRemove.append(note)
+            if frame - currentNotes[note].startFrame < 3:
+                continue
+            currentNotes[note].set_duration(frame)
 
 
     for note in notesToRemove:
-        finishedNotes.append(currentNotes[note])
+        
+        if frame - currentNotes[note].startFrame > 3:
+            finishedNotes.append(currentNotes[note])
         currentNotes.pop(note)
 
+
+
+def __get_notes_at_frame(frame,processedAudioData):
+    chroma = processedAudioData.chroma
+
+    strongestNotes = []
+    for x,row in enumerate(chroma[:,frame]):
+        if row < 0.25:
+            continue
+        
+        chroma = CHROMA[x]
+        octave = __get_octave(chroma,frame,processedAudioData.spectrum)
+        strongestNotes.append(chroma + str(octave))
+
+        
+    if frame in processedAudioData.onsets:
+        print(strongestNotes)
+    return strongestNotes

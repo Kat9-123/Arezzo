@@ -14,7 +14,7 @@ import AudioProcessor
 import NoteGenerator
 import ui.UI as UI
 import SheetMusicGenerator
-
+import Utils
 
 import time
 
@@ -41,6 +41,8 @@ AUDIO_BASE_PATH = "audio"
 
 
 def start():
+
+
 
     startTime = time.perf_counter() 
     
