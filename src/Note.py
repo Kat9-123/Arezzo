@@ -2,6 +2,9 @@ import ui.UI as UI
 from ProcessedAudioData import ProcessedAudioData
 import AudioProcessor
 
+
+
+import numpy as np
 import math
 import librosa
 
@@ -27,19 +30,24 @@ class Note:
     midi: int
     start: float
 
+    lifeTimeStrengths = np.array([])
+
+    startStrength: float
+
+
 
     startFrame: int
 
     processedAudioData: ProcessedAudioData
 
 
-    def __init__(self,_chroma,_octave,_startFrame,_processedAudioData) -> None:
+    def __init__(self,_chroma,_octave,_startFrame,_processedAudioData,_startStrength) -> None:
 
         self.chroma = _chroma
         self.octave = _octave
         self.startFrame = _startFrame
         self.processedAudioData = _processedAudioData
-
+        self.startStrength = _startStrength
 
 
         self.midi = librosa.note_to_midi(self.chroma + str(self.octave))
@@ -51,7 +59,7 @@ class Note:
         #print(time, "=>", round(time,5))
        # return round(time,5)
         integerTime,decimalTime = divmod(time,1)
-        print(time,math.log2(1/decimalTime))
+        #print(time,math.log2(1/decimalTime))
         result = 1.0/pow(2,round(math.log2(1/decimalTime))) + integerTime
        # print(time, "=>", result)
         return result
@@ -75,6 +83,11 @@ class Note:
 
 
     def set_duration(self,endFrame):
+
+        if np.mean(self.lifeTimeStrengths) < 0.4:
+           print("Note failed average check")
+           return False
+
         tempo = self.processedAudioData.tempo
         frameDuration = self.processedAudioData.frameDuration
 
@@ -89,3 +102,4 @@ class Note:
         debugNote += str(self.octave)
 
         UI.print_colour("{} {} {}                                   \n".format(debugNote, round(self.start,4), round(self.duration,4)),UI.CYAN)
+        return True

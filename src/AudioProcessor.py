@@ -5,6 +5,7 @@ from ProcessedAudioData import ProcessedAudioData
 import ui.UI as UI
 
 import librosa
+import scipy
 import numpy as np
 
 
@@ -75,8 +76,13 @@ def process_audio(audioPath):
 
 def __get_spectrum(y,samplingRate):
     X = librosa.stft(y,n_fft=N_FFT)
+
     spectrum = librosa.amplitude_to_db(abs(X))
 
+    #spectrum = np.minimum(spectrum,
+    #                       librosa.decompose.nn_filter(spectrum,
+    #                                                   aggregate=np.median,
+     #                                                  metric='cosine'))
 
     #spectrum[spectrum < SPECTRUM_DB_CUTOFF] = 0
 
@@ -86,10 +92,15 @@ def __get_spectrum(y,samplingRate):
     return spectrum
 def __get_chroma(y, samplingRate):
 
-    chroma = librosa.feature.chroma_stft(y=y,sr=samplingRate)
+    chroma = librosa.feature.chroma_cqt(y=y,sr=samplingRate)
 
-    chroma[chroma < CHROMA_CUTOFF] = 0
+    #chroma[chroma < CHROMA_CUTOFF] = 0
+   # chroma = np.minimum(chroma,
+   #                        librosa.decompose.nn_filter(chroma,
+    #                                                   aggregate=np.median,
+    #                                                   metric='cosine'))
 
+    #chroma = scipy.ndimage.median_filter(chroma, size=(1, 9))
 
     Graphing.specshow(chroma,samplingRate,location=1,xType="s",yType="chroma",yLabel="Note")
 

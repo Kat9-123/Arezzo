@@ -6,6 +6,7 @@ import ui.UI as UI
 
 import librosa
 import numpy as np
+import copy
 
 
 #https://en.wikipedia.org/wiki/Chroma_feature
@@ -152,7 +153,10 @@ def __get_octave(note,onset,spectrum):
     strongest = -1000
     strongestI = -1
     for i in range(1,9):
-        val = spectrum[__note_to_row(note + str(i)),onset]
+        val = np.mean([spectrum[__note_to_row(note + str(i)),onset],
+                       spectrum[__note_to_row(note + str(i)),onset]+1,
+                       spectrum[__note_to_row(note + str(i)),onset]+2])
+
         if val > strongest:
             strongest = val
             strongestI = i
@@ -272,7 +276,45 @@ def __guess_voice_count_at_sample(spectrum,sample):
     return nVoices
 
 
+def __linearalise_db(db):
+    return 10**(db/10)
 
+
+previousNotes = []
+def __remove_invalid_notes(notes,strengths,frame,processedAudioData):
+    global previousNotes
+
+    for x, note in enumerate(notes):
+        if x == len(notes) - 1:
+            break
+
+
+        nextNote = notes[x+1]
+        
+        strength = strengths[x]
+        nextStrength = strengths[x+1]
+
+        chroma = note[:-1]
+        nextChroma = nextNote[:-1]
+        
+        chromaIndex = CHROMA.index(chroma)
+        nextchromaIndex = CHROMA.index(nextChroma)
+
+
+        ## Neighbour check
+        if abs(chromaIndex - nextchromaIndex) % 10 != 1:
+            continue
+    
+        ## Both are strong enough
+        if strength > 0.7 and nextStrength > 0.7:
+            continue
+
+        
+    
+        
+
+
+    pass
 
 def __process_info_at_frame(frame,processedAudioData):
     global currentNotes,finishedNotes
@@ -280,55 +322,42 @@ def __process_info_at_frame(frame,processedAudioData):
     chroma = processedAudioData.chroma
     onsets = processedAudioData.onsets
     #for x,row in enumerate(spectrum[:,sample]):
-    notes = __get_notes_at_frame(frame,processedAudioData)
+    notes, strengths = __get_notes_at_frame(frame,processedAudioData)
+
+    ## Find new notes
     if frame in processedAudioData.onsets:
        
-        #voices = __guess_voice_count_at_sample(spectrum,frame)
-        #if voices == 0:
-        #    UI.warning("No voices found at onset!")
-        #print(frame,voices)
-    #    strongestChromas = np.argsort(chroma[:,frame])[::-1][:MAX_N_VOICES]
-     #   found = 0
-     #   for x in strongestChromas:
-     #       if found >= voices:
-     #           continue
-            
-            
-    #        row = chroma[x,frame]
-    #        if row < 0:
-     #          continue
 
-     #       found += 1
-                
-     #       octave = __get_octave(CHROMA[x],frame,spectrum)
-
-      #      note = CHROMA[x] + str(octave)
-
-
-       
-        for note in notes:
+        for note in notes.keys():
             if note not in currentNotes:
                 chroma = note[:-1]
                 octave = int(note[-1:])
-                currentNotes[note] = Note.Note(chroma,octave,frame,processedAudioData)
+                startStrength = __linearalise_db(spectrum[__note_to_row(note),frame])
+                currentNotes[note] = Note.Note(chroma,octave,frame,processedAudioData,startStrength)
 
         
     
-    notesToRemove = []
+        notesToRemove = []
 
-    for note in currentNotes.keys():
-        if note not in notes and currentNotes[note].startFrame != frame:
-            notesToRemove.append(note)
-            if frame - currentNotes[note].startFrame < 3:
-                continue
-            currentNotes[note].set_duration(frame)
+        for note in currentNotes.keys():
+            currentStrength = __linearalise_db(spectrum[__note_to_row(note),frame])
+            #if currentStrength / currentNotes[note].startStrength < 0.96:
+
+            if note not in notes and currentNotes[note].startFrame != frame:
+                notesToRemove.append(note)
+                if frame - currentNotes[note].startFrame < 4:
+                    continue
+                if currentNotes[note].set_duration(frame):
+                    finishedNotes.append(currentNotes[note])
 
 
-    for note in notesToRemove:
+        for note in notesToRemove:
+            currentNotes.pop(note)
+
         
-        if frame - currentNotes[note].startFrame > 3:
-            finishedNotes.append(currentNotes[note])
-        currentNotes.pop(note)
+        for note in currentNotes.keys():
+            chromaIndex = CHROMA.index(note[:-1])
+            currentNotes[note].lifeTimeStrengths = np.append(currentNotes[note].lifeTimeStrengths, processedAudioData.chroma[chromaIndex,frame])
 
 
 
@@ -336,15 +365,18 @@ def __get_notes_at_frame(frame,processedAudioData):
     chroma = processedAudioData.chroma
 
     strongestNotes = []
+    strengths = []
+
     for x,row in enumerate(chroma[:,frame]):
         if row < 0.25:
             continue
         
         chroma = CHROMA[x]
         octave = __get_octave(chroma,frame,processedAudioData.spectrum)
-        strongestNotes.append(chroma + str(octave))
+        strongestNotes.append((chroma + str(octave)))
+        strengths.append(row)
 
         
     if frame in processedAudioData.onsets:
         print(strongestNotes)
-    return strongestNotes
+    return (strongestNotes,strengths)
