@@ -1,6 +1,6 @@
 import Graphing
 import AudioProcessor
-import Note
+from Note import Note, NoteProbabilities
 import Main
 import ui.UI as UI
 
@@ -196,125 +196,113 @@ finishedNotes = []
 
 
 
-def __guess_voice_count_at_sample(spectrum,sample):
 
-
-
-    notes = {}
-    for octave in range(1,7):
-        for chroma in CHROMA:
-            
-            note = chroma + str(octave)
-            row = spectrum[__note_to_row(note),sample]
-
-            if row < 15:
-                continue
-            
-            notes[note] = row
-
-
-    #print(notes)
-
-    # Check for chromatic neighbours
-    keys = notes.keys()
-    #print(keys)
-    notesDeletionQueue = []
-    skipNeighbour = False
-    for note in keys:
-        if skipNeighbour:
-            skipNeighbour = False
-            continue
-        
-        chroma = note[:-1]
-        octave = int(note[-1:])
-        for i in range(octave+1,7):
-            octaveNote = chroma + str(i)
-            if octaveNote in notes:
-                notesDeletionQueue.append(octaveNote)
-
-        # Check fifth
-        
-
-        noteIndex = CHROMA.index(chroma)
-        
-        # B4 => C5
-        if noteIndex == 11:
-            noteIndex = -1
-            octave += 1
-        
-        chromaticNextNeighbour = CHROMA[noteIndex+1] + str(octave)
-
-        #print(note,chromaticNextNeighbour)
-
-        
-        if not chromaticNextNeighbour in notes:
-            continue
-        row = notes[note]
-        neighbourRow = notes[chromaticNextNeighbour]
-    
-        difference = row - neighbourRow
-
-        # Neighbour is greater
-        if difference < -2.5:
-            notesDeletionQueue.append(note)
-
-        # Row is greater
-        if difference > 2.5:
-            notesDeletionQueue.append(chromaticNextNeighbour)
-                
-
-    #print("Deleted", notesDeletionQueue)
-    for note in notesDeletionQueue:
-        notes.pop(note)
-
-
-    nVoices = 0
-    for note in notes:
-        nVoices += 1
-
-    #UI.diagnostic("Voice count",nVoices)
-    return nVoices
 
 
 def __linearalise_db(db):
     return 10**(db/10)
 
 
-previousNotes = []
-def __remove_invalid_notes(notes,strengths,frame,processedAudioData):
-    global previousNotes
+def __chromatic_neighbour_check(note,otherNote):
 
-    for x, note in enumerate(notes):
-        if x == len(notes) - 1:
-            break
+    chroma = note.chroma
+    strength = note.startStrength
 
 
-        nextNote = notes[x+1]
-        
-        strength = strengths[x]
-        nextStrength = strengths[x+1]
 
-        chroma = note[:-1]
-        nextChroma = nextNote[:-1]
-        
-        chromaIndex = CHROMA.index(chroma)
-        nextchromaIndex = CHROMA.index(nextChroma)
-
-
-        ## Neighbour check
-        if abs(chromaIndex - nextchromaIndex) % 10 != 1:
-            continue
+    otherChroma = otherNote.chroma
+    otherStrength = otherNote.startStrength
     
-        ## Both are strong enough
-        if strength > 0.7 and nextStrength > 0.7:
-            continue
-
-        
+    ## Check if the chromas are neighbours
+    chromaIndex = CHROMA.index(chroma)
+    otherChromaIndex = CHROMA.index(otherChroma)
     
+
+    ## Neighbour check
+    if abs(chromaIndex - otherChromaIndex) % 10 != 1:
+       return (note,otherNote)
+    
+
+    
+
+   # ## Both are strong enough
+   # if strength > 0.7 and otherStrength > 0.7:
         
 
+    ## Current note is weaker
+    if strength < 0.3 and otherStrength > 0.7:
+        note.set_probability_is_note(NoteProbabilities.LOW)
+        return (note,otherNote)
 
+    ## Current note is stronger
+    if otherStrength < 0.3 and strength > 0.7:
+        
+        otherNote.set_probability_is_note(NoteProbabilities.LOW)
+        return (note,otherNote)
+        
+    return (note,otherNote)
+        
+
+        
+        
+
+def __fifth_check(note,otherNote):
+    chroma = note.chroma
+    strength = note.startStrength
+
+    otherChroma = otherNote.chroma
+    otherStrength = otherNote.startStrength
+
+
+    chromaIndex = CHROMA.index(chroma)
+    otherChromaIndex = CHROMA.index(otherChroma)
+
+    ## Upwards (5th)
+    if (otherChromaIndex - chromaIndex) != 7:
+        return (note,otherNote)
+
+    ## Downwards (4th)
+    if (chromaIndex - otherChromaIndex) != 5:
+        return (note,otherNote)
+    
+    if otherStrength < 0.3:
+        otherNote.probabilityIsNote.set_probability_is_note(NoteProbabilities.LOW)
+        return (note,otherNote)
+
+
+
+    
+def __bleed_over_check(note,frame,processedAudioData):
     pass
+
+def __detect_invalid_notes(notes,frame=0,processedAudioData=0):
+    
+
+    for noteIndex,note in enumerate(notes):
+
+        chroma = note.chroma
+
+        for otherIndex,otherNote in enumerate(notes):
+
+            ## If note checking against itself
+            otherChroma = otherNote.chroma
+            if otherChroma == chroma:
+                continue
+            newNote,newOther = __chromatic_neighbour_check(note,otherNote)
+            notes[noteIndex] = newNote
+            notes[otherIndex] = newOther
+            newNote,newOther = __fifth_check(note,otherNote)
+
+            notes[noteIndex] = newNote
+            notes[otherIndex] = newOther
+
+    return notes
+
+
+
+        
+    
+
 
 def __process_info_at_frame(frame,processedAudioData):
     global currentNotes,finishedNotes
@@ -322,25 +310,26 @@ def __process_info_at_frame(frame,processedAudioData):
     chroma = processedAudioData.chroma
     onsets = processedAudioData.onsets
     #for x,row in enumerate(spectrum[:,sample]):
-    notes, strengths = __get_notes_at_frame(frame,processedAudioData)
+    notes = __get_notes_at_frame(frame,processedAudioData)
+    notes = __detect_invalid_notes(notes)
+
 
     ## Find new notes
     if frame in processedAudioData.onsets:
        
 
-        for note in notes.keys():
+        for note in notes:
             if note not in currentNotes:
-                chroma = note[:-1]
-                octave = int(note[-1:])
-                startStrength = __linearalise_db(spectrum[__note_to_row(note),frame])
-                currentNotes[note] = Note.Note(chroma,octave,frame,processedAudioData,startStrength)
+               # startStrength = __linearalise_db(spectrum[__note_to_row(note),frame])
+                note.start_note(processedAudioData)
+                currentNotes[note.note] = note
 
         
     
         notesToRemove = []
 
         for note in currentNotes.keys():
-            currentStrength = __linearalise_db(spectrum[__note_to_row(note),frame])
+           # currentStrength = __linearalise_db(spectrum[__note_to_row(note),frame])
             #if currentStrength / currentNotes[note].startStrength < 0.96:
 
             if note not in notes and currentNotes[note].startFrame != frame:
@@ -373,10 +362,11 @@ def __get_notes_at_frame(frame,processedAudioData):
         
         chroma = CHROMA[x]
         octave = __get_octave(chroma,frame,processedAudioData.spectrum)
-        strongestNotes.append((chroma + str(octave)))
-        strengths.append(row)
+        newNote = Note(chroma,octave,frame,row)
+        strongestNotes.append(newNote)
+
 
         
-    if frame in processedAudioData.onsets:
-        print(strongestNotes)
-    return (strongestNotes,strengths)
+    #if frame in processedAudioData.onsets:
+   #     print(strongestNotes)
+    return strongestNotes

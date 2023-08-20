@@ -7,6 +7,7 @@ import AudioProcessor
 import numpy as np
 import math
 import librosa
+from enum import Enum
 
 
 NOTE_DURATONS = [
@@ -22,10 +23,18 @@ NOTE_DURATONS = [
 
 
 
+class NoteProbabilities(Enum):
+    LOW = 0
+    NORMAL = 1
+    HIGH = 2
+
+
 class Note:
     duration: float
     chroma: str
     octave: int
+
+    note: str
 
     midi: int
     start: float
@@ -35,24 +44,38 @@ class Note:
     startStrength: float
 
 
+    probabilityIsNote = NoteProbabilities.HIGH
+
 
     startFrame: int
 
     processedAudioData: ProcessedAudioData
 
 
-    def __init__(self,_chroma,_octave,_startFrame,_processedAudioData,_startStrength) -> None:
-
+    def __init__(self,_chroma,_octave,_startFrame,_startStrength) -> None:
         self.chroma = _chroma
         self.octave = _octave
         self.startFrame = _startFrame
-        self.processedAudioData = _processedAudioData
         self.startStrength = _startStrength
 
+        self.note = self.chroma + str(self.octave)
 
+    def set_probability_is_note(self,_probability):
+        self.probabilityIsNote = _probability
+        match self.probabilityIsNote:
+            case NoteProbabilities.LOW:
+                print("LOW")
+            case NoteProbabilities.NORMAL:
+                print("NORMAL")
+            case NoteProbabilities.HIGH:
+                print("HIGH")
+
+    def start_note(self,_processedAudioData,):
+        
+
+        self.processedAudioData = _processedAudioData
+    
         self.midi = librosa.note_to_midi(self.chroma + str(self.octave))
-
-
 
 
     def snap_time_to_beat(self,time):
@@ -84,9 +107,27 @@ class Note:
 
     def set_duration(self,endFrame):
 
-        if np.mean(self.lifeTimeStrengths) < 0.4:
+
+        minLifeTimeStrength = 0
+        #minFrameLength
+
+        match self.probabilityIsNote:
+            case 0:
+                print("AAAAAAAAAA")
+                minLifeTimeStrength = 0.9
+
+            case NoteProbabilities.NORMAL:
+                minLifeTimeStrength = 0.45
+            case NoteProbabilities.HIGH:
+                minLifeTimeStrength = 0.2
+        
+
+
+        if np.mean(self.lifeTimeStrengths) < minLifeTimeStrength:
            print("Note failed average check")
            return False
+        
+        #if self.endFrame - self.startFrame
 
         tempo = self.processedAudioData.tempo
         frameDuration = self.processedAudioData.frameDuration
