@@ -6,7 +6,7 @@ import time
 import ui.UI as UI
 import Utils
 
-SAVE_AUDIO = False
+SAVE_AUDIO = True
 
 def midi(notes,tempo):
     

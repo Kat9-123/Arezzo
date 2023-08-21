@@ -92,7 +92,7 @@ def __get_spectrum(y,samplingRate):
     return spectrum
 def __get_chroma(y, samplingRate):
 
-    chroma = librosa.feature.chroma_cqt(y=y,sr=samplingRate)
+    chroma = librosa.feature.chroma_stft(y=y,sr=samplingRate)
 
     #chroma[chroma < CHROMA_CUTOFF] = 0
    # chroma = np.minimum(chroma,

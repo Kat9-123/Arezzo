@@ -24,9 +24,10 @@ NOTE_DURATONS = [
 
 
 class NoteProbabilities(Enum):
-    LOW = 0
-    NORMAL = 1
-    HIGH = 2
+    LOW = 1
+    KEEP = 0
+    NORMAL = 2
+    HIGH = 3
 
 
 class Note:
@@ -44,7 +45,7 @@ class Note:
     startStrength: float
 
 
-    probabilityIsNote = NoteProbabilities.HIGH
+    probabilityIsNote = NoteProbabilities.NORMAL
 
 
     startFrame: int
@@ -58,17 +59,20 @@ class Note:
         self.startFrame = _startFrame
         self.startStrength = _startStrength
 
+        if self.startStrength > 0.8:
+            self.probabilityIsNote = NoteProbabilities.HIGH
+
         self.note = self.chroma + str(self.octave)
 
+    def __repr__(self) -> str:
+        return f"Note: {self.chroma}{str(self.octave)}, {str(self.startStrength)}"
+
     def set_probability_is_note(self,_probability):
+        if _probability == NoteProbabilities.KEEP:
+            return
+    
         self.probabilityIsNote = _probability
-        match self.probabilityIsNote:
-            case NoteProbabilities.LOW:
-                print("LOW")
-            case NoteProbabilities.NORMAL:
-                print("NORMAL")
-            case NoteProbabilities.HIGH:
-                print("HIGH")
+        #print(self.probabilityIsNote)
 
     def start_note(self,_processedAudioData,):
         
@@ -112,16 +116,15 @@ class Note:
         #minFrameLength
 
         match self.probabilityIsNote:
-            case 0:
-                print("AAAAAAAAAA")
-                minLifeTimeStrength = 0.9
-
+            case NoteProbabilities.LOW:
+                minLifeTimeStrength = 0.8
+                return
             case NoteProbabilities.NORMAL:
-                minLifeTimeStrength = 0.45
+                minLifeTimeStrength = 0.25
             case NoteProbabilities.HIGH:
-                minLifeTimeStrength = 0.2
+                minLifeTimeStrength = 0
         
-
+        print(self.probabilityIsNote)
 
         if np.mean(self.lifeTimeStrengths) < minLifeTimeStrength:
            print("Note failed average check")
@@ -134,7 +137,7 @@ class Note:
 
         self.start = self.snap_time_to_beat(self.startFrame * (tempo/60) * frameDuration)
         self.duration = self.snap_time_to_beat((endFrame - self.startFrame)  * (tempo/60) * frameDuration)
-
+        
 
         debugNote = self.chroma
         if len(self.chroma) == 1:
