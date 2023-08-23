@@ -17,7 +17,7 @@ import copy
 
 # Rows, Frames
 
-TEMPO_BOUNDRY = 140
+
 
 CHROMA = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
@@ -31,20 +31,18 @@ MAX_NOTE_DURATION = 4
 MAX_N_VOICES = 4
 
 
-IS_POLYPHONIC = True
 
 def get_notes(processedAudioData):
     """Takes in spectrum, chroma, onsets and tempo and returns all of the voices with their respective notes."""
     global finishedNotes
     UI.progress("Generating Notes")
-    
+
     spectrumRowCache = __cache_note_to_spectrum_row()
     UI.diagnostic("Cached Spectrum Rows", str(spectrumRowCache))
     UI.diagnostic("Onsets", str(processedAudioData.onsets))
-    tempo = __fix_tempo(processedAudioData.tempo)
+
 
     frameCount = processedAudioData.spectrum.shape[1]
-
 
 
     #start = onsets[0]
@@ -52,51 +50,14 @@ def get_notes(processedAudioData):
     #    onsets[x] -= start
 
 
-    if IS_POLYPHONIC:
-        for currentFrame in range(frameCount):
-            #__get_notes_at_frame(currentFrame,processedAudioData)
-            __process_info_at_frame(currentFrame,processedAudioData)
 
-        UI.stop_spinner()
-        return (finishedNotes,tempo)
+    for currentFrame in range(frameCount):
+        #__get_notes_at_frame(currentFrame,processedAudioData)
+        __process_info_at_frame(currentFrame,processedAudioData)
 
-
-    # IF HOMOPHONIC. Legacy
-    notes = []
-    for x,onset in enumerate(processedAudioData.onsets):
-
-
-
-        strongestChroma = np.argsort(processedAudioData.chroma[:,onset])[::-1][:1]
-
-        
-
-        octave = __get_octave(CHROMA[strongestChroma[0]],onset,processedAudioData.spectrum)
-
-        note = Note.Note(CHROMA[strongestChroma[0]],octave,onset,tempo,frameCount)
-    
-        if x == len(processedAudioData.onsets) -1:
-            endSample = processedAudioData.onsets[-1] + 2
-        else:
-            endSample = processedAudioData.onsets[x+1]
-        note.set_duration(endSample)
-
-        notes.append(note)
-    
     UI.stop_spinner()
-    return (notes,tempo)
+    return finishedNotes
 
-
-def __fix_tempo(rawTempo):
-    """Correctly reduces tempo, based on TEMPO_BOUNDRY."""
-    tempo = rawTempo
-    return tempo
-
-    while tempo > TEMPO_BOUNDRY:
-        tempo //= 2
-    
-    UI.diagnostic("Corrected Tempo",tempo, "bpm")
-    return tempo
 
 
 
@@ -159,8 +120,8 @@ def __get_octave(note,onset,spectrum):
         values = []
 
         for r in range(-3,4):
-            for c in range(-1,6):
-                values.append(spectrum[row+r,onset+c])
+            #for c in range(-1,6):
+            values.append(spectrum[row+r,onset])
 
 
 
@@ -193,8 +154,7 @@ def __harmonic_octave_detection():
 def __get_key_signature():
     pass
 
-def __get_time_signature():
-    pass
+
 
 
 
@@ -330,37 +290,38 @@ def __detect_invalid_notes(notes,frame,processedAudioData):
 
 
 
-def __final_note_stop_check(frame,processedAudioData):
-    onsets = processedAudioData.onsets
-    if frame <= onsets[-1]:
-        return False
-    
-    if np.average(processedAudioData.spectrum[:,frame]) < -49:
-        return True
-    
-    return False
+
     
 
 previousNotes = []
+
+
+def __add_new_notes():
+    pass
+
+
+def __remove_old_notes():
+    pass
+
 def __process_info_at_frame(frame,processedAudioData):
     global currentNotes,finishedNotes,previousNotes
     spectrum = processedAudioData.spectrum
     chroma = processedAudioData.chroma
     onsets = processedAudioData.onsets
-    finalStop = __final_note_stop_check(frame,processedAudioData)
-    if finalStop and len(currentNotes) == 0:
-        return
+
     notes = __get_notes_at_frame(frame,processedAudioData)
 
     ## Find new notes
-    if frame in processedAudioData.onsets or finalStop:
-        if finalStop and len(currentNotes) == 0:
-            return
+    if frame in processedAudioData.onsets:
+
 
         notes = __detect_invalid_notes(notes,frame,processedAudioData)
         previousNotes = []
 
         notesToRemove = []
+
+
+        isFinalNote = (frame == processedAudioData.onsets[-1])
 
 
         playingNotesStrings = []
@@ -374,7 +335,7 @@ def __process_info_at_frame(frame,processedAudioData):
             
             idx = -1 if note not in playingNotesStrings else playingNotesStrings.index(note)
 
-            if (idx == -1 or notes[idx].probabilityIsNote == NoteProbabilities.LOW or finalStop) and currentNotes[note].startFrame != frame:
+            if (idx == -1 or notes[idx].probabilityIsNote == NoteProbabilities.LOW) and currentNotes[note].startFrame != frame:
                 notesToRemove.append(note)
                 if frame - currentNotes[note].startFrame < 4:
                     continue
@@ -382,12 +343,13 @@ def __process_info_at_frame(frame,processedAudioData):
                     finishedNotes.append(currentNotes[note])
 
 
+
+
+
         for note in notesToRemove:
             currentNotes.pop(note)
 
 
-        if finalStop:
-            return
 
 
 
@@ -397,10 +359,10 @@ def __process_info_at_frame(frame,processedAudioData):
                 note.start_note(processedAudioData)
 
                 if note.note in currentNotes:
-                    UI.warning("Note override")
-                else:
-                    currentNotes[note.note] = note
-                    previousNotes.append(note.chroma)
+                    UI.warning(f"Note override: {note.note}")
+                
+                currentNotes[note.note] = note
+                previousNotes.append(note.chroma)
 
         
     
@@ -410,7 +372,13 @@ def __process_info_at_frame(frame,processedAudioData):
         for note in currentNotes.keys():
             chromaIndex = CHROMA.index(note[:-1])
             currentNotes[note].lifeTimeStrengths = np.append(currentNotes[note].lifeTimeStrengths, processedAudioData.chroma[chromaIndex,frame])
+            if isFinalNote:
+                if (currentNotes[note].set_duration(-1,isFinal=True)):
+                    finishedNotes.append(currentNotes[note])
 
+
+            
+        
 
 
 def __get_notes_at_frame(frame,processedAudioData):

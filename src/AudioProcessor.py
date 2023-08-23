@@ -16,6 +16,7 @@ SPECTRUM_DB_CUTOFF = -50
 CHROMA_CUTOFF = 0.2#0.9
 ONSET_TEMPORAL_LAG = 2
 
+TEMPO_BOUNDRY = 140
 
 N_FFT = 2048#4096*4
 
@@ -45,7 +46,7 @@ def process_audio(audioPath):
     pointDuration = duration/frameCount
 
     tempo = __get_tempo(y,samplingRate)
-    UI.diagnostic("Est. Tempo",tempo, "bpm")
+    
     UI.diagnostic("Frame Count",frameCount)
     UI.diagnostic("Duration",duration, "s")
     UI.diagnostic("Frame Duration",pointDuration * 1000, "ms")
@@ -112,9 +113,21 @@ def __get_chroma(y, samplingRate):
 def __get_tempo(y,sampleRate):
     """Estimate tempo"""
     onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
-    tempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate)
+    rawTempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate)
+
+    tempo = round(rawTempo[0])
+    UI.diagnostic("Est. Tempo",tempo, "bpm")
+    #return tempo
+
+    while tempo > TEMPO_BOUNDRY:
+        tempo //= 2
     
-    return round(tempo[0])
+    UI.diagnostic("Corrected Tempo",tempo, "bpm")    
+
+    return tempo
+
+
+
 
 ## Gets the onsets
 def __get_onset(y,sampleRate,frameCount):

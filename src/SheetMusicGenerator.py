@@ -23,7 +23,7 @@ def midi(notes,tempo):
     time = 0    # start at the beginning
     mf.addTrackName(track, time, "Track")
     mf.addTempo(track, time, tempo)
-
+    #mf.addTimeSignature(track,time,3,4,36)
     # add some notes
     channel = 0
     volume = 100

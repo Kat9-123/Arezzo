@@ -23,6 +23,16 @@ NOTE_DURATONS = [
 
 
 
+# 2 -> Semiquavers
+# 3 -> Demisemiquavers
+# etc.
+NOTE_DEPTH = 2**2
+
+
+
+
+
+
 class NoteProbabilities(Enum):
     LOW = 1
     KEEP = 0
@@ -53,6 +63,7 @@ class Note:
     processedAudioData: ProcessedAudioData
 
 
+
     def __init__(self,_chroma,_octave,_startFrame,_startStrength) -> None:
         self.chroma = _chroma
         self.octave = _octave
@@ -74,42 +85,44 @@ class Note:
         self.probabilityIsNote = _probability
         #print(self.probabilityIsNote)
 
-    def start_note(self,_processedAudioData,):
+    def start_note(self,_processedAudioData):
         
 
         self.processedAudioData = _processedAudioData
+
     
         self.midi = librosa.note_to_midi(self.chroma + str(self.octave))
+
 
 
     def snap_time_to_beat(self,time):
         #print(time, "=>", round(time,5))
        # return round(time,5)
-        integerTime,decimalTime = divmod(time,1)
-        #print(time,math.log2(1/decimalTime))
-        result = 1.0/pow(2,round(math.log2(1/decimalTime))) + integerTime
-       # print(time, "=>", result)
+
+
+
+
+        if time == 0.0:
+            UI.warning("Zero Time")
+            return 0.0
+        
+        result =  time * NOTE_DEPTH
+
+        result = round(result)
+
+        result /= NOTE_DEPTH
+
+
+
+        #print(time, "=>", result)
         return result
 
-        initialTime = time
-        for duration in NOTE_DURATONS:
-            #1.2
-            while time >= duration:
-                time -= duration
-            if abs(duration - time) < (duration / 5):
-                pass
-
-        result = initialTime - time
-        if result == 0.0:
-            result = 0.25
-        print(time, "=>", result)
-        return result
 
 
 
 
 
-    def set_duration(self,endFrame):
+    def set_duration(self,endFrame,isFinal=False):
 
 
         minLifeTimeStrength = 0
@@ -117,14 +130,13 @@ class Note:
 
         match self.probabilityIsNote:
             case NoteProbabilities.LOW:
-                minLifeTimeStrength = 0.8
-                return
+                minLifeTimeStrength = 0.75
             case NoteProbabilities.NORMAL:
                 minLifeTimeStrength = 0.25
             case NoteProbabilities.HIGH:
                 minLifeTimeStrength = 0
         
-        print(self.probabilityIsNote)
+        #print(self.probabilityIsNote)
 
         if np.mean(self.lifeTimeStrengths) < minLifeTimeStrength:
            print("Note failed average check")
@@ -134,9 +146,16 @@ class Note:
 
         tempo = self.processedAudioData.tempo
         frameDuration = self.processedAudioData.frameDuration
+      
+        offset = self.processedAudioData.onsets[0]
+        offsetStartFrame = self.startFrame - offset
+        offsetEndFrame = endFrame - offset
 
-        self.start = self.snap_time_to_beat(self.startFrame * (tempo/60) * frameDuration)
-        self.duration = self.snap_time_to_beat((endFrame - self.startFrame)  * (tempo/60) * frameDuration)
+        self.start = self.snap_time_to_beat(offsetStartFrame * (tempo/60) * frameDuration)
+        if not isFinal:
+            self.duration = self.snap_time_to_beat((offsetEndFrame - offsetStartFrame)  * (tempo/60) * frameDuration)
+        else:
+            self.duration = 2
         
 
         debugNote = self.chroma

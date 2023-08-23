@@ -26,7 +26,7 @@ MUSECORE4_PATH = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 EXPORT_TYPE = "pdf" # PNG or PDF
 
 
-AUDIO_TO_ANALYSE = r"PWS_TEST_4.wav"
+AUDIO_TO_ANALYSE = r"PWS_TEST_1.wav"
 
 
 
@@ -55,9 +55,9 @@ def start():
 
     processedAudioData = AudioProcessor.process_audio(f"{AUDIO_BASE_PATH}\\{AUDIO_TO_ANALYSE}") 
 
-    notes, correctedTempo = NoteGenerator.get_notes(processedAudioData)
+    notes = NoteGenerator.get_notes(processedAudioData)
 
-    SheetMusicGenerator.midi(notes,correctedTempo)
+    SheetMusicGenerator.midi(notes,processedAudioData.tempo)
 
 
     Graphing.save_plot()

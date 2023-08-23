@@ -30,6 +30,7 @@ def setY(y):
 
 def init():
     ## https://stackoverflow.com/questions/12492810/python-how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows
+    ## Required for colours
     os.system("")
 
 
@@ -52,12 +53,12 @@ def set_colour(colour):
 
 
 def warning(value):
-    print_colour("{}\n".format(str(value)),RED)
+    print_colour(f"{str(value)}\n",RED)
 
 
 def print_colour(text,colour,*,end=""):
     #stop_spinner()
-    print("{}{}{}".format(colour,text,WHITE),end=end)
+    print(f"{colour}{text}{WHITE}",end=end)
 
 
 
