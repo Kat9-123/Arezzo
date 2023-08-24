@@ -10,17 +10,6 @@ import librosa
 from enum import Enum
 
 
-NOTE_DURATONS = [
-    8, # Breve
-    4, # Semibreve
-    2, # Minim
-    1, # Crotchet
-    0.5, # Quaver
-    0.25, # Semiquaver
-  #  0.125 # Demisemiquaver
-
-]
-
 
 
 # 2 -> Semiquavers
@@ -115,7 +104,7 @@ class Note:
 
 
         #print(time, "=>", result)
-        return result
+        return float(result)
 
 
 

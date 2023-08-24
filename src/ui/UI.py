@@ -56,6 +56,10 @@ def warning(value):
     print_colour(f"{str(value)}\n",RED)
 
 
+
+def debug(value):
+    print(value)
+
 def print_colour(text,colour,*,end=""):
     #stop_spinner()
     print(f"{colour}{text}{WHITE}",end=end)
@@ -66,6 +70,9 @@ def diagnostic(name,value,suffix=""):
     print_colour("{}: {} {}                                                     \n".format(name,str(value),suffix),YELLOW)
 
 
+
+def newline():
+    print()
 
 
 
