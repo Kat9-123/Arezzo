@@ -32,9 +32,14 @@ MAX_N_VOICES = 4
 
 
 
+
+freqs = np.ndarray
+
+
 def get_notes(processedAudioData):
     """Takes in spectrum, chroma, onsets and tempo and returns all of the voices with their respective notes."""
-    global finishedNotes
+    global finishedNotes,freqs
+    freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
     UI.progress("Generating Notes")
 
     spectrumRowCache = __cache_note_to_spectrum_row()
@@ -64,12 +69,11 @@ def get_notes(processedAudioData):
 
 
 def __row_to_note(row):
-    freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
 
     return librosa.hz_to_note(freqs[row],unicode=False)
 
 def __note_to_row(note):
-    freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
+    
     hz = librosa.note_to_hz(note)
     smallestDist = 10000
     smallestRow = -1
@@ -91,6 +95,12 @@ def __note_to_row(note):
 
 
 
+def get_volume_of_note(note,frame,processedAudioData):
+    row = __note_to_row(note)
+
+    return processedAudioData.spectrum[row,frame]
+
+
 def __cache_note_to_spectrum_row():
     freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
     cache = {}
@@ -110,8 +120,51 @@ def __cache_note_to_spectrum_row():
     return cache
 
 
+"""
+def __get_octave(note,onset,processedAudioData):
+    strongest = -1000
+    strongestI = -1
+    onsets = processedAudioData.onsets
+   # index = np.where(onsets == onset)[0]
 
-def __get_octave(note,onset,spectrum):
+    nextOnset = 0
+    #if index == len(onsets) - 1:
+    #    nextOnset = onset+10
+    #else:
+     #   nextOnset = onsets[index]
+#
+
+    for i in range(1,9):
+        row = __note_to_row(note + str(i))
+
+        values = []
+
+        
+        for frame in range(onset,5):
+            values.append(processedAudioData.spectrum[row,frame])
+
+
+
+        val = np.mean(values)
+        if val > strongest:
+            strongest = val
+            strongestI = i
+
+        #if val > LOWEST_OCTAVE_DB:
+        #   return i
+
+    if strongestI == -1:
+        UI.warning("Octave not found!")
+        return 0
+    return strongestI
+        #if val > strongest:
+        #    strongest = val
+        #   strongestI = i
+        
+    #return strongestI
+"""
+def __get_octave(note,onset,processedAudioData):
+    spectrum = processedAudioData.spectrum
     strongest = -1000
     strongestI = -1
     for i in range(1,9):
@@ -392,7 +445,7 @@ def __get_notes_at_frame(frame,processedAudioData):
             continue
         
         chroma = CHROMA[x]
-        octave = __get_octave(chroma,frame,processedAudioData.spectrum)
+        octave = __get_octave(chroma,frame,processedAudioData)
         newNote = Note(chroma,octave,frame,row)
         strongestNotes.append(newNote)
 
