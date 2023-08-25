@@ -447,6 +447,7 @@ def __get_notes_at_frame(frame,processedAudioData):
         chroma = CHROMA[x]
         octave = __get_octave(chroma,frame,processedAudioData)
         newNote = Note(chroma,octave,frame,row)
+        print(get_volume_of_note(newNote.note,frame,processedAudioData))
         strongestNotes.append(newNote)
 
 

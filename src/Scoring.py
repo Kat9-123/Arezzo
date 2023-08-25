@@ -34,6 +34,7 @@ def score(notes,filePath,tempo):
     generatedNotes = __generated_note_list_parser(notes)
     originalNotes = __get_orig_notes(filePath,tempo)
 
+
     lengthScore = __length_score(generatedNotes,originalNotes)
     generatedOrignalScore = __match_generated_original(generatedNotes,originalNotes)
     orignalGeneratedScore = __match_original_generated(generatedNotes,originalNotes)
