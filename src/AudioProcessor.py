@@ -63,7 +63,8 @@ def process_audio(audioPath):
                                             tempo=tempo,
                                             duration=duration,
                                             frameCount=frameCount,
-                                            frameDuration=pointDuration)
+                                            frameDuration=pointDuration,
+                                            loudest=spectrum.max())
 
 
 
@@ -123,6 +124,7 @@ def __get_tempo(y,sampleRate):
         tempo //= 2
     
     UI.diagnostic("Corrected Tempo",tempo, "bpm")    
+
 
     return tempo
 

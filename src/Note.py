@@ -52,7 +52,6 @@ class Note:
     processedAudioData: ProcessedAudioData
 
 
-
     def __init__(self,_chroma,_octave,_startFrame,_startStrength) -> None:
         self.chroma = _chroma
         self.octave = _octave
@@ -65,7 +64,7 @@ class Note:
         self.note = self.chroma + str(self.octave)
 
     def __repr__(self) -> str:
-        return f"Note: {self.chroma}{str(self.octave)}, {str(self.startStrength)}"
+        return f"{self.note} : {self.startStrength:.2f}"
 
     def set_probability_is_note(self,_probability):
         if _probability == NoteProbabilities.KEEP:
@@ -116,19 +115,20 @@ class Note:
 
         minLifeTimeStrength = 0
         #minFrameLength
+        if self.probabilityIsNote ==  NoteProbabilities.LOW:
+            minLifeTimeStrength = 0.8
+        elif self.probabilityIsNote == NoteProbabilities.NORMAL:
+            minLifeTimeStrength = 0.2
+        elif self.probabilityIsNote == NoteProbabilities.HIGH:
+            minLifeTimeStrength = 0
 
-        match self.probabilityIsNote:
-            case NoteProbabilities.LOW:
-                minLifeTimeStrength = 0.75
-            case NoteProbabilities.NORMAL:
-                minLifeTimeStrength = 0.25
-            case NoteProbabilities.HIGH:
-                minLifeTimeStrength = 0
+                
         
         #print(self.probabilityIsNote)
-
-        if np.mean(self.lifeTimeStrengths) < minLifeTimeStrength:
-           print("Note failed average check")
+        averageStrength = np.mean(self.lifeTimeStrengths)
+        if averageStrength < minLifeTimeStrength:
+          # print("Note failed average check")
+           UI.print_colour("{} {} Failed avg.\n".format(self.note, round(averageStrength,4)),UI.RED)
            return False
         
         #if self.endFrame - self.startFrame
@@ -153,5 +153,5 @@ class Note:
         
         debugNote += str(self.octave)
 
-        UI.print_colour("{} {} {}                                   \n".format(debugNote, round(self.start,4), round(self.duration,4)),UI.CYAN)
+        UI.print_colour("{} {} {} {}                                  \n".format(debugNote, round(self.start,4), round(self.duration,4),round(averageStrength,4)),UI.CYAN)
         return True

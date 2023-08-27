@@ -27,10 +27,10 @@ MUSECORE4_PATH = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 EXPORT_TYPE = "pdf" # PNG or PDF
 
 
-AUDIO_TO_ANALYSE = r"PWS_TEST_2.wav"
+AUDIO_TO_ANALYSE = r"PWS_TEST_6.wav"
 
 
-COMPARE_FILE = r"PWS_TEST_4.mid"
+COMPARE_FILE = r"PWS_TEST_6.mid"
 
 
 
@@ -70,7 +70,7 @@ def start():
     perSecondOfAudioDuration = duration/processedAudioData.duration
 
    
-   # Scoring.score(notes,COMPARE_FILE,processedAudioData.tempo)
+    Scoring.score(notes,COMPARE_FILE,processedAudioData.tempo)
     UI.newline()
    
     UI.diagnostic("Processing time per second of audio",round(perSecondOfAudioDuration,3), "seconds")

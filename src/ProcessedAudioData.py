@@ -11,3 +11,5 @@ class ProcessedAudioData(NamedTuple):
     frameCount: int
     frameDuration: float
 
+    loudest: float
+
