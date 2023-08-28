@@ -128,28 +128,19 @@ def __cache_note_to_spectrum_row():
     return cache
 
 
-"""
 def __get_octave(note,onset,processedAudioData):
     strongest = -1000
     strongestI = -1
-    onsets = processedAudioData.onsets
-   # 
 
-    nextOnset = 0
-    #if index == len(onsets) - 1:
-    #    nextOnset = onset+10
-    #else:
-     #   nextOnset = onsets[index]
-#
+
 
     for i in range(1,9):
         row = __note_to_row(note + str(i))
 
         values = []
 
-        
-        for frame in range(onset,5):
-            values.append(processedAudioData.spectrum[row,frame])
+
+        values.append(processedAudioData.spectrum[row,onset])
 
 
 
@@ -170,8 +161,8 @@ def __get_octave(note,onset,processedAudioData):
         #   strongestI = i
         
     #return strongestI
-"""
-def __get_octave(note,onset,processedAudioData):
+
+def ___get_octave(note,onset,processedAudioData):
     #onsets = processedAudioData.onsets.tolist()
     index = np.where(processedAudioData.onsets == onset)[0][0]
     
@@ -187,7 +178,7 @@ def __get_octave(note,onset,processedAudioData):
     largestJump = -5000
     largestJumpIndex = -1
 
-
+    print(f"{note} ", end="")
     previousStrength = 5000
     for i in range(1,9):
         row = __note_to_row(note + str(i))
@@ -202,8 +193,8 @@ def __get_octave(note,onset,processedAudioData):
             values.append(spectrum[row,x])
 
         val = np.mean(values)
-        #print(f"{val} ",end="")
-        if val - previousStrength > largestJump:
+        print(f"{val} ",end="")
+        if val - previousStrength > 15:
             largestJumpIndex = i
             largestJump = val - previousStrength
 
@@ -220,7 +211,7 @@ def __get_octave(note,onset,processedAudioData):
     if largestJumpIndex == -1:
         UI.warning("Octave not found!")
         return 0
-
+    print()
     return largestJumpIndex
         #if val > strongest:
         #    strongest = val
@@ -275,6 +266,14 @@ def __chromatic_neighbour_check(note,otherNote):
     if abs(chromaIndex - otherChromaIndex) % 10 != 1:
        return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
     
+
+    if chroma == "B" and otherChroma == "C" and otherNote.octave - note.octave > 1:
+        return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
+    
+    elif chroma == "C" and otherChroma == "B" and otherNote.octave - note.octave < -1:
+        return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
+    elif note.octave != otherNote.octave:
+        return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
 
     
 
@@ -429,7 +428,7 @@ def __process_info_at_frame(frame,processedAudioData):
             
             idx = -1 if note not in playingNotesStrings else playingNotesStrings.index(note)
 
-            if (idx == -1 or notes[idx].probabilityIsNote == NoteProbabilities.HIGH) and currentNotes[note].startFrame != frame:
+            if (idx == -1 or notes[idx].probabilityIsNote == NoteProbabilities.LOW or currentNotes[note].probabilityIsNote == NoteProbabilities.HIGH) and currentNotes[note].startFrame != frame:
                 notesToRemove.append(note)
                 if frame - currentNotes[note].startFrame < 4:
                     continue
@@ -483,11 +482,14 @@ def __get_notes_at_frame(frame,processedAudioData):
     strengths = []
 
     for x,row in enumerate(chroma[:,frame]):
+        chroma = CHROMA[x]
+        octave = __get_octave(chroma,frame,processedAudioData)
+        strength = __relative_volume_of_note(chroma + str(octave),frame,processedAudioData)
         if row < 0.25:
             continue
         
-        chroma = CHROMA[x]
-        octave = __get_octave(chroma,frame,processedAudioData)
+
+        #print(row)
         newNote = Note(chroma,octave,frame,__relative_volume_of_note(chroma + str(octave),frame,processedAudioData))
         # print()
         strongestNotes.append(newNote)

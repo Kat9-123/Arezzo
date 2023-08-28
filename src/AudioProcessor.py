@@ -7,6 +7,7 @@ import ui.UI as UI
 import librosa
 import scipy
 import numpy as np
+import scipy.stats
 
 
 
@@ -14,7 +15,7 @@ import numpy as np
 
 SPECTRUM_DB_CUTOFF = -50
 CHROMA_CUTOFF = 0.2#0.9
-ONSET_TEMPORAL_LAG = 2
+ONSET_TEMPORAL_LAG = 1
 
 TEMPO_BOUNDRY = 140
 
@@ -115,6 +116,7 @@ def __get_tempo(y,sampleRate):
     """Estimate tempo"""
     onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
     rawTempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate)
+    
 
     tempo = round(rawTempo[0])
     UI.diagnostic("Est. Tempo",tempo, "bpm")
@@ -124,7 +126,6 @@ def __get_tempo(y,sampleRate):
         tempo //= 2
     
     UI.diagnostic("Corrected Tempo",tempo, "bpm")    
-
 
     return tempo
 

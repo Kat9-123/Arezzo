@@ -7,11 +7,25 @@ import librosa
 
 
 
+def __get_original_tempo(filePath:str):
+    """PATH\\FILENAME+TEMPO.mid"""
+    start = filePath.find("+")
+    end = filePath.find(".")
 
-def __get_orig_notes(filePath,tempo):
+    if start == -1 or end == -1:
+        raise Exception("Invalid MIDI test fileformat, expected tempo in filename. Ex: PATH\\FILENAME+TEMPO.mid")
+
+
+    tempo = int(filePath[start+1:end])
+
+    return tempo
+
+def __get_orig_notes(filePath):
     midi_data = pretty_midi.PrettyMIDI(filePath)
     #print("duration:",midi_data.get_end_time())
-    bpm = midi_data.estimate_tempo()
+    tempo = __get_original_tempo(filePath)
+   # tempo = round(midi_data.estimate_tempo())
+    UI.diagnostic("Original tempo", tempo, "bpm")
     #print(f'{"note":>10} {"start":>10} {"end":>10}')
     
     bps = tempo/60.0
@@ -26,26 +40,33 @@ def __get_orig_notes(filePath,tempo):
 
             notes.append(f"{pitch} {start} {end}")
 
-    return notes
+    return (notes,tempo)
 
 
+def __tempo_score(original,generated):
+    ratio = generated/original
+    result = 1 - abs(-ratio + 1)
+    return result * 100
 
-def score(notes,filePath,tempo):
+
+def score(notes,filePath,generatedTempo):
     generatedNotes = __generated_note_list_parser(notes)
-    originalNotes = __get_orig_notes(filePath,tempo)
+    originalNotes,originalTempo = __get_orig_notes(filePath)
 
 
     lengthScore = __length_score(generatedNotes,originalNotes)
     generatedOrignalScore = __match_generated_original(generatedNotes,originalNotes)
     orignalGeneratedScore = __match_original_generated(generatedNotes,originalNotes)
+    tempoScore = __tempo_score(originalTempo,generatedTempo)
 
     UI.diagnostic("Length Score", round(lengthScore,2), "%")
+    UI.diagnostic("Tempo Score", round(tempoScore,2), "%")
     UI.diagnostic("Generated-Orignal Score", round(generatedOrignalScore,2), "%")
     UI.diagnostic("Original-Generated Score", round(orignalGeneratedScore,2), "%")
 
 
-    total = lengthScore+generatedOrignalScore + orignalGeneratedScore
-    score = round(total / 3.0,2)
+    total = lengthScore+generatedOrignalScore + orignalGeneratedScore + tempoScore
+    score = round(total / 4.0,2)
     UI.diagnostic("SCORE", score, "%")
     
 
