@@ -13,6 +13,8 @@ import Graphing
 import AudioProcessor
 import NoteGenerator
 import ui.UI as UI
+import network.Manager as NetworkManager
+
 import SheetMusicGenerator
 import Utils
 import Scoring
@@ -27,10 +29,10 @@ MUSECORE4_PATH = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 EXPORT_TYPE = "pdf" # PNG or PDF
 
 
-AUDIO_TO_ANALYSE = r"PWS_TEST_1.wav"
+AUDIO_TO_ANALYSE = r"PWS_TEST_6.wav"
 
 
-COMPARE_FILE = r"PWS_TEST_1+80.mid"
+COMPARE_FILE = r"PWS_TEST_6+94.mid"
 
 
 
@@ -46,9 +48,13 @@ AUDIO_BASE_PATH = "audio"
 
 def start():
 
+    UI.init()
+    NetworkManager.train()
+
+    return
     startTime = time.perf_counter() 
     
-    UI.init()
+    
 
 
 

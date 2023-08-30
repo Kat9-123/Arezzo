@@ -15,7 +15,7 @@ import scipy.stats
 
 SPECTRUM_DB_CUTOFF = -50
 CHROMA_CUTOFF = 0.2#0.9
-ONSET_TEMPORAL_LAG = 1
+ONSET_TEMPORAL_LAG = 0
 
 TEMPO_BOUNDRY = 140
 
@@ -25,6 +25,18 @@ samplingRate = 0
 
 
 
+
+def network_process(audioPath):
+    print("Starting audio network process")
+    y, samplingRate = librosa.load(audioPath,offset=0,duration=50)
+
+    spectrum = __get_spectrum(y,samplingRate)
+    frameCount = spectrum.shape[1]
+    rowCount = spectrum.shape[0]
+    onsets = __get_onset(y, samplingRate,frameCount)
+
+    return (spectrum,onsets,spectrum.shape)
+    
 
 def process_audio(audioPath):
     """Takes the audio at the path and returns a spectrum, chroma classification, onsets, 
