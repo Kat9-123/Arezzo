@@ -48,12 +48,11 @@ AUDIO_BASE_PATH = "audio"
 
 def start():
 
-    UI.init()
-    NetworkManager.train()
+    
 
-    return
     startTime = time.perf_counter() 
     
+    UI.init()
     
 
 
