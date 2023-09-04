@@ -19,7 +19,8 @@ ONSET_TEMPORAL_LAG = 0
 
 TEMPO_BOUNDRY = 140
 
-N_FFT = 2048#4096*4
+N_FFT = 2048*2#4096*
+WINDOW_LENGTH = 2048*2
 
 samplingRate = 0
 
@@ -50,7 +51,7 @@ def process_audio(audioPath):
 
 
     spectrum = __get_spectrum(y,samplingRate)
-
+    print(spectrum.shape)
     frameCount = spectrum.shape[1]
 
     chroma = __get_chroma(y,samplingRate)
@@ -90,7 +91,7 @@ def process_audio(audioPath):
 
 
 def __get_spectrum(y,samplingRate):
-    X = librosa.stft(y,n_fft=N_FFT)
+    X = librosa.stft(y,n_fft=N_FFT,win_length=WINDOW_LENGTH,hop_length=2048//4)
 
     spectrum = librosa.amplitude_to_db(abs(X))
 
