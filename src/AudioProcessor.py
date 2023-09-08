@@ -15,7 +15,7 @@ import scipy.stats
 
 SPECTRUM_DB_CUTOFF = -50
 CHROMA_CUTOFF = 0.2#0.9
-ONSET_TEMPORAL_LAG = 0
+ONSET_TEMPORAL_LAG = 2
 
 TEMPO_BOUNDRY = 140
 
@@ -144,8 +144,6 @@ def __get_tempo(y,sampleRate):
 
 
 
-
-## Gets the onsets
 def __get_onset(y,sampleRate,frameCount):
 
     D = np.abs(librosa.stft(y))

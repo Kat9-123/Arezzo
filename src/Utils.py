@@ -3,7 +3,7 @@ import ui.UI as UI
 
 
 def sys_call(command: str) -> None:
-    """System call wrapper with diagnostic print"""
+    """System call wrapper with diagnostic print."""
     UI.print_colour(f"SYSTEM CALL: '{command}'", UI.PURPLE, end="\n")
     os.system(command)
 
@@ -14,19 +14,15 @@ def sys_call(command: str) -> None:
 # etc.
 NOTE_DEPTH = 2**2
 
-def snap_to_beat(time):
-
+def snap_to_beat(time: float) -> float:
+    """Takes a rough estimate for beat alignment, and snaps it to the beat."""
 
     if time == 0.0:
         #UI.warning("Zero Time")
         return 0.0
     
-    result =  time * NOTE_DEPTH
-
+    result = time * NOTE_DEPTH
     result = round(result)
-
     result /= NOTE_DEPTH
 
-
-    #print(time, "=>", result)
     return float(result)

@@ -8,55 +8,61 @@ import Utils
 
 SAVE_AUDIO = True
 
-def midi(notes,tempo):
-    
+def generate_midi_file(notes,tempo) -> None:
+    """Takes a list of note objects, and a tempo and creates a MIDI file."""
+
     if not SAVE_AUDIO:
         return
     UI.progress("Generating MIDI")
     print(notes)
     earliestStartTime = __get_earliest_start_time(notes)
 
-    # create your MIDI object
-    mf = MIDIFile(len(notes))     # only 1 track
-    track = 0   # the only track
 
-    time = 0    # start at the beginning
-    mf.addTrackName(track, time, "Track")
-    mf.addTempo(track, time, tempo)
-    #mf.addTimeSignature(track,time,3,4,36)
-    # add some notes
+    midiFile = MIDIFile(len(notes))
+
+    track = 0
+    time = 0
     channel = 0
     volume = 100
 
+    midiFile.addTrackName(track, time, "Track")
+    midiFile.addTempo(track, time, tempo)
+
+
+
     for note in notes:
-        mf.addNote(0, channel, note.midi, note.start - earliestStartTime, note.duration, volume)
+        midiFile.addNote(track, channel, note.midi, note.start - earliestStartTime, note.duration, volume)
 
     # write it to disk
 
     midiPath = "output\\midi\\{}.mid".format(Main.outputName)
+
     UI.diagnostic("MIDI:",midiPath)
+
+
     with open(midiPath, 'wb') as outf:
-        mf.writeFile(outf)
+        midiFile.writeFile(outf)
 
 
-    musescore(midiPath)
+    __generate_sheetmusic_musescore(midiPath)
 
 
-def musescore(midiPath):
+def __generate_sheetmusic_musescore(midiPath: str) -> None:
+    """Uses musescore to generate a pdf, given a midi file path."""
     UI.progress("Generating Sheet music")
     
     # Help
-    command = 'src\\MusescoreCaller.bat "{}" "output\\sheet music\\{}.{}" "{}"'.format(Main.MUSECORE4_PATH,Main.outputName,Main.EXPORT_TYPE,midiPath)
+    command = f'src\\MusescoreCaller.bat "{Main.MUSECORE4_PATH}" "output\\sheet music\\{Main.outputName}.{Main.EXPORT_TYPE}" "{midiPath}"'
   
 
     Utils.sys_call(command)
-    #os.system(f'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe "output\\sheet music\\{Main.outputName}.{Main.EXPORT_TYPE}"')
 
 
 
 
 
-def __get_earliest_start_time(notes):
+
+def __get_earliest_start_time(notes) -> float:
     earliest = 10_000
 
     for note in notes:

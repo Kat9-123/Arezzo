@@ -128,15 +128,15 @@ def __cache_note_to_spectrum_row():
     return cache
 
 
-def __get_octave(note,onset,processedAudioData):
+def ___get_octave(note,onset,processedAudioData):
     strongest = -1000
     strongestI = -1
 
 
-
+    print(f"{note} ", end="")
     for i in range(1,9):
         row = __note_to_row(note + str(i))
-
+        
         values = []
 
 
@@ -148,6 +148,7 @@ def __get_octave(note,onset,processedAudioData):
         if val > strongest:
             strongest = val
             strongestI = i
+        print(f"{val} ",end="")
 
         #if val > LOWEST_OCTAVE_DB:
         #   return i
@@ -162,7 +163,7 @@ def __get_octave(note,onset,processedAudioData):
         
     #return strongestI
 
-def ___get_octave(note,onset,processedAudioData):
+def __get_octave(note,onset,processedAudioData):
     #onsets = processedAudioData.onsets.tolist()
     index = np.where(processedAudioData.onsets == onset)[0][0]
     
@@ -175,10 +176,11 @@ def ___get_octave(note,onset,processedAudioData):
 
 
 
-    largestJump = -5000
-    largestJumpIndex = -1
+    strongest = -10000
+    strongestI = -1
 
     print(f"{note} ", end="")
+
     previousStrength = 5000
     for i in range(1,9):
         row = __note_to_row(note + str(i))
@@ -186,33 +188,36 @@ def ___get_octave(note,onset,processedAudioData):
         values = []
 
 
-        for x in range(onset,nextOnset):
-        #for r in range(-3,4):
-        #    #for c in range(-1,6):
+        for x in range(1):#range(onset,nextOnset):
+       # for r in range(-3,4):
+        #for c in range(-1,6):
             
-            values.append(spectrum[row,x])
+            values.append(spectrum[row,onset])
 
         val = np.mean(values)
         print(f"{val} ",end="")
-        if val - previousStrength > 15:
-            largestJumpIndex = i
-            largestJump = val - previousStrength
+        #if note == "B":
+         #   print(val,previousStrength)
+
+        if val > 0 and val - previousStrength > 10:
+        #if val - previousStrength > 40:
+            return i
+
 
         previousStrength = val
 
-
         #if val > strongest:
          #   strongest = val
-         #   strongestI = i
+          #  strongestI = i
 
         #if val > LOWEST_OCTAVE_DB:
         #   return i
 
-    if largestJumpIndex == -1:
+    if strongestI == -1:
         UI.warning("Octave not found!")
         return 0
     print()
-    return largestJumpIndex
+    return strongestI
         #if val > strongest:
         #    strongest = val
         #   strongestI = i
@@ -265,7 +270,7 @@ def __chromatic_neighbour_check(note,otherNote):
     ## Neighbour check
     if abs(chromaIndex - otherChromaIndex) % 10 != 1:
        return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
-    
+
 
     #if chroma == "B" and otherChroma == "C" and otherNote.octave - note.octave > 1:
     #    return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
@@ -353,8 +358,8 @@ def __detect_invalid_notes(notes,frame,processedAudioData,previousFrame):
 
         chroma = note.chroma
 
-        if note.startStrength > 0.5:
-            note.set_probability_is_note(NoteProbabilities.HIGH)
+        #if note.startStrength > 0.5:
+        #    note.set_probability_is_note(NoteProbabilities.HIGH)
 
         for otherIndex,otherNote in enumerate(notes):
 
