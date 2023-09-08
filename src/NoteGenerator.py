@@ -40,6 +40,7 @@ def get_notes(processedAudioData):
     """Takes in spectrum, chroma, onsets and tempo and returns all of the voices with their respective notes."""
     global finishedNotes,freqs
     freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
+   # freqs = librosa.fft_frequencies(sr=AudioProcessor.samplingRate,n_fft=AudioProcessor.N_FFT)
     UI.progress("Generating Notes")
 
     spectrumRowCache = __cache_note_to_spectrum_row()
@@ -48,7 +49,6 @@ def get_notes(processedAudioData):
 
 
     frameCount = processedAudioData.spectrum.shape[1]
-
 
     #start = onsets[0]
    # for x in range(len(onsets)):
@@ -267,13 +267,13 @@ def __chromatic_neighbour_check(note,otherNote):
        return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
     print("Chromatic neighbour check")
 
-    if chroma == "B" and otherChroma == "C" and otherNote.octave - note.octave > 1:
-        return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
+    #if chroma == "B" and otherChroma == "C" and otherNote.octave - note.octave > 1:
+    #    return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
     
-    elif chroma == "C" and otherChroma == "B" and otherNote.octave - note.octave < -1:
-        return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
-    elif note.octave != otherNote.octave:
-        return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
+   # elif chroma == "C" and otherChroma == "B" and otherNote.octave - note.octave < -1:
+    #    return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
+    #elif note.octave != otherNote.octave:
+    #    return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
 
     
 
