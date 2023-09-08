@@ -65,7 +65,7 @@ def start():
 
     notes = NoteGenerator.get_notes(processedAudioData)
     
-    SheetMusicGenerator.midi(notes,processedAudioData.tempo)
+    SheetMusicGenerator.generate_midi_file(notes,processedAudioData.tempo)
 
 
     Graphing.save_plot()
@@ -75,7 +75,7 @@ def start():
     perSecondOfAudioDuration = duration/processedAudioData.duration
 
    
-   # Scoring.score(notes,COMPARE_FILE,processedAudioData.tempo)
+    Scoring.score(notes,COMPARE_FILE,processedAudioData.tempo)
     UI.newline()
    
     UI.diagnostic("Processing time per second of audio",round(perSecondOfAudioDuration,3), "seconds")

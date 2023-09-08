@@ -265,7 +265,7 @@ def __chromatic_neighbour_check(note,otherNote):
     ## Neighbour check
     if abs(chromaIndex - otherChromaIndex) % 10 != 1:
        return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
-    
+    print("Chromatic neighbour check")
 
     if chroma == "B" and otherChroma == "C" and otherNote.octave - note.octave > 1:
         return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
@@ -336,7 +336,7 @@ def __bleed_over_check(note,frame,processedAudioData,previousFrame):
     deltaFrame = frame - previousFrame
     strength = 1 - 0.02 * deltaFrame
 
-
+    print("BLEEDOVER STRENGTH", strength)
     if note.startStrength < strength:
 
         return NoteProbabilities.LOW
@@ -353,8 +353,8 @@ def __detect_invalid_notes(notes,frame,processedAudioData,previousFrame):
 
         chroma = note.chroma
 
-        if note.startStrength > 0.5:
-            note.set_probability_is_note(NoteProbabilities.HIGH)
+        #if note.startStrength > 0.5:
+        #    note.set_probability_is_note(NoteProbabilities.HIGH)
 
         for otherIndex,otherNote in enumerate(notes):
 

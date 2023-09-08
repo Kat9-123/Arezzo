@@ -143,8 +143,6 @@ def __get_tempo(y,sampleRate):
 
 
 
-
-## Gets the onsets
 def __get_onset(y,sampleRate,frameCount):
 
     D = np.abs(librosa.stft(y))

@@ -94,7 +94,7 @@ class Note:
             UI.warning("Zero Time")
             return 0.0
         
-        result =  time * NOTE_DEPTH
+        result = time * NOTE_DEPTH
 
         result = round(result)
 
