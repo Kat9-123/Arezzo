@@ -108,7 +108,8 @@ class Note:
 
 
 
-
+    def get_average_strength(self):
+        return np.mean(self.lifeTimeStrengths)
 
     def set_duration(self,endFrame,isFinal=False):
 

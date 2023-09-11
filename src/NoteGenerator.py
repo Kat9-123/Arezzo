@@ -163,6 +163,22 @@ def ___get_octave(note,onset,processedAudioData):
         
     #return strongestI
 
+def __get_strength_of_octave(chroma,octave,onset,nextOnset,spectrum):
+    row = __note_to_row(chroma + str(octave))
+
+
+    #strength = __relative_volume_of_note(chroma + str(octave),onset,processedAudioData)
+    values = []
+
+
+    for c in range(onset,nextOnset):
+        #for r in range(-2,2):
+        #for c in range(-1,6):
+        
+                values.append(spectrum[row,c])
+
+    return np.mean(values)
+
 def __get_octave(note,onset,processedAudioData):
     #onsets = processedAudioData.onsets.tolist()
     index = np.where(processedAudioData.onsets == onset)[0][0]
@@ -176,40 +192,31 @@ def __get_octave(note,onset,processedAudioData):
 
 
 
-    strongest = -10000
-    strongestI = -1
 
     print(f"{note} ", end="")
 
-    test = -1
+    index = -1
     previousStrength = 5000
+    nextOctaveIsWeak = False
     for i in range(1,9):
-        row = __note_to_row(note + str(i))
 
-
-        strength = __relative_volume_of_note(note + str(i),onset,processedAudioData)
-        values = []
-
-
-        for c in range(onset,nextOnset):
-            #for r in range(-2,2):
-            #for c in range(-1,6):
-            
-                 values.append(spectrum[row,c])
-
-        val = np.mean(values)
+        val = __get_strength_of_octave(note,i,onset,nextOnset,spectrum)
         #if note == "C#":
 
         print(f"{round(float(val),3)} ",end="")
         #if note == "B":
          #   print(val,previousStrength)
 
-        if test != -1:
+        if index != -1:
             continue
-        if val > 0 and val - previousStrength > 15:
+
+       
+        if val > 4 and val - previousStrength > 15:
+            if __get_strength_of_octave(note,i+1,onset,nextOnset,spectrum) < 0:
+                nextOctaveIsWeak = True
         #if val - previousStrength > 40:
            # print()
-            test = i
+            index = i
 
 
         previousStrength = val
@@ -225,7 +232,7 @@ def __get_octave(note,onset,processedAudioData):
     #    UI.warning("Octave not found!")
     #    return 0
     print()
-    return test
+    return (index,nextOctaveIsWeak)
         #if val > strongest:
         #    strongest = val
         #   strongestI = i
@@ -307,7 +314,7 @@ def __chromatic_neighbour_check(note,otherNote):
         
 
         
-        
+#####################START STRENGTH ?
 
 def __fifth_check(note,otherNote):
     chroma = note.chroma
@@ -322,6 +329,10 @@ def __fifth_check(note,otherNote):
     chromaIndex = CHROMA.index(chroma)
     otherChromaIndex = CHROMA.index(otherChroma)
 
+
+    if librosa.note_to_midi(note.note) > librosa.note_to_midi(otherNote.note):
+        return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
+
     ## Upwards (5th)
     if (otherChromaIndex - chromaIndex) != 7:
         ## Downwards (4th)
@@ -335,6 +346,7 @@ def __fifth_check(note,otherNote):
 
 
     return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
+
 
     
 def __bleed_over_check(note,frame,processedAudioData,previousFrame):
@@ -467,13 +479,12 @@ def __process_info_at_frame(frame,processedAudioData):
                 if note.note in currentNotes:
                    # if currentNotes[note.note].probabilityIsNote == NoteProbabilities.HIGH:
                     #    note.probabilityIsNote = NoteProbabilities.NORMAL
+
                     UI.warning(f"Note override: {note.note}")
                 
                 currentNotes[note.note] = note
                 previousNotes.append(note.chroma)
 
-        
-    
 
 
         
@@ -488,7 +499,7 @@ def __process_info_at_frame(frame,processedAudioData):
 
 
 
-def __get_notes_at_frame(onset,processedAudioData):
+def ___get_notes_at_frame(onset,processedAudioData):
 
     notes = []
     for chroma in CHROMA:
@@ -563,7 +574,7 @@ def __get_notes_at_frame(onset,processedAudioData):
         
 
 
-def ___get_notes_at_frame(frame,processedAudioData):
+def __get_notes_at_frame(frame,processedAudioData):
     chromas = processedAudioData.chroma
     index = np.where(processedAudioData.onsets == frame)[0][0]
     
@@ -576,18 +587,20 @@ def ___get_notes_at_frame(frame,processedAudioData):
 
     for x,row in enumerate(chromas[:,frame]):
         chroma = CHROMA[x]
-        octave = __get_octave(chroma,frame,processedAudioData)
+        octave,nextOctaveIsWeak = __get_octave(chroma,frame,processedAudioData)
         strength = __relative_volume_of_note(chroma + str(octave),frame,processedAudioData)
 
         #avgStrength = np.mean(chroma[x,frame:nextOnset-2])
-        if row < 0.25:
-            continue
+        if row > 0.25 or (octave != -1 and not nextOctaveIsWeak): 
+       # if row < 0.25:
         
 
         #print(row)
-        newNote = Note(chroma,octave,frame,__relative_volume_of_note(chroma + str(octave),frame,processedAudioData))
+            newNote = Note(chroma,octave,frame,__relative_volume_of_note(chroma + str(octave),frame,processedAudioData))
+            if nextOctaveIsWeak:
+                newNote.set_probability_is_note(NoteProbabilities.LOW)
         # print()
-        strongestNotes.append(newNote)
+            strongestNotes.append(newNote)
 
 
         
