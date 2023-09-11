@@ -38,7 +38,7 @@ freqs = np.ndarray
 
 def get_notes(processedAudioData):
     """Takes in spectrum, chroma, onsets and tempo and returns all of the voices with their respective notes."""
-    global finishedNotes,freqs
+    global freqs
     freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
    # freqs = librosa.fft_frequencies(sr=AudioProcessor.samplingRate,n_fft=AudioProcessor.N_FFT)
     UI.progress("Generating Notes")
@@ -55,13 +55,13 @@ def get_notes(processedAudioData):
     #    onsets[x] -= start
 
 
-
+    notes = []
     for currentFrame in range(frameCount):
         #__get_notes_at_frame(currentFrame,processedAudioData)
-        __process_info_at_frame(currentFrame,processedAudioData)
+        notes = __process_info_at_frame(notes,currentFrame,processedAudioData)
 
     UI.stop_spinner()
-    return finishedNotes
+    return notes
 
 
 
@@ -212,7 +212,7 @@ def __get_octave(note,onset,processedAudioData):
 
        
         if val > 4 and val - previousStrength > 15:
-            if __get_strength_of_octave(note,i+1,onset,nextOnset,spectrum) < 0:
+            if __get_strength_of_octave(note,i+1,onset,nextOnset,spectrum) < -5:
                 nextOctaveIsWeak = True
         #if val - previousStrength > 40:
            # print()
@@ -277,29 +277,14 @@ def __chromatic_neighbour_check(note,otherNote):
     otherChroma = otherNote.chroma
     otherStrength = otherNote.startStrength
     
-    ## Check if the chromas are neighbours
-    chromaIndex = CHROMA.index(chroma)
-    otherChromaIndex = CHROMA.index(otherChroma)
-    
-
-    ## Neighbour check
-    if abs(chromaIndex - otherChromaIndex) % 10 != 1:
-       return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
-
-
-    #if chroma == "B" and otherChroma == "C" and otherNote.octave - note.octave > 1:
-    #    return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
-    
-   # elif chroma == "C" and otherChroma == "B" and otherNote.octave - note.octave < -1:
-    #    return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
-    #elif note.octave != otherNote.octave:
-    #    return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
 
     
 
-   # ## Both are strong enough
-   # if strength > 0.7 and otherStrength > 0.7:
-        
+    midi = librosa.note_to_midi(note.note)
+    otherMIDI = librosa.note_to_midi(otherNote.note)
+
+    if abs(midi - otherMIDI) != 1:
+        return (NoteProbabilities.KEEP,NoteProbabilities.KEEP)
 
     ## Current note is weaker
     if otherStrength - strength > 0.1:
@@ -359,9 +344,10 @@ def __bleed_over_check(note,frame,processedAudioData,previousFrame):
         return NoteProbabilities.KEEP
     
     deltaFrame = frame - previousFrame
-    strength = 1 - 0.02 * deltaFrame
+    strength = 0.015 * deltaFrame
 
-
+    if note.chroma == "G":
+        print(note.startStrength, strength)
     if note.startStrength < strength:
 
         return NoteProbabilities.LOW
@@ -420,7 +406,97 @@ def __add_new_notes():
 def __remove_old_notes():
     pass
 
-def __process_info_at_frame(frame,processedAudioData):
+
+playingNotes = []
+def __process_info_at_frame(finishedNotes,frame,processedAudioData):
+    global playingNotes,previousNotes,previousFrame
+
+
+
+    for note in playingNotes:
+        note.lifeTimeStrengths = np.append(note.lifeTimeStrengths, __relative_volume_of_note(note.note,frame,processedAudioData))
+
+
+    if frame not in processedAudioData.onsets:
+        return finishedNotes
+    
+
+    newNotes = __get_notes_at_frame(frame,processedAudioData)
+    newNotes = __detect_invalid_notes(newNotes,frame,processedAudioData,previousFrame)
+
+    previousFrame = frame
+    previousNotes = []
+    notesToRemove = []
+
+
+   
+
+
+    for playingNote in playingNotes:
+
+
+        newSameNote = None
+        for newNote in newNotes:
+       
+            if newNote.note != playingNote.note:
+                continue
+
+            newSameNote = newNote
+            break
+
+
+        noteNotPlaying = (newSameNote == None)
+        if noteNotPlaying != True:
+            noteLowProbability = (newSameNote.probabilityIsNote == NoteProbabilities.LOW)
+            isDistinctNote = (newSameNote.startStrength > playingNote.get_average_strength())
+        else:
+            noteLowProbability = False
+            isDistinctNote = False
+
+
+        if (noteNotPlaying or noteLowProbability or isDistinctNote) and playingNote.startFrame != frame:
+            notesToRemove.append(playingNote)
+
+
+            if frame - playingNote.startFrame < 4:
+                continue
+
+            if playingNote.set_duration(frame):
+                finishedNotes.append(playingNote)
+
+            if not isDistinctNote and not noteNotPlaying:
+                newNotes.remove(newSameNote)
+
+
+
+
+    for note in notesToRemove:
+        playingNotes.remove(note)
+
+
+    for note in newNotes:
+
+        # startStrength = __linearalise_db(spectrum[__note_to_row(note),frame])
+        note.start_note(processedAudioData)
+
+
+        playingNotes.append(note)
+        previousNotes.append(note.chroma)
+
+
+    if frame != processedAudioData.onsets[-1]:
+        return finishedNotes
+    
+    for note in playingNotes:
+        if (note.set_duration(-1,isFinal=True)):
+            finishedNotes.append(note)
+
+    return finishedNotes
+
+
+
+
+def ___process_info_at_frame(frame,processedAudioData):
     global currentNotes,finishedNotes,previousNotes,previousFrame
     spectrum = processedAudioData.spectrum
     chroma = processedAudioData.chroma
@@ -597,8 +673,8 @@ def __get_notes_at_frame(frame,processedAudioData):
 
         #print(row)
             newNote = Note(chroma,octave,frame,__relative_volume_of_note(chroma + str(octave),frame,processedAudioData))
-            if nextOctaveIsWeak:
-                newNote.set_probability_is_note(NoteProbabilities.LOW)
+            #if nextOctaveIsWeak:
+            #    newNote.set_probability_is_note(NoteProbabilities.LOW)
         # print()
             strongestNotes.append(newNote)
 

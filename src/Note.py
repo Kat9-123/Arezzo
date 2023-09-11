@@ -129,7 +129,7 @@ class Note:
         averageStrength = np.mean(self.lifeTimeStrengths)
         if averageStrength < minLifeTimeStrength:
           # print("Note failed average check")
-           UI.print_colour("{} {} Failed avg.\n".format(self.note, round(averageStrength,4)),UI.RED)
+           UI.print_colour("{} {} Failed avg. {}\n".format(self.note, round(averageStrength,4),self.lifeTimeStrengths),UI.RED)
            return False
         
         #if self.endFrame - self.startFrame
