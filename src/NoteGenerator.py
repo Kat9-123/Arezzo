@@ -673,8 +673,8 @@ def __get_notes_at_frame(frame,processedAudioData):
 
         #print(row)
             newNote = Note(chroma,octave,frame,__relative_volume_of_note(chroma + str(octave),frame,processedAudioData))
-            #if nextOctaveIsWeak:
-            #    newNote.set_probability_is_note(NoteProbabilities.LOW)
+            if nextOctaveIsWeak:
+                newNote.set_probability_is_note(NoteProbabilities.LOW)
         # print()
             strongestNotes.append(newNote)
 

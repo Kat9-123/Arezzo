@@ -128,10 +128,13 @@ def __get_chroma(y, samplingRate):
 def __get_tempo(y,sampleRate):
     """Estimate tempo"""
     onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
+    print(onset_env)
     rawTempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate)
-    
+    tempo, beats = librosa.beat.beat_track(y=y,sr=sampleRate)
+    first_beat_time, last_beat_time = librosa.frames_to_time((beats[0],beats[-1]),sr=sampleRate,n_fft=N_FFT)
 
-    tempo = round(rawTempo[0])
+    #print("Tempo 2:", 60/((last_beat_time-first_beat_time)/(len(beats)-1)))
+    tempo =round(rawTempo[0])
     UI.diagnostic("Est. Tempo",tempo, "bpm")
     #return tempo
 

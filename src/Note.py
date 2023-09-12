@@ -109,6 +109,7 @@ class Note:
 
 
     def get_average_strength(self):
+        return self.startStrength
         return np.mean(self.lifeTimeStrengths)
 
     def set_duration(self,endFrame,isFinal=False):
@@ -126,7 +127,7 @@ class Note:
                 
         
         #print(self.probabilityIsNote)
-        averageStrength = np.mean(self.lifeTimeStrengths)
+        averageStrength = self.get_average_strength()
         if averageStrength < minLifeTimeStrength:
           # print("Note failed average check")
            UI.print_colour("{} {} Failed avg. {}\n".format(self.note, round(averageStrength,4),self.lifeTimeStrengths),UI.RED)
