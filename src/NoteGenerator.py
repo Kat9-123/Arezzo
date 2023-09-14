@@ -340,14 +340,33 @@ def __bleed_over_check(note,frame,processedAudioData,previousFrame):
     if previousFrame == -1:
         return NoteProbabilities.KEEP
 
-    if note.chroma not in previousNotes:
+    prevNote = None
+    for n in previousNotes:
+        if n.note == note.note:
+            prevNote = n
+            break
+
+    if prevNote == None:
         return NoteProbabilities.KEEP
+
+    
+    prevStrength = prevNote.get_average_strength()
+    strength = note.startStrength
+
+    if note.chroma == "F#":
+        print(prevStrength, strength)
+
+    if prevStrength - 0.05 > strength:
+        return NoteProbabilities.LOW
+    
+    return NoteProbabilities.KEEP
+
+
     
     deltaFrame = frame - previousFrame
     strength = 0.015 * deltaFrame
 
-    if note.chroma == "G":
-        print(note.startStrength, strength)
+
     if note.startStrength < strength:
 
         return NoteProbabilities.LOW
@@ -481,7 +500,7 @@ def __process_info_at_frame(finishedNotes,frame,processedAudioData):
 
 
         playingNotes.append(note)
-        previousNotes.append(note.chroma)
+        previousNotes.append(note)
 
 
     if frame != processedAudioData.onsets[-1]:
@@ -494,84 +513,7 @@ def __process_info_at_frame(finishedNotes,frame,processedAudioData):
     return finishedNotes
 
 
-
-
-def ___process_info_at_frame(frame,processedAudioData):
-    global currentNotes,finishedNotes,previousNotes,previousFrame
-    spectrum = processedAudioData.spectrum
-    chroma = processedAudioData.chroma
-    onsets = processedAudioData.onsets
-
-   
-
-    ## Find new notes
-    if frame in processedAudioData.onsets:
-        notes = __get_notes_at_frame(frame,processedAudioData)
-
-        notes = __detect_invalid_notes(notes,frame,processedAudioData,previousFrame)
-        previousFrame = frame
-        previousNotes = []
-
-        notesToRemove = []
-
-
-        isFinalNote = (frame == processedAudioData.onsets[-1])
-
-
-        playingNotesStrings = []
-        for i in notes:
-            playingNotesStrings.append(i.note)
-
-
-        for note in currentNotes.keys():
-            currentStrength = __note_to_row(note)
-            #if currentStrength / currentNotes[note].startStrength < 0.96:
-            
-            idx = -1 if note not in playingNotesStrings else playingNotesStrings.index(note)
-
-            if (idx == -1 or notes[idx].probabilityIsNote == NoteProbabilities.LOW or currentNotes[note].probabilityIsNote == NoteProbabilities.HIGH) and currentNotes[note].startFrame != frame:
-                notesToRemove.append(note)
-                if frame - currentNotes[note].startFrame < 4:
-                    continue
-                if currentNotes[note].set_duration(frame):
-                    finishedNotes.append(currentNotes[note])
-
-
-
-
-
-        for note in notesToRemove:
-            currentNotes.pop(note)
-
-
-
-
-
-        for note in notes:
-            if note not in currentNotes:
-               # startStrength = __linearalise_db(spectrum[__note_to_row(note),frame])
-                note.start_note(processedAudioData)
-
-                if note.note in currentNotes:
-                   # if currentNotes[note.note].probabilityIsNote == NoteProbabilities.HIGH:
-                    #    note.probabilityIsNote = NoteProbabilities.NORMAL
-
-                    UI.warning(f"Note override: {note.note}")
-                
-                currentNotes[note.note] = note
-                previousNotes.append(note.chroma)
-
-
-
-        
-        for note in currentNotes.keys():
-            currentNotes[note].lifeTimeStrengths = np.append(currentNotes[note].lifeTimeStrengths, __relative_volume_of_note(note,frame,processedAudioData))
-            if isFinalNote:
-                if (currentNotes[note].set_duration(-1,isFinal=True)):
-                    finishedNotes.append(currentNotes[note])
-
-
-     
+  
 
 
 
@@ -667,7 +609,8 @@ def __get_notes_at_frame(frame,processedAudioData):
         strength = __relative_volume_of_note(chroma + str(octave),frame,processedAudioData)
 
         #avgStrength = np.mean(chroma[x,frame:nextOnset-2])
-        if row > 0.25 or (octave != -1 and not nextOctaveIsWeak): 
+        #or (octave != -1 and not nextOctaveIsWeak)
+        if row > 0.25 : 
        # if row < 0.25:
         
 

@@ -15,6 +15,7 @@ import NoteGenerator
 import ui.UI as UI
 import network.Manager as NetworkManager
 
+import testing.Tester as Tester
 import SheetMusicGenerator
 import Utils
 import Scoring
@@ -32,9 +33,6 @@ EXPORT_TYPE = "pdf" # PNG or PDF
 AUDIO_TO_ANALYSE = r"PWS_TEST_4.wav"
 
 
-COMPARE_FILE = r"PWS_TEST_4+92.mid"
-
-
 
 
 
@@ -46,45 +44,55 @@ AUDIO_BASE_PATH = "audio"
 
 
 
-def start():
-
+def main():
+    UI.init()
+    run(AUDIO_BASE_PATH + "\\" + AUDIO_TO_ANALYSE)
+    #Tester.test()
+    #score = run(f"{AUDIO_BASE_PATH}\\{AUDIO_TO_ANALYSE}",testMode=True)
     
 
+
+
+
+
+
+def run(path,*,testMode=False):
     startTime = time.perf_counter() 
     
-    UI.init()
-    
+
+    if not testMode:
+        Graphing.create_plot(rows=3)
 
 
-
-
-    Graphing.create_plot(rows=3)
-
-
-    processedAudioData = AudioProcessor.process_audio(f"{AUDIO_BASE_PATH}\\{AUDIO_TO_ANALYSE}") 
+    processedAudioData = AudioProcessor.process_audio(path) 
 
     notes = NoteGenerator.get_notes(processedAudioData)
     
-    SheetMusicGenerator.generate_midi_file(notes,processedAudioData.tempo)
+    if not testMode:
+        SheetMusicGenerator.generate_midi_file(notes,processedAudioData.tempo)
 
-
-    Graphing.save_plot()
+    if not testMode:
+        Graphing.save_plot()
 
 
     duration = time.perf_counter() - startTime
     perSecondOfAudioDuration = duration/processedAudioData.duration
 
    
-    Scoring.score(notes,COMPARE_FILE,processedAudioData.tempo)
+    
     UI.newline()
    
     UI.diagnostic("Processing time per second of audio",round(perSecondOfAudioDuration,3), "seconds")
     UI.print_colour(f"\nDone. Processing {round(processedAudioData.duration,3)} seconds of audio took {round(duration, 3)} seconds. Showing plots.\n",UI.GREEN)
 
-    
-    Graphing.show_plot()
 
+    if not testMode:
+        Graphing.show_plot()
+    return (notes,processedAudioData.tempo)
+
+
+    
 
 if __name__ == "__main__":
-    start()
+    main()
 

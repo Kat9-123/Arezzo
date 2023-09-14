@@ -133,8 +133,14 @@ def __get_tempo(y,sampleRate):
     tempo, beats = librosa.beat.beat_track(y=y,sr=sampleRate)
     first_beat_time, last_beat_time = librosa.frames_to_time((beats[0],beats[-1]),sr=sampleRate,n_fft=N_FFT)
 
-    #print("Tempo 2:", 60/((last_beat_time-first_beat_time)/(len(beats)-1)))
+    print("Tempo 2:", 60/((last_beat_time-first_beat_time)/(len(beats)-1)))
+
+    
     tempo =round(rawTempo[0])
+
+
+    tempo = (60/((last_beat_time-first_beat_time)/(len(beats)-1)))//1
+
     UI.diagnostic("Est. Tempo",tempo, "bpm")
     #return tempo
 

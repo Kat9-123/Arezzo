@@ -7,28 +7,12 @@ import librosa
 
 
 
-def __get_original_tempo(filePath:str):
-    """PATH\\FILENAME+TEMPO.mid"""
-    start = filePath.find("+")
-    end = filePath.find(".")
-
-    if start == -1 or end == -1:
-        raise Exception("Invalid MIDI test fileformat, expected tempo in filename. Ex: PATH\\FILENAME+TEMPO.mid")
-
-
-    tempo = int(filePath[start+1:end])
-
-    return tempo
-
-def __get_orig_notes(filePath):
+def __get_orig_notes(filePath,originalTempo):
     midi_data = pretty_midi.PrettyMIDI(filePath)
     #print("duration:",midi_data.get_end_time())
-    tempo = __get_original_tempo(filePath)
    # tempo = round(midi_data.estimate_tempo())
-    UI.diagnostic("Original tempo", tempo, "bpm")
-    #print(f'{"note":>10} {"start":>10} {"end":>10}')
-    
-    bps = tempo/60.0
+
+    bps = originalTempo/60.0 
     notes = []
     for instrument in midi_data.instruments:
         for note in instrument.notes:
@@ -40,7 +24,7 @@ def __get_orig_notes(filePath):
 
             notes.append(f"{pitch} {start} {end}")
 
-    return (notes,tempo)
+    return (notes)
 
 
 def __tempo_score(original,generated):
@@ -49,9 +33,9 @@ def __tempo_score(original,generated):
     return result * 100
 
 
-def score(notes,filePath,generatedTempo):
+def score(notes,filePath,generatedTempo,originalTempo) -> float:
     generatedNotes = __generated_note_list_parser(notes)
-    originalNotes,originalTempo = __get_orig_notes(filePath)
+    originalNotes = __get_orig_notes(filePath,originalTempo)
 
 
     lengthScore = __length_score(generatedNotes,originalNotes)
@@ -65,10 +49,14 @@ def score(notes,filePath,generatedTempo):
     UI.diagnostic("Original-Generated Score", round(orignalGeneratedScore,2), "%")
 
 
-    total = lengthScore+generatedOrignalScore + orignalGeneratedScore + tempoScore
-    score = round(total / 4.0,2)
+    total = lengthScore           * 1 + \
+            generatedOrignalScore * 2 + \
+            orignalGeneratedScore * 2 + \
+            tempoScore            * 1
+    score = round(total / (6.0),2)
     UI.diagnostic("SCORE", score, "%")
     
+    return score
 
 def __generated_note_list_parser(notes):
     result = []
