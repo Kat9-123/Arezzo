@@ -16,7 +16,7 @@ def test():
 
     results = []
     for x,row in enumerate(data):
-        if x == 0:
+        if x == 0 or row[0][0] == '#':
             continue
         
         path = "audio\\" + row[0].replace(' ','')
@@ -25,7 +25,7 @@ def test():
         minScore = float(row[3].replace(' ',''))
 
         
-        notes,tempo = Main.run(path,testMode=True)
+        notes,tempo = Main.run(path,testMode=True,tempoOverride=-1)
 
         score = Scoring.score(notes,comparePath,tempo,origTempo)
         results.append([path,score,minScore])

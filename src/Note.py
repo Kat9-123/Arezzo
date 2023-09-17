@@ -1,7 +1,7 @@
 import ui.UI as UI
 from ProcessedAudioData import ProcessedAudioData
 import AudioProcessor
-
+import Utils
 
 
 import numpy as np
@@ -15,7 +15,7 @@ from enum import Enum
 # 2 -> Semiquavers
 # 3 -> Demisemiquavers
 # etc.
-NOTE_DEPTH = 2**2
+
 
 
 
@@ -23,8 +23,8 @@ NOTE_DEPTH = 2**2
 
 
 class NoteProbabilities(Enum):
-    LOW = 1
     KEEP = 0
+    LOW = 1
     NORMAL = 2
     HIGH = 3
 
@@ -64,7 +64,7 @@ class Note:
         self.note = self.chroma + str(self.octave)
 
     def __repr__(self) -> str:
-        return f"{self.note} : {self.startStrength:.2f}"
+        return f"({self.note} {self.startStrength:.2f})"
 
     def set_probability_is_note(self,_probability):
         if _probability == NoteProbabilities.KEEP:
@@ -82,28 +82,6 @@ class Note:
         self.midi = librosa.note_to_midi(self.chroma + str(self.octave))
 
 
-
-    def snap_time_to_beat(self,time):
-        #print(time, "=>", round(time,5))
-       # return round(time,5)
-
-
-
-
-        if time == 0.0:
-            UI.warning("Zero Time")
-            return 0.0
-        
-        result = time * NOTE_DEPTH
-
-        result = round(result)
-
-        result /= NOTE_DEPTH
-
-
-
-        #print(time, "=>", result)
-        return float(result)
 
 
 
@@ -142,9 +120,9 @@ class Note:
         offsetStartFrame = self.startFrame - offset
         offsetEndFrame = endFrame - offset
 
-        self.start = self.snap_time_to_beat(offsetStartFrame * (tempo/60) * frameDuration)
+        self.start = Utils.snap_to_beat(offsetStartFrame * (tempo/60) * frameDuration)
         if not isFinal:
-            self.duration = self.snap_time_to_beat((offsetEndFrame - offsetStartFrame)  * (tempo/60) * frameDuration)
+            self.duration = Utils.snap_to_beat((offsetEndFrame - offsetStartFrame)  * (tempo/60) * frameDuration)
         else:
             self.duration = 2
         

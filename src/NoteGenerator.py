@@ -18,6 +18,9 @@ import copy
 # Rows, Frames
 
 
+SHOW_OCTAVE_INFO = False
+
+
 
 CHROMA = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
@@ -28,7 +31,7 @@ HARMONIC_OCTAVE_MAX_DIFFERENCE_DB = 2
 
 MAX_NOTE_DURATION = 4
 
-MAX_N_VOICES = 4
+
 
 
 
@@ -103,7 +106,7 @@ def __get_volume_of_note(note,frame,processedAudioData):
 
 
 def __relative_volume_of_note(note,frame,processedAudioData):
-    average = np.mean(processedAudioData.spectrum[:,frame])
+    #average = np.mean(processedAudioData.spectrum[:,frame])
     volume = __get_volume_of_note(note,frame,processedAudioData)
 
     #return volume/average * -1
@@ -128,40 +131,7 @@ def __cache_note_to_spectrum_row():
     return cache
 
 
-def ___get_octave(note,onset,processedAudioData):
-    strongest = -1000
-    strongestI = -1
 
-
-    print(f"{note} ", end="")
-    for i in range(1,9):
-        row = __note_to_row(note + str(i))
-        
-        values = []
-
-
-        values.append(processedAudioData.spectrum[row,onset])
-
-
-
-        val = np.mean(values)
-        if val > strongest:
-            strongest = val
-            strongestI = i
-        print(f"{val} ",end="")
-
-        #if val > LOWEST_OCTAVE_DB:
-        #   return i
-
-    if strongestI == -1:
-        UI.warning("Octave not found!")
-        return 0
-    return strongestI
-        #if val > strongest:
-        #    strongest = val
-        #   strongestI = i
-        
-    #return strongestI
 
 def __get_strength_of_octave(chroma,octave,onset,nextOnset,spectrum):
     row = __note_to_row(chroma + str(octave))
@@ -193,7 +163,7 @@ def __get_octave(note,onset,processedAudioData):
 
 
 
-    print(f"{note} ", end="")
+    UI.debug(f"{note} ", end="",debugControl=SHOW_OCTAVE_INFO)
 
     index = -1
     previousStrength = 5000
@@ -203,7 +173,7 @@ def __get_octave(note,onset,processedAudioData):
         val = __get_strength_of_octave(note,i,onset,nextOnset,spectrum)
         #if note == "C#":
 
-        print(f"{round(float(val),3)} ",end="")
+        UI.debug(f"{round(float(val),3)} ",end="",debugControl=SHOW_OCTAVE_INFO)
         #if note == "B":
          #   print(val,previousStrength)
 
@@ -231,7 +201,7 @@ def __get_octave(note,onset,processedAudioData):
     #if strongestI == -1:
     #    UI.warning("Octave not found!")
     #    return 0
-    print()
+    UI.newline(debugControl=SHOW_OCTAVE_INFO)
     return (index,nextOctaveIsWeak)
         #if val > strongest:
         #    strongest = val

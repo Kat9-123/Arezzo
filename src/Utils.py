@@ -1,5 +1,6 @@
 import os
 import ui.UI as UI
+import Config as cfg
 
 
 def sys_call(command: str) -> None:
@@ -12,7 +13,7 @@ def sys_call(command: str) -> None:
 # 2 -> Semiquavers
 # 3 -> Demisemiquavers
 # etc.
-NOTE_DEPTH = 2**2
+
 
 def snap_to_beat(time: float) -> float:
     """Takes a rough estimate for beat alignment, and snaps it to the beat."""
@@ -21,8 +22,10 @@ def snap_to_beat(time: float) -> float:
         #UI.warning("Zero Time")
         return 0.0
     
-    result = time * NOTE_DEPTH
+    noteDepth = cfg.CONFIG["OPTIONS"]["note_depth"]
+
+    result = time * noteDepth
     result = round(result)
-    result /= NOTE_DEPTH
+    result /= noteDepth
 
     return float(result)

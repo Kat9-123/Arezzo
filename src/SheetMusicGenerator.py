@@ -5,16 +5,25 @@ import subprocess
 import time
 import ui.UI as UI
 import Utils
+import time
 
-SAVE_AUDIO = True
+from Config import CONFIG
 
-def generate_midi_file(notes,tempo) -> None:
+
+
+def generate_midi_file(notes,tempo,audioPath) -> None:
     """Takes a list of note objects, and a tempo and creates a MIDI file."""
 
-    if not SAVE_AUDIO:
+    if not CONFIG["DEBUG"]["generate_sheet_music"]:
         return
+    
+
     UI.progress("Generating MIDI")
     print(notes)
+
+
+    outputName = f"{str(int(time.time()))}_{os.path.basename(audioPath)}"
+
     earliestStartTime = __get_earliest_start_time(notes)
 
 
@@ -35,7 +44,7 @@ def generate_midi_file(notes,tempo) -> None:
 
     # write it to disk
 
-    midiPath = "output\\midi\\{}.mid".format(Main.outputName)
+    midiPath = "output\\midi\\{}.mid".format(outputName)
 
     UI.diagnostic("MIDI:",midiPath)
 

@@ -39,7 +39,7 @@ def network_process(audioPath):
     return (spectrum,onsets,spectrum.shape)
     
 
-def process_audio(audioPath):
+def process_audio(audioPath,tempoOverride=-1):
     """Takes the audio at the path and returns a spectrum, chroma classification, onsets, 
        estimated tempo and the duration of the file."""
     global samplingRate
@@ -59,7 +59,11 @@ def process_audio(audioPath):
 
     pointDuration = duration/frameCount
 
-    tempo = __get_tempo(y,samplingRate)
+
+    if tempoOverride == -1:
+        tempo = __get_tempo(y,samplingRate)
+    else:
+        tempo = tempoOverride
     
     UI.diagnostic("Frame Count",frameCount)
     UI.diagnostic("Duration",duration, "s")
@@ -128,9 +132,10 @@ def __get_chroma(y, samplingRate):
 def __get_tempo(y,sampleRate):
     """Estimate tempo"""
     onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
-    print(onset_env)
+    
     rawTempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate)
     tempo, beats = librosa.beat.beat_track(y=y,sr=sampleRate)
+    print(tempo)
     first_beat_time, last_beat_time = librosa.frames_to_time((beats[0],beats[-1]),sr=sampleRate,n_fft=N_FFT)
 
     print("Tempo 2:", 60/((last_beat_time-first_beat_time)/(len(beats)-1)))

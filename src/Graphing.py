@@ -7,7 +7,7 @@ import time
 
 ax = None
 
-SHOW_PLOT = False
+SHOW_PLOT = True
 
 def specshow(data,samplingRate:int, location:int, xType:str = None, yType:str = None,xLabel:str ="",yLabel:str = ""):
     """Uses Librosa specshow to display a two dimensional numpy array. See Librosa documentation for xType and yType."""

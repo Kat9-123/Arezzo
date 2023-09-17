@@ -57,12 +57,14 @@ def warning(value):
 
 
 
-def debug(value):
-    print(value)
+def debug(value,*,end="\n",debugControl=True):
+    if debugControl:
+        print(value,end)
 
-def print_colour(text,colour,*,end=""):
+def print_colour(text,colour,*,end="",debugControl=True):
     #stop_spinner()
-    print(f"{colour}{text}{WHITE}",end=end)
+    if debugControl:
+        print(f"{colour}{text}{WHITE}",end=end)
 
 
 
@@ -71,8 +73,9 @@ def diagnostic(name,value,suffix=""):
 
 
 
-def newline():
-    print()
+def newline(*,debugControl=True):
+    if debugControl:
+        print()
 
 
 

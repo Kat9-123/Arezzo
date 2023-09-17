@@ -1,0 +1,30 @@
+# Config file
+
+
+
+
+testing = false # Flag to start in testing mode. Uses test.csv
+path = "audio\\PWS_TEST_1.wav"
+
+
+[DATA]
+graphing = false
+
+
+[DEBUG]
+generate_sheet_music = false
+
+show_octave_info = false
+
+
+
+[OPTIONS]
+# 2 -> Quaver
+# 4 -> Semiquavers
+# 8 -> Demisemiquavers
+# etc.
+note_depth = 4 # Power of 2
+
+export_type = "pdf" # pdf or png
+
+musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
