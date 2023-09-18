@@ -12,6 +12,8 @@ TESTS_PATH = "tests.csv"
 
 
 def test():
+    UI.print_colour("TESTING", UI.GREEN,end="\n")
+
     data = np.loadtxt(TESTS_PATH, delimiter=",", dtype=str)
 
     results = []

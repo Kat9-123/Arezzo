@@ -19,11 +19,12 @@ show_octave_info = false
 
 
 [OPTIONS]
-# 2 -> Quaver
-# 4 -> Semiquavers
-# 8 -> Demisemiquavers
+# 0 -> Crotchet
+# 1 -> Quaver
+# 2 -> Semiquavers
+# 3 -> Demisemiquavers
 # etc.
-note_depth = 4 # Power of 2
+note_depth_power = 2
 
 export_type = "pdf" # pdf or png
 

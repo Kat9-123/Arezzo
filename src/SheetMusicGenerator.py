@@ -6,15 +6,13 @@ import time
 import ui.UI as UI
 import Utils
 import time
-
-from Config import CONFIG
-
+import Config as cfg
 
 
-def generate_midi_file(notes,tempo,audioPath) -> None:
+def generate_midi_file(notes,tempo,outputName) -> None:
     """Takes a list of note objects, and a tempo and creates a MIDI file."""
 
-    if not CONFIG["DEBUG"]["generate_sheet_music"]:
+    if not cfg.CONFIG["DEBUG"]["generate_sheet_music"]:
         return
     
 
@@ -22,7 +20,6 @@ def generate_midi_file(notes,tempo,audioPath) -> None:
     print(notes)
 
 
-    outputName = f"{str(int(time.time()))}_{os.path.basename(audioPath)}"
 
     earliestStartTime = __get_earliest_start_time(notes)
 

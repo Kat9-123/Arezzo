@@ -10,9 +10,7 @@ def sys_call(command: str) -> None:
 
 
 
-# 2 -> Semiquavers
-# 3 -> Demisemiquavers
-# etc.
+
 
 
 def snap_to_beat(time: float) -> float:
@@ -22,7 +20,7 @@ def snap_to_beat(time: float) -> float:
         #UI.warning("Zero Time")
         return 0.0
     
-    noteDepth = cfg.CONFIG["OPTIONS"]["note_depth"]
+    noteDepth = 2**cfg.CONFIG["OPTIONS"]["note_depth_power"]
 
     result = time * noteDepth
     result = round(result)

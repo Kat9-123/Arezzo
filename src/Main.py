@@ -21,6 +21,7 @@ import Scoring
 import Config as cfg
 
 import time
+import os
 
 
 
@@ -40,9 +41,13 @@ def main():
     cfg.get_configuration()
 
     UI.init()
+    if cfg.CONFIG["testing"]:
+        Tester.test()
+        return
+
+
     run(cfg.CONFIG["path"])
-    #Tester.test()
-    #score = run(f"{AUDIO_BASE_PATH}\\{AUDIO_TO_ANALYSE}",testMode=True)
+    ##    #score = run(f"{AUDIO_BASE_PATH}\\{AUDIO_TO_ANALYSE}",testMode=True)
     
 
 
@@ -51,7 +56,8 @@ def main():
 
 
 def run(path,*,testMode=False,tempoOverride=-1):
-    startTime = time.perf_counter() 
+    startTime = time.perf_counter()
+    outputName = f"{str(int(time.time()))}_{os.path.basename(path)}"
 
     UI.print_colour(f"Processing {path}",UI.GREEN,end="\n\n")
     
@@ -66,10 +72,10 @@ def run(path,*,testMode=False,tempoOverride=-1):
     notes = NoteGenerator.get_notes(processedAudioData)
     
     if not testMode:
-        SheetMusicGenerator.generate_midi_file(notes,processedAudioData.tempo)
+        SheetMusicGenerator.generate_midi_file(notes,processedAudioData.tempo,outputName)
 
     if not testMode:
-        Graphing.save_plot()
+        Graphing.save_plot(outputName)
 
 
     duration = time.perf_counter() - startTime

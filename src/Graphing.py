@@ -60,12 +60,12 @@ def vLine(times, onset_frames,onset_env,location,colour):
 
 
 
-def save_plot():
+def save_plot(name):
     if not SHOW_PLOT:
         return
     
     
-    path = f"screenshots\\{Main.outputName}.png"
+    path = f"screenshots\\{name}.png"
     UI.diagnostic("Saving screenshot to",path)
     plt.savefig(path,dpi=1200)
 
