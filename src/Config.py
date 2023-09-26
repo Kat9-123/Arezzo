@@ -24,6 +24,14 @@ def __parse_args():
                         
                         help="Activates test mode, see test.csv for test cases")
 
+    parser.add_argument("--ptd","--process-training-data",action='store_true',
+                        
+                        help="Processes ")
+    
+    parser.add_argument("--train",action='store_true',
+                    
+                    help="Start training the network")
+
     return(parser.parse_args())
 
 

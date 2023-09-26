@@ -7,17 +7,6 @@ testing = false # Flag to start in testing mode. Uses test.csv
 path = "audio\\PWS_TEST_6.wav"
 
 
-[DATA]
-graphing = false
-
-
-[DEBUG]
-generate_sheet_music = false
-
-show_octave_info = false
-
-
-
 [OPTIONS]
 # 0 -> Crotchet
 # 1 -> Quaver
@@ -29,3 +18,32 @@ note_depth_power = 2
 export_type = "pdf" # pdf or png
 
 musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
+
+
+
+
+[NETWORK]
+process_training_data = false
+data_to_process_audio = "HOMO2-88.mp3"
+data_to_process_midi = "homo\\HOMO2-88.midi"
+
+train_net = true
+save_model = false
+training_data = "HOMO2-88.csd"
+
+model = ""
+
+spectrum_size = 6222
+
+
+
+
+
+
+[DEBUG]
+generate_sheet_music = false
+
+show_octave_info = false
+graphing = false
+
+

@@ -28,17 +28,6 @@ samplingRate = 0
 
 
 
-def network_process(audioPath):
-    print("Starting audio network process")
-    y, samplingRate = librosa.load(audioPath,offset=0,duration=50)
-
-    spectrum = __get_spectrum(y,samplingRate)
-    frameCount = spectrum.shape[1]
-    rowCount = spectrum.shape[0]
-    onsets = __get_onset(y, samplingRate,frameCount)
-
-    return (spectrum,onsets,spectrum.shape)
-    
 
 def process_audio(audioPath,tempoOverride=-1):
     """Takes the audio at the path and returns a spectrum, chroma classification, onsets, 
@@ -51,12 +40,15 @@ def process_audio(audioPath,tempoOverride=-1):
     duration = librosa.get_duration(y=y, sr=samplingRate)
 
 
-    spectrum = __get_spectrum(y,samplingRate)
+    stft = np.abs(librosa.stft(y,n_fft=N_FFT,win_length=WINDOW_LENGTH,hop_length=HOP_LENGTH))
+
+    spectrum = __get_spectrum(stft,samplingRate)
+
     print(spectrum.shape)
     frameCount = spectrum.shape[1]
 
     chroma = __get_chroma(y,samplingRate)
-    onsets = __get_onset(y, samplingRate,frameCount)
+    onsets = __get_onset(y,stft, samplingRate,frameCount)
 
     pointDuration = duration/frameCount
 
@@ -100,10 +92,9 @@ def process_audio(audioPath,tempoOverride=-1):
 
 
 
-def __get_spectrum(y,samplingRate):
-    X = librosa.stft(y,n_fft=N_FFT,win_length=WINDOW_LENGTH,hop_length=HOP_LENGTH)
+def __get_spectrum(stft,samplingRate):
 
-    spectrum = librosa.amplitude_to_db(abs(X))
+    spectrum = librosa.amplitude_to_db(stft)
 
     #spectrum = np.minimum(spectrum,
     #                       librosa.decompose.nn_filter(spectrum,
@@ -164,9 +155,9 @@ def __get_tempo(y,sampleRate):
 
 
 
-def __get_onset(y,sampleRate,frameCount):
+def __get_onset(y,stft,sampleRate,frameCount):
 
-    D = np.abs(librosa.stft(y))
+    D = stft
     D[D < SPECTRUM_DB_CUTOFF] = 0
     times = librosa.times_like(D,sr=sampleRate)
     onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
@@ -174,11 +165,11 @@ def __get_onset(y,sampleRate,frameCount):
     Graphing.onset(times,onset_env,onset_frames,location=2)
     Graphing.vLine(times,onset_frames,onset_env,location=2,colour="b")
 
-
-    for x in range(len(onset_frames)):
-        val = onset_frames[x] + ONSET_TEMPORAL_LAG
-        if val < frameCount:
-            onset_frames[x] = val
+    onset_frames += ONSET_TEMPORAL_LAG
+  ##  for x in range(len(onset_frames)):
+    #    val = onset_frames[x] + ONSET_TEMPORAL_LAG
+   #     if val < frameCount:
+    #        onset_frames[x] = val
 
     
     Graphing.vLine(times,onset_frames,onset_env,location=2,colour="r")

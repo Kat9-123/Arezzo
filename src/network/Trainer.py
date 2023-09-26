@@ -12,7 +12,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import accuracy_score
 from network.Network import Network
 import network.SpectrumCompressor as SpectrumCompressor
-
+import Config as cfg
 #import SpectrumCompressor
 
 DEVICE = "cuda"
@@ -36,7 +36,7 @@ def __accuracy(output, target):
 
 def train():
 
-    notes,spectrum = SpectrumCompressor.decompress("MONO-12-R.csd")
+    notes,spectrum = SpectrumCompressor.decompress(cfg.CONFIG['NETWORK']['training_data'])
 
 
 
@@ -62,7 +62,7 @@ def train():
     #optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
     # prepare model and training parameters
-    n_epochs = 50
+    n_epochs = 150
     batch_size = 10
     batches_per_epoch = len(X_train) // batch_size
 
@@ -127,7 +127,8 @@ def train():
     # Restore best model
     model.load_state_dict(best_weights)
 
-    torch.save(model.state_dict(), 'network.mdl')
+    if cfg.CONFIG['NETWORK']['save_model']:
+        torch.save(model.state_dict(), 'network.mdl')
 
     model.eval()
 

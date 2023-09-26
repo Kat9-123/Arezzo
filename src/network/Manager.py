@@ -16,14 +16,17 @@ import network.SpectrumCompressor as SpectrumCompressor
 from torch.utils.data import DataLoader
 import time
 from network.Network import Network
+
+import Config as cfg
+
 #import network.SpectrumCompressor as SpectrumCompressor
 AUDIO_PATH = "learning\\audio\\"
 MIDI_PATH = "learning\\midi\\"
 
-FILE_NAME = "mono\\MONO-12-R"
+
 
 INPUT_SIZE = 6222
-OUTPUT_SIZE = 12
+OUTPUT_SIZE = 88
 
 MAX_ROW = 6222
 
@@ -31,11 +34,11 @@ model = None
 
 def car():
     ## Process audio file -> spectrum & onsets
-    audioData = AudioProcessor.process_audio(f"{AUDIO_PATH}{FILE_NAME}.mp3")
+    audioData = AudioProcessor.process_audio(f"{AUDIO_PATH}{cfg.CONFIG['NETWORK']['data_to_process_audio']}")
 
 
    # audioData.tempo = 120
-    midi = MIDIManager.get_midi(f"{MIDI_PATH}{FILE_NAME}.midi",120)
+    midi = MIDIManager.get_midi(f"{MIDI_PATH}{cfg.CONFIG['NETWORK']['data_to_process_midi']}",120)
     tempo = 120
     midiOnsets = []
     earliest = audioData.onsets[0]
@@ -60,30 +63,23 @@ def car():
     spectrum = np.ndarray((len(onsetBeats),MAX_ROW))
 
     for x,onset in enumerate(onsetBeats):
+    
 
-
-        n = []
+        newNotes = np.zeros(OUTPUT_SIZE,dtype=np.uint8)
         for i in range(0,len(midi)):
             note = midi[i]
             if note[2] - onset > 100:
                break
 
             if note[1] < onset and note[2] > onset or note[1] == onset:
-                n.append(note[0] - 21)
+                newNotes[note[0] - 21] = 1
 
 
-
-        newNotes = np.zeros(OUTPUT_SIZE,dtype=np.uint8)
-        for i in range(OUTPUT_SIZE):
-            if i in n:
-                newNotes[i] = 1
-            else:
-                newNotes[i] = 0
         notes[x] = newNotes
 
 
+
         spectrumOnset = int(onset / ((tempo/60) * audioData.frameDuration) + earliest)
-        #print(spectrumOnset)
 
         diff = 10_000
         for i in audioData.onsets:
@@ -92,19 +88,18 @@ def car():
                 diff = d
         if diff > 1: print(diff)
 
-        row = audioData.spectrum[0:MAX_ROW,spectrumOnset]
-        #row = row.round(3)
-       # row[row < -40] = -40
-       # row = row * -1
 
 
-        spectrum[x] = row
+        spectrum[x] = audioData.spectrum[0:MAX_ROW,spectrumOnset]
 
     print(notes.shape)
     print(spectrum.shape)
     start = time.time()
     print("COMPRESSING")
-    SpectrumCompressor.compress(notes,spectrum,FILE_NAME)
+
+    fileName = cfg.CONFIG['NETWORK']['data_to_process_audio'].split(".")[0]
+
+    SpectrumCompressor.compress(notes,spectrum,fileName)
     print("DONE!")
     print(time.time() - start)
 
@@ -112,7 +107,7 @@ def car():
 
 def setup_trained_model():
     global model
-    model = Network() # we do not specify ``weights``, i.e. create untrained model
+    model = Network() 
     model.load_state_dict(torch.load('network.mdl'))
     model.eval()
 

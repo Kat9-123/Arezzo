@@ -44,30 +44,28 @@ def main():
     cfg.get_configuration()
     UI.init()
 
-    
-    #test()
-    #NetTrainer.train()
-    Manager.car()
-
-    #Manager.setup_trained_model()
-  #  data = pd.read_csv("research/BACH.csv", header=None)
 
 
+    if cfg.CONFIG["NETWORK"]["process_training_data"]:
+        print("Processing training data...")
+        Manager.car()
+        return
 
-   # X = data.iloc[:, 88:] * -1
+    if cfg.CONFIG["NETWORK"]["train_net"]:
+        print("Training network...")
+        NetTrainer.train()
+        return
+
+    if cfg.CONFIG["testing"]:
+        print("Testing...")
+        Tester.test()
+        return
 
 
+    Manager.setup_trained_model()
 
-   # print(Manager.get_model_output(X.values[0]))
-
-
-   # if cfg.CONFIG["testing"]:
-   #     Tester.test()
-   #     return
-
-
-
-   # run(cfg.CONFIG["path"])
+    print("Generating sheet music...")
+    run(cfg.CONFIG["path"])
     ##    #score = run(f"{AUDIO_BASE_PATH}\\{AUDIO_TO_ANALYSE}",testMode=True)
     
 
