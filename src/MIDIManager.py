@@ -15,10 +15,9 @@ def get_midi(path,tempo):
         for note in instrument.notes:
 
 
-            pitch = librosa.midi_to_note(note.pitch,unicode=False)
             start = Utils.snap_to_beat(note.start*bps)
             end = Utils.snap_to_beat(note.end*bps)
 
-            notes.append([pitch, start, end])
+            notes.append([note.pitch, start, end])
 
     return notes

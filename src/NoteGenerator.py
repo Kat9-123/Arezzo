@@ -7,6 +7,7 @@ import ui.UI as UI
 import librosa
 import numpy as np
 import copy
+import network.Manager as netManager
 
 
 #https://en.wikipedia.org/wiki/Chroma_feature
@@ -45,6 +46,8 @@ def get_notes(processedAudioData):
     freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
    # freqs = librosa.fft_frequencies(sr=AudioProcessor.samplingRate,n_fft=AudioProcessor.N_FFT)
     UI.progress("Generating Notes")
+    print(__note_to_row("C9"))
+    input()
 
     spectrumRowCache = __cache_note_to_spectrum_row()
     UI.diagnostic("Cached Spectrum Rows", str(spectrumRowCache))
@@ -396,9 +399,17 @@ def __remove_old_notes():
     pass
 
 
+
+def __model_get_notes(processedAudioData,frame):
+    data = processedAudioData.spectrum[0:6222,frame]
+    return netManager.get_model_output(data)
+
 playingNotes = []
 def __process_info_at_frame(finishedNotes,frame,processedAudioData):
     global playingNotes,previousNotes,previousFrame
+   
+
+            
 
 
 
@@ -408,7 +419,15 @@ def __process_info_at_frame(finishedNotes,frame,processedAudioData):
 
     if frame not in processedAudioData.onsets:
         return finishedNotes
-    
+
+    modelOutput = __model_get_notes(processedAudioData,frame)
+    print(modelOutput.tolist())
+    for x,i in enumerate((modelOutput.tolist())):
+        if i == 0:
+            continue
+        octave, chroma = divmod(x,12)
+        chroma = CHROMA[chroma]
+        UI.print_colour(chroma+ str(octave),UI.RED,end="\n")
 
     newNotes = __get_notes_at_frame(frame,processedAudioData)
     newNotes = __detect_invalid_notes(newNotes,frame,processedAudioData,previousFrame)

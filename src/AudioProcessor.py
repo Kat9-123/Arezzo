@@ -15,12 +15,13 @@ import scipy.stats
 
 SPECTRUM_DB_CUTOFF = -50
 CHROMA_CUTOFF = 0.2#0.9
-ONSET_TEMPORAL_LAG = 2
+ONSET_TEMPORAL_LAG = 8
 
 TEMPO_BOUNDRY = 140
 
 N_FFT = 2048*8#4096*
 WINDOW_LENGTH = 2048*2
+HOP_LENGTH=2048//4
 
 samplingRate = 0
 
@@ -72,6 +73,11 @@ def process_audio(audioPath,tempoOverride=-1):
     UI.diagnostic("Loudest",spectrum.max(),"db")
 
 
+   # onsetTimes = librosa.frames_to_time(onsets,sr=samplingRate,hop_length=HOP_LENGTH,n_fft=N_FFT)  * (120/60)
+   # onsetTimes -= onsetTimes[0]
+
+   # for i in onsetTimes:
+   #     print(Utils.snap_to_beat(i))
 
     UI.stop_spinner()
 
@@ -95,7 +101,7 @@ def process_audio(audioPath,tempoOverride=-1):
 
 
 def __get_spectrum(y,samplingRate):
-    X = librosa.stft(y,n_fft=N_FFT,win_length=WINDOW_LENGTH,hop_length=2048//4)
+    X = librosa.stft(y,n_fft=N_FFT,win_length=WINDOW_LENGTH,hop_length=HOP_LENGTH)
 
     spectrum = librosa.amplitude_to_db(abs(X))
 

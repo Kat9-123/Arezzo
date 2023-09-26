@@ -15,17 +15,19 @@ import NoteGenerator
 import ui.UI as UI
 import testing.Tester as Tester
 import SheetMusicGenerator
+import network.Manager as Manager
 import Utils
 import Scoring
+import network.Trainer as NetTrainer
 
 import Config as cfg
 
 import time
 import os
+import pandas as pd
 
 
-
-
+#import network.training.RandomMIDIGenerator as RAND
 
 
 
@@ -38,15 +40,34 @@ import os
 
 
 def main():
+
     cfg.get_configuration()
-
     UI.init()
-    if cfg.CONFIG["testing"]:
-        Tester.test()
-        return
+
+    
+    #test()
+    #NetTrainer.train()
+    Manager.car()
+
+    #Manager.setup_trained_model()
+  #  data = pd.read_csv("research/BACH.csv", header=None)
 
 
-    run(cfg.CONFIG["path"])
+
+   # X = data.iloc[:, 88:] * -1
+
+
+
+   # print(Manager.get_model_output(X.values[0]))
+
+
+   # if cfg.CONFIG["testing"]:
+   #     Tester.test()
+   #     return
+
+
+
+   # run(cfg.CONFIG["path"])
     ##    #score = run(f"{AUDIO_BASE_PATH}\\{AUDIO_TO_ANALYSE}",testMode=True)
     
 
