@@ -1,3 +1,8 @@
+# Very simple but quite effective compression of the training data (notes + spectrum)
+
+
+
+
 import math
 import numpy as np
 
@@ -11,7 +16,7 @@ NOTE_COUNT_LOCATION = 0
 SPECTRUM_SIZE_LOCATION = 1
 SAMPLE_COUNT_LOCATION = 2
 
-def __compress_notes(notes,noteCount,sampleCount):
+def __compress_notes(notes,noteCount,sampleCount) :
     noteWordCount = math.ceil(noteCount/16)
 
 
@@ -102,6 +107,9 @@ def compress(notes,spectrum,fileName):
 
 
 
+
+
+
 def __retrieve_header(headerInts):
     noteCount = int(headerInts[NOTE_COUNT_LOCATION])
     spectrumSize = int(headerInts[SPECTRUM_SIZE_LOCATION])
@@ -184,12 +192,16 @@ def decompress(fileName):
 
 
 def test():
+    SPECTRUM_LOWER_BOUND = -50
+    SPECTRUM_UPPER_BOUND = 50
     SAMPLE_COUNT = 5000
     SPECTRUM_SIZE = 10000
     NOTE_COUNT = 88
 
+    MAX_COMPRESSED_DIFFERENCE = 0.002
 
-    spectrum = (50 - -50) * np.random.rand(SAMPLE_COUNT,SPECTRUM_SIZE) + -50
+
+    spectrum = (SPECTRUM_UPPER_BOUND - SPECTRUM_LOWER_BOUND) * np.random.rand(SAMPLE_COUNT,SPECTRUM_SIZE) + SPECTRUM_LOWER_BOUND
 
 
     fNotes = np.random.rand(SAMPLE_COUNT,NOTE_COUNT)
@@ -210,7 +222,7 @@ def test():
     
     for y in range(spectrum.shape[0]):
         for x in range(spectrum.shape[1]):
-            assert abs(spectrum[y][x] - rSpectrum[y][x]) < 0.002
+            assert abs(spectrum[y][x] - rSpectrum[y][x]) < MAX_COMPRESSED_DIFFERENCE
 
     for y in range(notes.shape[0]):
         for x in range(notes.shape[1]):
@@ -218,7 +230,4 @@ def test():
 
 
     print("Passed tests!")
-
-
-
 

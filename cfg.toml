@@ -16,7 +16,7 @@ path = "audio\\PWS_TEST_6.wav"
 note_depth_power = 2
 
 export_type = "pdf" # pdf or png
-
+onset_to_beat_lag = 0.06
 musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 
 
@@ -27,7 +27,7 @@ process_training_data = false
 data_to_process_audio = "HOMO2-88.mp3"
 data_to_process_midi = "homo\\HOMO2-88.midi"
 
-train_net = true
+train_net = false
 save_model = false
 training_data = "HOMO2-88.csd"
 
@@ -35,6 +35,8 @@ model = ""
 
 spectrum_size = 6222
 
+
+show_network_graphs = true
 
 
 

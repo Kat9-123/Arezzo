@@ -8,8 +8,6 @@ import torch.nn as nn
 import torch.optim as optim
 import tqdm
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import accuracy_score
 from network.Network import Network
 import network.SpectrumCompressor as SpectrumCompressor
 import Config as cfg
@@ -30,8 +28,9 @@ def __accuracy(output, target):
 
     mistakes = (pred != target).sum()
 
+    score -= mistakes
 
-    return (score - mistakes)/maxScore
+    return score/maxScore
     
 
 def train():
@@ -40,33 +39,32 @@ def train():
 
 
 
-    X = spectrum
-    y = notes
+    input = spectrum
+    output = notes
 
 
     # convert pandas DataFrame (X) and numpy array (y) into PyTorch tensors
-    X = torch.tensor(X, dtype=torch.float32)
-    y = torch.tensor(y, dtype=torch.float32)
+    input = torch.tensor(input, dtype=torch.float32)
+    output = torch.tensor(output, dtype=torch.float32)
 
     # split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7, shuffle=True)
+    inputTrain, inputTest, outputTrain, outputTest = train_test_split(input, output, train_size=0.7, shuffle=True)
 
 
-
+    
 
 
     # loss metric and optimizer
     model = Network().to(DEVICE)
     criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.SGD(model.parameters(), lr=1e-3)
-    #optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
     # prepare model and training parameters
     n_epochs = 150
     batch_size = 10
-    batches_per_epoch = len(X_train) // batch_size
+    batches_per_epoch = len(inputTrain) // batch_size
 
-    best_acc = - np.inf   # init to negative infinity
+    best_acc = -np.inf
     best_weights = None
     train_loss_hist = []
     train_acc_hist = []
@@ -88,18 +86,18 @@ def train():
                 # take a batch
                 
                 start = i * batch_size
-                X_batch = X_train[start:start+batch_size]
-                y_batch = y_train[start:start+batch_size]
+                inputBatch = inputTrain[start:start+batch_size]
+                outputBatch = outputTrain[start:start+batch_size]
                 # forward pass
-                y_pred = model(X_batch.to(DEVICE))
-                loss = criterion(y_pred.to(DEVICE), y_batch.to(DEVICE))
+                outputPred = model(inputBatch.to(DEVICE))
+                loss = criterion(outputPred.to(DEVICE), outputBatch.to(DEVICE))
                 # backward pass
                 optimizer.zero_grad()
                 loss.backward()
                 # update weights
                 optimizer.step()
                 # compute and store metrics
-                acc = __accuracy(y_pred,y_batch.to(DEVICE))
+                acc = __accuracy(outputPred,outputBatch.to(DEVICE))
                 #acc = (torch.argmax(y_pred, 1) == torch.argmax(y_batch.to(DEVICE), 1)).float().mean()
                 epoch_loss.append(float(loss))
                 epoch_acc.append(float(acc))
@@ -109,10 +107,9 @@ def train():
                 )
         # set model in evaluation mode and run through the test set
         model.eval()
-        y_pred = model(X_test.to(DEVICE))
-        ce = criterion(y_pred.to(DEVICE), y_test.to(DEVICE))
-        #acc = (torch.argmax(y_pred, 1) == torch.argmax(y_test.to(DEVICE), 1)).float().mean()
-        acc = __accuracy(y_pred,y_test.to(DEVICE))
+        outputPred = model(inputTest.to(DEVICE))
+        ce = criterion(outputPred.to(DEVICE), outputTest.to(DEVICE))
+        acc = __accuracy(outputPred,outputTest.to(DEVICE))
         ce = float(ce)
         acc = float(acc)
         train_loss_hist.append(np.mean(epoch_loss))
@@ -134,16 +131,16 @@ def train():
 
 
     for i in range(20):
-        out = model(X[i].to(DEVICE))
+        out = model(input[i].to(DEVICE))
         for x in range(len(out)):
             if out[x] > 0.5:
                 print(x)
         print("TARGET")
-        for x in range(len(y[i])):
-            if y[i][x] > 0.5:
+        for x in range(len(output[i])):
+            if output[i][x] > 0.5:
                 print(x)
         
-        print(__accuracy(out,y[i].to(DEVICE)))
+        print(__accuracy(out,output[i].to(DEVICE)))
 
 
     # Plot the loss and accuracy

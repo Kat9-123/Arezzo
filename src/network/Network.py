@@ -8,6 +8,8 @@ class Network(nn.Module):
  
     def __init__(self):
         super().__init__()
+        
+
         self.relu_stack = nn.Sequential(
             nn.Linear(6222, 1000),
             nn.ReLU(),

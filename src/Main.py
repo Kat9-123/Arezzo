@@ -19,6 +19,7 @@ import network.Manager as Manager
 import Utils
 import Scoring
 import network.Trainer as NetTrainer
+import network.TrainingDataProcessor as TrainingDataProcessor
 
 import Config as cfg
 
@@ -48,7 +49,7 @@ def main():
 
     if cfg.CONFIG["NETWORK"]["process_training_data"]:
         print("Processing training data...")
-        Manager.car()
+        TrainingDataProcessor.process_training_data()
         return
 
     if cfg.CONFIG["NETWORK"]["train_net"]:
