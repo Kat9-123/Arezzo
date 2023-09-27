@@ -4,7 +4,7 @@
 
 
 testing = false # Flag to start in testing mode. Uses test.csv
-path = "audio\\PWS_TEST_6.wav"
+path = "audio\\PWS_TEST_1.wav"
 
 
 [OPTIONS]
@@ -24,12 +24,12 @@ musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 
 [NETWORK]
 process_training_data = false
-data_to_process_audio = "HOMO2-88.mp3"
-data_to_process_midi = "homo\\HOMO2-88.midi"
+data_to_process_audio = "BACH.mp3"
+data_to_process_midi = "music\\BACH.midi"
 
-train_net = false
-save_model = false
-training_data = "HOMO2-88.csd"
+train_net = true
+save_model = true
+training_data = "BACH.csd"
 
 model = ""
 
