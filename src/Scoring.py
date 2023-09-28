@@ -1,6 +1,6 @@
 import Utils
 from Note import Note
-import ui.UI as UI
+import cui.CUI as CUI
 
 import pretty_midi
 import librosa
@@ -43,10 +43,10 @@ def score(notes,filePath,generatedTempo,originalTempo) -> float:
     orignalGeneratedScore = __match_original_generated(generatedNotes,originalNotes)
     tempoScore = __tempo_score(originalTempo,generatedTempo)
 
-    UI.diagnostic("Length Score", round(lengthScore,2), "%")
-    UI.diagnostic("Tempo Score", round(tempoScore,2), "%")
-    UI.diagnostic("Generated-Orignal Score", round(generatedOrignalScore,2), "%")
-    UI.diagnostic("Original-Generated Score", round(orignalGeneratedScore,2), "%")
+    CUI.diagnostic("Length Score", round(lengthScore,2), "%")
+    CUI.diagnostic("Tempo Score", round(tempoScore,2), "%")
+    CUI.diagnostic("Generated-Orignal Score", round(generatedOrignalScore,2), "%")
+    CUI.diagnostic("Original-Generated Score", round(orignalGeneratedScore,2), "%")
 
 
     total = lengthScore           * 1 + \
@@ -54,7 +54,7 @@ def score(notes,filePath,generatedTempo,originalTempo) -> float:
             orignalGeneratedScore * 2 + \
             tempoScore            * 1
     score = round(total / (6.0),2)
-    UI.diagnostic("SCORE", score, "%")
+    CUI.diagnostic("SCORE", score, "%")
     
     return score
 

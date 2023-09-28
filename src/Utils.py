@@ -1,11 +1,11 @@
 import os
-import ui.UI as UI
+import cui.CUI as CUI
 import Config as cfg
 
 
 def sys_call(command: str) -> None:
     """System call wrapper with diagnostic print."""
-    UI.print_colour(f"SYSTEM CALL: '{command}'", UI.PURPLE, end="\n")
+    CUI.print_colour(f"SYSTEM CALL: '{command}'", CUI.PURPLE, end="\n")
     os.system(command)
 
 

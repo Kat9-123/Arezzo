@@ -1,5 +1,5 @@
 import Main
-import ui.UI as UI
+import cui.CUI as CUI
 
 import librosa
 import matplotlib.pyplot as plt
@@ -66,7 +66,7 @@ def save_plot(name):
     
     
     path = f"screenshots\\{name}.png"
-    UI.diagnostic("Saving screenshot to",path)
+    CUI.diagnostic("Saving screenshot to",path)
     plt.savefig(path,dpi=1200)
 
 def show_plot():

@@ -3,7 +3,7 @@ import Main
 import os
 import subprocess
 import time
-import ui.UI as UI
+import cui.CUI as CUI
 import Utils
 import time
 import Config as cfg
@@ -16,7 +16,7 @@ def generate_midi_file(notes,tempo,outputName) -> None:
         return
     
 
-    UI.progress("Generating MIDI")
+    CUI.progress("Generating MIDI")
     print(notes)
 
 
@@ -43,7 +43,7 @@ def generate_midi_file(notes,tempo,outputName) -> None:
 
     midiPath = "output\\midi\\{}.mid".format(outputName)
 
-    UI.diagnostic("MIDI:",midiPath)
+    CUI.diagnostic("MIDI:",midiPath)
 
 
     with open(midiPath, 'wb') as outf:
@@ -55,7 +55,7 @@ def generate_midi_file(notes,tempo,outputName) -> None:
 
 def __generate_sheetmusic_musescore(midiPath: str) -> None:
     """Uses musescore to generate a pdf, given a midi file path."""
-    UI.progress("Generating Sheet music")
+    CUI.progress("Generating Sheet music")
     
     # Help
     command = f'src\\MusescoreCaller.bat "{Main.MUSECORE4_PATH}" "output\\sheet music\\{Main.outputName}.{Main.EXPORT_TYPE}" "{midiPath}"'

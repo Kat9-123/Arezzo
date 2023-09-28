@@ -1,4 +1,4 @@
-import ui.UI as UI
+import cui.CUI as CUI
 from ProcessedAudioData import ProcessedAudioData
 import AudioProcessor
 import Utils
@@ -108,7 +108,7 @@ class Note:
         averageStrength = self.get_average_strength()
         if averageStrength < minLifeTimeStrength:
           # print("Note failed average check")
-           UI.print_colour("{} {} Failed avg. {}\n".format(self.note, round(averageStrength,4),self.lifeTimeStrengths),UI.RED)
+           CUI.print_colour("{} {} Failed avg. {}\n".format(self.note, round(averageStrength,4),self.lifeTimeStrengths),CUI.RED)
            return False
         
         #if self.endFrame - self.startFrame
@@ -133,5 +133,5 @@ class Note:
         
         debugNote += str(self.octave)
 
-        UI.print_colour("{} {} {} {}                                  \n".format(debugNote, round(self.start,4), round(self.duration,4),round(averageStrength,4)),UI.CYAN)
+        CUI.print_colour("{} {} {} {}                                  \n".format(debugNote, round(self.start,4), round(self.duration,4),round(averageStrength,4)),CUI.CYAN)
         return True

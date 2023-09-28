@@ -12,7 +12,7 @@
 import Graphing
 import AudioProcessor
 import NoteGenerator
-import ui.UI as UI
+import cui.CUI as CUI
 import testing.Tester as Tester
 import SheetMusicGenerator
 import network.Manager as Manager
@@ -43,7 +43,7 @@ import pandas as pd
 def main():
 
     cfg.get_configuration()
-    UI.init()
+    CUI.init()
 
 
 
@@ -79,7 +79,7 @@ def run(path,*,testMode=False,tempoOverride=-1):
     startTime = time.perf_counter()
     outputName = f"{str(int(time.time()))}_{os.path.basename(path)}"
 
-    UI.print_colour(f"Processing {path}",UI.GREEN,end="\n\n")
+    CUI.print_colour(f"Processing {path}",CUI.GREEN,end="\n\n")
     
 
     if not testMode:
@@ -103,10 +103,10 @@ def run(path,*,testMode=False,tempoOverride=-1):
 
    
     
-    UI.newline()
+    CUI.newline()
    
-    UI.diagnostic("Processing time per second of audio",round(perSecondOfAudioDuration,3), "seconds")
-    UI.print_colour(f"\nDone. Processing {round(processedAudioData.duration,3)} seconds of audio took {round(duration, 3)} seconds. Showing plots.\n",UI.GREEN)
+    CUI.diagnostic("Processing time per second of audio",round(perSecondOfAudioDuration,3), "seconds")
+    CUI.print_colour(f"\nDone. Processing {round(processedAudioData.duration,3)} seconds of audio took {round(duration, 3)} seconds. Showing plots.\n",CUI.GREEN)
 
 
     if not testMode:

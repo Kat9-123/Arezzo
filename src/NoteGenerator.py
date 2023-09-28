@@ -2,7 +2,7 @@ import Graphing
 import AudioProcessor
 from Note import Note, NoteProbabilities
 import Main
-import ui.UI as UI
+import cui.CUI as CUI
 
 import librosa
 import numpy as np
@@ -45,13 +45,12 @@ def get_notes(processedAudioData):
     global freqs
     #freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
    # freqs = librosa.fft_frequencies(sr=AudioProcessor.samplingRate,n_fft=AudioProcessor.N_FFT)
-    UI.progress("Generating Notes")
+    CUI.progress("Generating Notes")
     #print(__note_to_row("C9"))
-    input()
 
     #spectrumRowCache = __cache_note_to_spectrum_row()
     #UI.diagnostic("Cached Spectrum Rows", str(spectrumRowCache))
-    UI.diagnostic("Onsets", str(processedAudioData.onsets))
+    CUI.diagnostic("Onsets", str(processedAudioData.onsets))
 
 
     frameCount = processedAudioData.spectrum.shape[1]
@@ -66,7 +65,7 @@ def get_notes(processedAudioData):
         #__get_notes_at_frame(currentFrame,processedAudioData)
         __model_get_notes(processedAudioData,currentFrame)
 
-    UI.stop_spinner()
+    CUI.stop_spinner()
     return notes
 
 
@@ -110,7 +109,7 @@ def __model_get_notes(processedAudioData,frame):
             continue
         octave, chroma = divmod(x + 9,12)
         chroma = CHROMA[chroma]
-        UI.print_colour(chroma + str(octave),UI.RED,end="\n")
+        CUI.print_colour(chroma + str(octave),CUI.RED,end="\n")
     return 
 
 playingNotes = []

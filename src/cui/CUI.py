@@ -1,4 +1,4 @@
-import ui.Spinner as Spinner
+import cui.Spinner as Spinner
 
 
 import threading

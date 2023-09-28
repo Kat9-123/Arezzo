@@ -2,7 +2,7 @@ import Utils
 import Graphing
 import NoteGenerator
 from ProcessedAudioData import ProcessedAudioData
-import ui.UI as UI
+import cui.CUI as CUI
 
 import librosa
 import scipy
@@ -33,7 +33,7 @@ def process_audio(audioPath,tempoOverride=-1):
     """Takes the audio at the path and returns a spectrum, chroma classification, onsets, 
        estimated tempo and the duration of the file."""
     global samplingRate
-    UI.progress("Processing {}".format(audioPath),prefixNewline=False)
+    CUI.progress("Processing {}".format(audioPath),prefixNewline=False)
 
     y, samplingRate = librosa.load(audioPath)
 
@@ -58,11 +58,11 @@ def process_audio(audioPath,tempoOverride=-1):
     else:
         tempo = tempoOverride
     
-    UI.diagnostic("Frame Count",frameCount)
-    UI.diagnostic("Duration",duration, "s")
-    UI.diagnostic("Frame Duration",pointDuration * 1000, "ms")
-    UI.diagnostic("Softest",spectrum.min(), "db")
-    UI.diagnostic("Loudest",spectrum.max(),"db")
+    CUI.diagnostic("Frame Count",frameCount)
+    CUI.diagnostic("Duration",duration, "s")
+    CUI.diagnostic("Frame Duration",pointDuration * 1000, "ms")
+    CUI.diagnostic("Softest",spectrum.min(), "db")
+    CUI.diagnostic("Loudest",spectrum.max(),"db")
 
 
    # onsetTimes = librosa.frames_to_time(onsets,sr=samplingRate,hop_length=HOP_LENGTH,n_fft=N_FFT)  * (120/60)
@@ -71,7 +71,7 @@ def process_audio(audioPath,tempoOverride=-1):
    # for i in onsetTimes:
    #     print(Utils.snap_to_beat(i))
 
-    UI.stop_spinner()
+    CUI.stop_spinner()
 
     processedAudioData = ProcessedAudioData(spectrum=spectrum,
                                             chroma=chroma,
@@ -141,15 +141,15 @@ def __get_tempo(y,sampleRate):
     tempo =round(rawTempo[0])
 
 
-    tempo = (60/((last_beat_time-first_beat_time)/(len(beats)-1)))//1
+    #tempo = (60/((last_beat_time-first_beat_time)/(len(beats)-1)))//1
 
-    UI.diagnostic("Est. Tempo",tempo, "bpm")
+    CUI.diagnostic("Est. Tempo",tempo, "bpm")
     #return tempo
 
     while tempo > TEMPO_BOUNDRY:
         tempo //= 2
     
-    UI.diagnostic("Corrected Tempo",tempo, "bpm")    
+    CUI.diagnostic("Corrected Tempo",tempo, "bpm")    
 
     return tempo
 

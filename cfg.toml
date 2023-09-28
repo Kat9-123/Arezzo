@@ -28,8 +28,8 @@ process_training_data = false
 data_to_process_audio = "BACH.mp3"
 data_to_process_midi = "music\\BACH.midi"
 
-train_net = true
-save_model = true
+train_net = false
+save_model = false
 training_data = "BACH.csd"
 
 model = ""

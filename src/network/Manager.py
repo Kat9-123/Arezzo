@@ -20,6 +20,7 @@ def setup_trained_model():
 def get_model_output(data):
     data = torch.tensor(data,dtype=torch.float32)
     output = model(data)
+    print(output)
     #print(torch.round(output,decimals=1).tolist())
     pred = (output > 0.5).float()
     return pred

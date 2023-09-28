@@ -1,6 +1,6 @@
 import time
 import threading
-import ui.UI as UI
+import cui.CUI as CUI
 
 
 class Spinner:
@@ -36,7 +36,7 @@ class Spinner:
         self.stopEvent = threading.Event()
         self.text = _text
 
-        return
+        #return
         self.thread.start()
     
     def __run(self):
@@ -44,7 +44,7 @@ class Spinner:
         while True:
             time.sleep(0.06)
 
-            UI.print_colour(f"[{self.FRAMES[i]}] {self.text}", UI.GREEN, end="\r")
+            CUI.print_colour(f"[{self.FRAMES[i]}] {self.text}", CUI.GREEN, end="\r")
 
             i += 1
             if i >= len(self.FRAMES):
@@ -54,12 +54,12 @@ class Spinner:
                 return
     
     def stop(self):
-        return
+        #return
         self.stopEvent.set()
         self.thread.join()
 
-        UI.set_colour(UI.GREEN)
+        CUI.set_colour(CUI.GREEN)
         print(f"[  √  ] {self.text}\n")
-        UI.set_colour(UI.WHITE)
+        CUI.set_colour(CUI.WHITE)
         
 
