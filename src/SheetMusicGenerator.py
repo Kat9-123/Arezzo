@@ -58,7 +58,7 @@ def __generate_sheetmusic_musescore(midiPath: str) -> None:
     UI.progress("Generating Sheet music")
     
     # Help
-    command = f'src\\MusescoreCaller.bat "{Main.MUSECORE4_PATH}" "output\\sheet music\\{Main.outputName}.{Main.EXPORT_TYPE}" "{midiPath}"'
+    command = f'src\\MusescoreCaller.bat "{cfg.CONFIG["OPTIONS"]["musescore4_path"]}" "TEST.pdf" "{midiPath}"'
   
 
     Utils.sys_call(command)

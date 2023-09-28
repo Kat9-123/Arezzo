@@ -4,7 +4,7 @@
 
 
 testing = false # Flag to start in testing mode. Uses test.csv
-path = "audio\\PWS_TEST_1.wav"
+path = "audio\\PWS_TEST_4.wav"
 
 
 [DATA]
@@ -12,7 +12,7 @@ graphing = false
 
 
 [DEBUG]
-generate_sheet_music = false
+generate_sheet_music = true
 
 show_octave_info = false
 

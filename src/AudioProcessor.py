@@ -141,10 +141,10 @@ def __get_tempo(y,sampleRate):
     print("Tempo 2:", 60/((last_beat_time-first_beat_time)/(len(beats)-1)))
 
     
-    tempo =round(rawTempo[0])
+    #tempo =round(rawTempo[0])
 
 
-    tempo = (60/((last_beat_time-first_beat_time)/(len(beats)-1)))//1
+    #tempo = (60/((last_beat_time-first_beat_time)/(len(beats)-1)))//1
 
     UI.diagnostic("Est. Tempo",tempo, "bpm")
     #return tempo
