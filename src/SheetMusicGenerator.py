@@ -6,7 +6,7 @@ import time
 import cui.CUI as CUI
 import Utils
 import time
-import Config as cfg
+import Configurator as cfg
 import librosa
 
 

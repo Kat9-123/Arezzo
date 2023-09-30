@@ -3,6 +3,7 @@
 
 
 
+
 import math
 import numpy as np
 
@@ -16,7 +17,7 @@ NOTE_COUNT_LOCATION = 0
 SPECTRUM_SIZE_LOCATION = 1
 SAMPLE_COUNT_LOCATION = 2
 
-def __compress_notes(notes,noteCount,sampleCount) :
+def __compress_notes(notes,noteCount,sampleCount):
     noteWordCount = math.ceil(noteCount/16)
 
 

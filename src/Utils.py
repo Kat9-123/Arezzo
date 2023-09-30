@@ -1,6 +1,6 @@
 import os
 import cui.CUI as CUI
-import Config as cfg
+import Configurator as cfg
 
 
 def sys_call(command: str) -> None:

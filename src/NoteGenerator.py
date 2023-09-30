@@ -52,6 +52,7 @@ def get_notes(processedAudioData):
             note = chroma + str(octave)
             cachedNoteRows[note] = __note_to_row(note,freqs)
 
+    print(cachedNoteRows)
    # freqs = librosa.fft_frequencies(sr=AudioProcessor.samplingRate,n_fft=AudioProcessor.N_FFT)
     CUI.progress("Generating Notes")
     #print(__note_to_row("C9"))

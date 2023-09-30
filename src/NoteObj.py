@@ -53,9 +53,9 @@ class NoteObj:
 
     def __repr__(self) -> str:
         if self.duration == 0:
-            return f"({self.note} {self.__startFrame:.2f})"
+            return f"(@{self.note} {self.__startFrame:.2f})"
     
-        return f"(@{self.note} {self.start:.2f}:{self.duration:.2f})"
+        return f"({self.note} {self.start:.2f}:{self.duration:.2f})"
 
 
 

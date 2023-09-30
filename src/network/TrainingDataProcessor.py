@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader
 import time
 from network.Network import Network
 
-import Config as cfg
+import Configurator as cfg
 
 
 AUDIO_PATH = "learning\\audio\\"
@@ -34,11 +34,11 @@ model = None
 
 def process_training_data():
     ## Process audio file -> spectrum & onsets
-    audioData = AudioProcessor.process_audio(f"{AUDIO_PATH}{cfg.CONFIG['NETWORK']['data_to_process_audio']}")
+    audioData = AudioProcessor.process_audio(f"{AUDIO_PATH}{cfg.CONFIG['ARGS']['audio']}")
 
 
    # audioData.tempo = 120
-    midi = MIDIManager.get_midi(f"{MIDI_PATH}{cfg.CONFIG['NETWORK']['data_to_process_midi']}",120)
+    midi = MIDIManager.get_midi(f"{MIDI_PATH}{cfg.CONFIG['ARGS']['midi']}",120)
     tempo = 120
     midiOnsets = []
     earliest = audioData.onsets[0]
@@ -97,7 +97,7 @@ def process_training_data():
     start = time.time()
     print("COMPRESSING")
 
-    fileName = cfg.CONFIG['NETWORK']['data_to_process_audio'].split(".")[0]
+    fileName = cfg.CONFIG['ARGS']['audio'].split(".")[0]
 
     SpectrumCompressor.compress(notes,spectrum,fileName)
     print("DONE!")

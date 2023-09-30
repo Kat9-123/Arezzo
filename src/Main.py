@@ -21,7 +21,7 @@ import Scoring
 import network.Trainer as NetTrainer
 import network.TrainingDataProcessor as TrainingDataProcessor
 
-import Config as cfg
+import Configurator as cfg
 
 import time
 import os
@@ -47,29 +47,28 @@ def main():
 
 
 
-    if cfg.CONFIG["NETWORK"]["process_training_data"]:
+    if cfg.mode == cfg.Modes.PROCESS_TRAINING_DATA:
         print("Processing training data...")
         TrainingDataProcessor.process_training_data()
         return
 
-    if cfg.CONFIG["NETWORK"]["train_net"]:
+    if cfg.mode == cfg.Modes.TRAIN:
         print("Training network...")
         NetTrainer.train()
         return
 
-    if cfg.CONFIG["testing"]:
+    if cfg.mode == cfg.Modes.TEST_MULTIPLE:
         print("Testing...")
         Tester.test()
         return
+    if cfg.mode == cfg.Modes.TEST_SINGLE:
+        raise Exception("Single test mode hasnt been implemented yet!")
 
 
     Manager.setup_trained_model()
 
     print("Generating sheet music...")
-    run(cfg.CONFIG["path"])
-    ##    #score = run(f"{AUDIO_BASE_PATH}\\{AUDIO_TO_ANALYSE}",testMode=True)
-    
-
+    run(cfg.CONFIG["ARGS"]["audio"])
 
 
 
