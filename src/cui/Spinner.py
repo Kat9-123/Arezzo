@@ -32,6 +32,7 @@ class Spinner:
     text: str
 
     def __init__(self,_text) -> None:
+        return
         self.thread = threading.Thread(target=self.__run)
         self.stopEvent = threading.Event()
         self.text = _text
@@ -40,6 +41,7 @@ class Spinner:
         self.thread.start()
     
     def __run(self):
+        return
         i = 0
         while True:
             time.sleep(0.06)
@@ -54,6 +56,7 @@ class Spinner:
                 return
     
     def stop(self):
+        return
         #return
         self.stopEvent.set()
         self.thread.join()

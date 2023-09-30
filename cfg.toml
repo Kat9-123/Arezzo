@@ -44,7 +44,7 @@ show_network_graphs = true
 
 
 [DEBUG]
-generate_sheet_music = false
+generate_sheet_music = true
 
 show_octave_info = false
 graphing = false

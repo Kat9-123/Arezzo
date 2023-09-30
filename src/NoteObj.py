@@ -33,6 +33,7 @@ class NoteObj:
     
     __startFrame: int
     __processedAudioData: ProcessedAudioData
+    __lifetimeStrengths: list = []
 
 
     def __init__(self,_note,_startFrame,_processedAudioData) -> None:
@@ -41,6 +42,13 @@ class NoteObj:
         self.__startFrame = _startFrame
         self.__processedAudioData = _processedAudioData
 
+
+    def add_strength(self,strength):
+        self.__lifetimeStrengths.append(strength)
+        
+
+    def get_average_strength(self):
+        return np.mean(self.__lifetimeStrengths) # Median?
 
 
     def __repr__(self) -> str:

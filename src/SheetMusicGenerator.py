@@ -7,6 +7,7 @@ import cui.CUI as CUI
 import Utils
 import time
 import Config as cfg
+import librosa
 
 
 def generate_midi_file(notes,tempo,outputName) -> None:
@@ -37,11 +38,12 @@ def generate_midi_file(notes,tempo,outputName) -> None:
 
 
     for note in notes:
-        midiFile.addNote(track, channel, note.midi, note.start - earliestStartTime, note.duration, volume)
+        midi = librosa.note_to_midi(note.note)
+        midiFile.addNote(track, channel, midi, note.start - earliestStartTime, note.duration, volume)
 
     # write it to disk
 
-    midiPath = "output\\midi\\{}.mid".format(outputName)
+    midiPath = f"output\\midi\\{outputName}.mid"
 
     CUI.diagnostic("MIDI:",midiPath)
 
@@ -50,15 +52,16 @@ def generate_midi_file(notes,tempo,outputName) -> None:
         midiFile.writeFile(outf)
 
 
-    __generate_sheetmusic_musescore(midiPath)
+    __generate_sheetmusic_musescore(midiPath,outputName)
 
 
-def __generate_sheetmusic_musescore(midiPath: str) -> None:
+def __generate_sheetmusic_musescore(midiPath: str,outputName: str) -> None:
     """Uses musescore to generate a pdf, given a midi file path."""
     CUI.progress("Generating Sheet music")
-    
+    museScorePath = cfg.CONFIG["OPTIONS"]["musescore4_path"]
+    exportType = cfg.CONFIG["OPTIONS"]["export_type"]
     # Help
-    command = f'src\\MusescoreCaller.bat "{Main.MUSECORE4_PATH}" "output\\sheet music\\{Main.outputName}.{Main.EXPORT_TYPE}" "{midiPath}"'
+    command = f'src\\MusescoreCaller.bat "{museScorePath}" "output\\sheet music\\{outputName}.{exportType}" "{midiPath}"'
   
 
     Utils.sys_call(command)

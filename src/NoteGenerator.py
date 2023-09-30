@@ -42,8 +42,15 @@ freqs = np.ndarray
 
 def get_notes(processedAudioData):
     """Takes in spectrum, chroma, onsets and tempo and returns all of the voices with their respective notes."""
-    global freqs
+    global cachedNoteRows
     freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
+    print(processedAudioData.onsets)
+    cachedNoteRows = {}
+
+    for octave in range(0,8):
+        for chroma in CHROMA:
+            note = chroma + str(octave)
+            cachedNoteRows[note] = __note_to_row(note,freqs)
 
    # freqs = librosa.fft_frequencies(sr=AudioProcessor.samplingRate,n_fft=AudioProcessor.N_FFT)
     CUI.progress("Generating Notes")
@@ -63,8 +70,8 @@ def get_notes(processedAudioData):
 
     notes = []
     currentNotes = []
-    for currentFrame in processedAudioData.onsets:
-        notes = __get_notes_at_frame(currentNotes,notes,currentFrame,processedAudioData)
+    for frame in range(processedAudioData.onsets[0],processedAudioData.onsets[-1]+1):
+        notes = __process_frame(currentNotes,notes,frame,processedAudioData)
         #__model_get_notes(processedAudioData,currentFrame)
 
     CUI.stop_spinner()
@@ -81,8 +88,6 @@ def get_notes(processedAudioData):
 
 
 
-currentNotes = {}
-finishedNotes = []
 
 
 
@@ -96,6 +101,22 @@ def __delete_queued_notes(notes: list,queue: list):
     return notes
 
 
+def __get_volume(note,frame,processedAudioData):
+    return processedAudioData.spectrum[cachedNoteRows[note],frame]
+
+def __process_frame(currentNotes: list,finishedNotes: list,frame: int,processedAudioData):
+    
+    if frame in processedAudioData.onsets:
+        return __get_notes_at_frame(currentNotes,finishedNotes,frame,processedAudioData)
+
+    for noteObj in currentNotes:
+        strength = __get_volume(noteObj.note,frame-AudioProcessor.ONSET_TEMPORAL_LAG,processedAudioData)
+        noteObj.add_strength(strength)
+
+    return finishedNotes
+
+
+
 def __get_notes_at_frame(currentNotes: list,finishedNotes: list,frame: int,processedAudioData) -> list:
     playingNotes = __model_get_notes(processedAudioData,frame)
 
@@ -103,18 +124,28 @@ def __get_notes_at_frame(currentNotes: list,finishedNotes: list,frame: int,proce
     noteDeletionQueue = []
 
 
-    for curNote in currentNotes:
+    for curNoteObj in currentNotes:
 
 
-        if curNote.note in playingNotes:
-            playingNotes.remove(curNote.note)
-            continue
+        if curNoteObj.note in playingNotes:
+            
+            newStrength = __get_volume(curNoteObj.note,frame-AudioProcessor.ONSET_TEMPORAL_LAG,processedAudioData)
+            
+            avgStrength = curNoteObj.get_average_strength()
+            print(newStrength,avgStrength, (newStrength - avgStrength))
+
+
+            # Not a repeat note 
+            if (newStrength - avgStrength) < -8:
+                playingNotes.remove(curNoteObj.note)
+                continue
+
         
         # curNote wasnt found, and should be ended
-        curNote.finish_note(frame)
-        print(curNote)
-        finishedNotes.append(curNote)
-        noteDeletionQueue.append(curNote)
+        curNoteObj.finish_note(frame)
+        print(curNoteObj, curNoteObj.get_average_strength())
+        finishedNotes.append(curNoteObj)
+        noteDeletionQueue.append(curNoteObj)
             
 
     currentNotes = __delete_queued_notes(currentNotes,noteDeletionQueue)
@@ -163,7 +194,7 @@ def __model_get_notes(processedAudioData,frame):
 
 
 
-def __note_to_row(note):
+def __note_to_row(note,freqs):
     
     hz = librosa.note_to_hz(note)
     smallestDist = 10000
