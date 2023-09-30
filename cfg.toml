@@ -4,8 +4,8 @@
 
 
 testing = false # Flag to start in testing mode. Uses test.csv
-#path = "audio\\PWS_TEST_1.wav"
-path = "audio\\PWS_TEST_1.wav"
+path = "audio\\PWS_TEST_1b.wav"
+#path = "audio\\HOMO4-88_SHORT.mp3"
 
 
 [OPTIONS]

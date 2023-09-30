@@ -1,5 +1,5 @@
 import Utils
-from Note import Note
+from NoteObj import NoteObj
 import cui.CUI as CUI
 
 import pretty_midi

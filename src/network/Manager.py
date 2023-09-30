@@ -12,7 +12,7 @@ model = None
 def setup_trained_model():
     global model
     model = Network() 
-    model.load_state_dict(torch.load('network.mdl',map_location=torch.device("cpu")))
+    model.load_state_dict(torch.load('4VOICE.mdl',map_location=torch.device("cpu")))
     model.eval()
 
     

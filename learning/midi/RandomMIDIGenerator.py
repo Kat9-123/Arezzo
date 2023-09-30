@@ -21,7 +21,7 @@ durations = [
 ]
 
 
-def generate_random_midi(lower,upper,randomDurations,notesPerOnset):
+def generate_random_midi(lower,upper,randomDurations,notesPerOnset,beatCount=2500):
 
 
 
@@ -69,7 +69,7 @@ def generate_random_midi(lower,upper,randomDurations,notesPerOnset):
 
 #generate_random_midi(21,109,True,1)
 
-generate_random_midi(21,109,False,4)
+generate_random_midi(21,109,False,4,beatCount=120)
 
 #generate_random_midi(60,72,True,2)
 #generate_random_midi(48,84,True,2)
