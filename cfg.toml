@@ -17,6 +17,7 @@ export_type = "pdf" # pdf or png
 
 [ADVANCED_OPTIONS]
 onset_to_beat_lag = 0.06
+#model = "HOMO4-88.mdl"
 model = "models\\4VOICE.mdl"
 
 
@@ -33,5 +34,5 @@ musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 [DEBUG]
 generate_sheet_music = false
 graphing = false
-save_model = false
+save_model = true
 show_network_graphs = true

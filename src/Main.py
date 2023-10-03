@@ -26,7 +26,7 @@ import Configurator as cfg
 import time
 import os
 import pandas as pd
-
+import GetMiscInfo
 
 #import network.training.RandomMIDIGenerator as RAND
 
@@ -45,6 +45,7 @@ def main():
     cfg.get_configuration()
     CUI.init()
 
+    
 
 
     if cfg.mode == cfg.Modes.PROCESS_TRAINING_DATA:
@@ -96,6 +97,7 @@ def run(path,*,testMode=False,tempoOverride=-1):
     if not testMode:
         Graphing.save_plot(outputName)
 
+    GetMiscInfo.guess_key(notes)
 
     duration = time.perf_counter() - startTime
     perSecondOfAudioDuration = duration/processedAudioData.duration

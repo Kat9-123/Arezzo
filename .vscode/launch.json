@@ -6,7 +6,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/Main.py",
             "args":[
-                "audio\\PWS_TEST_1.wav"
+               "audio\\PWS_TEST_1b.wav"
+               //"-nHOMO4-88.csd"
                 
             ],
             "justMyCode": true,
