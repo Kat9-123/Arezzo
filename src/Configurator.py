@@ -1,7 +1,5 @@
 import argparse
 from enum import Enum
-
-
 import tomli
 
 

@@ -20,6 +20,7 @@ onset_to_beat_lag = 0.06
 #model = "HOMO4-88.mdl"
 model = "models\\4VOICE.mdl"
 
+key_profile = "Krumhansl-Kessler.csv"
 
 
 

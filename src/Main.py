@@ -1,4 +1,5 @@
 # MY_CONSTANT
+#? VALUE_SET_ONCE_ # Undefined when initialised, but afterwards set only once
 # my_function
 # myValue
 # MyClass
@@ -6,8 +7,11 @@
 # __privateFunction
 # _overridableFunction
 
-
-
+# The first thing we do is load the config. Because we do this
+# before initialising anything else, the global var CONFIG can
+# just be imported directly by other scripts
+import Configurator as cfg
+cfg.get_configuration()
 
 import Graphing
 import AudioProcessor
@@ -21,12 +25,12 @@ import Scoring
 import network.Trainer as NetTrainer
 import network.TrainingDataProcessor as TrainingDataProcessor
 
-import Configurator as cfg
+
 
 import time
 import os
 import pandas as pd
-import GetMiscInfo
+import KeyFinder, TimeSigFinder
 
 #import network.training.RandomMIDIGenerator as RAND
 
@@ -42,10 +46,8 @@ import GetMiscInfo
 
 def main():
 
-    cfg.get_configuration()
-    CUI.init()
-
     
+    CUI.init()
 
 
     if cfg.mode == cfg.Modes.PROCESS_TRAINING_DATA:
@@ -97,7 +99,8 @@ def run(path,*,testMode=False,tempoOverride=-1):
     if not testMode:
         Graphing.save_plot(outputName)
 
-    GetMiscInfo.guess_key(notes)
+    KeyFinder.guess_key(notes)
+    TimeSigFinder.guess_time_signature(notes)
 
     duration = time.perf_counter() - startTime
     perSecondOfAudioDuration = duration/processedAudioData.duration

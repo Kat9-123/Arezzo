@@ -1,9 +1,6 @@
 from math import sqrt
-
-def guess_time_signature():
-    #T/4
-    #end-(start - (start % T)) >= T
-    pass
+import csv
+from Configurator import CONFIG
 
 
 def __average(x):
@@ -41,31 +38,41 @@ KEY_NAMES = [
 
 ]
 
-MAJOR_PROFILE = [
-    6.35,
-    2.23,
-    3.48,
-    2.33,
-    4.38,
-    4.09,
-    2.52,
-    5.19,
-    2.39,
-    3.66,
-    2.29,
-    2.88,
-]
+def __get_profile() -> None:
+    """Load the profile specified in CONFIG.ADVANCED_OPTIONS.KEY_PROFILE"""
+    global MAJOR_PROFILE_, MINOR_PROFILE_
+    if MAJOR_PROFILE_ != None and MINOR_PROFILE_ != None:
+        return
+    
 
-MINOR_PROFILE = [
-    6.33, 2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17
 
-]
+    with open(CONFIG["ADVANCED_OPTIONS"]["key_profile"], newline='') as csvfile:
+        reader = csv.reader(csvfile)
+
+        for row in reader:
+
+            if row[0].upper() == "MAJOR":
+                MAJOR_PROFILE_ = []
+                for i in row[1:]:
+                    MAJOR_PROFILE_.append(float(i))
+
+            elif row[0].upper() == "MINOR":
+                MINOR_PROFILE_ = []
+                for i in row[1:]:
+                    MINOR_PROFILE_.append(float(i))
+
+    return
+
+
+
+MAJOR_PROFILE_ = None
+
+MINOR_PROFILE_ = None
 
 # https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
 def __pearson_correlation(x,y):
     n = len(x) # Should be 12
 
-    result = 0
 
     xAvg = __average(x)
     yAvg = __average(y)
@@ -102,11 +109,14 @@ def __offset_notes(notes):
 
 CHROMAS = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
+PROFILE_ = None
+
 def __load_profile():
     pass
 
 def guess_key(noteObjs):
-
+    __get_profile()
+    
     chromaDurations = [0]*12
 
     for noteObj in noteObjs:
@@ -125,12 +135,12 @@ def guess_key(noteObjs):
     greatest = -1_000
     iGreatest = -1
     for i in range(12):
-        major = __pearson_correlation(MAJOR_PROFILE,chromaDurations)
+        major = __pearson_correlation(MAJOR_PROFILE_,chromaDurations)
         if major > greatest:
             iGreatest = i
             greatest = major
 
-        minor = __pearson_correlation(MINOR_PROFILE,chromaDurations)
+        minor = __pearson_correlation(MINOR_PROFILE_,chromaDurations)
         if minor > greatest:
             iGreatest = i + 12
             greatest = minor
