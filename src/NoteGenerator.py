@@ -1,12 +1,12 @@
-import Graphing
+
 import AudioProcessor
 from NoteObj import NoteObj
-import Main
+
 import cui.CUI as CUI
 
 import librosa
 import numpy as np
-import copy
+
 import network.Manager as netManager
 
 
@@ -14,46 +14,27 @@ import network.Manager as netManager
 # {C, C♯, D, D♯, E , F, F♯, G, G♯, A, A♯, B} => chroma
 # 1, 5, 2, 7 => octave
 # C4, A5, Db2 => note
+# NoteObj
 
 
 # Rows, Frames
 
 
-SHOW_OCTAVE_INFO = False
-
-
 
 CHROMA = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
-LOWEST_OCTAVE_DB = 5
 
-HARMONIC_OCTAVE_MAX_DIFFERENCE_DB = 2
-
-
-MAX_NOTE_DURATION = 4
-
-
-
-
-
-
-freqs = np.ndarray
-
+cachedNoteRows = {}
 
 def get_notes(processedAudioData):
     """Takes in spectrum, chroma, onsets and tempo and returns all of the voices with their respective notes."""
     global cachedNoteRows
-    freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
     print(processedAudioData.onsets)
-    cachedNoteRows = {}
 
-    for octave in range(0,8):
-        for chroma in CHROMA:
-            note = chroma + str(octave)
-            cachedNoteRows[note] = __note_to_row(note,freqs)
+    cachedNoteRows = __get_note_to_row_cache()
 
     print(cachedNoteRows)
-   # freqs = librosa.fft_frequencies(sr=AudioProcessor.samplingRate,n_fft=AudioProcessor.N_FFT)
+   # freqs = 
     CUI.progress("Generating Notes")
     #print(__note_to_row("C9"))
 
@@ -82,15 +63,38 @@ def get_notes(processedAudioData):
 
 
 
+def __get_note_to_row_cache():
+    def __note_to_row(note,freqs):
+        
+        hz = librosa.note_to_hz(note)
+        smallestDist = 10000
+        smallestRow = -1
 
+        for x,freq in enumerate(freqs):
+            dist = abs(freq - hz)
+            
+            if dist < smallestDist:
+                smallestRow = x
+                smallestDist = dist
+        
+        if smallestRow == -1:
+            CUI.warning("Row corresponding to note not found!")
+            return 0
 
+    # UI.diagnostic("NOTE_TO_ROW","{} => {}".format(note,smallestRow))
+        return smallestRow
+    
+    #librosa.fft_frequencies(sr=AudioProcessor.samplingRate,n_fft=AudioProcessor.N_FFT)
+    freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
+    
+    cachedNoteRows = {}
 
+    for octave in range(0,8):
+        for chroma in CHROMA:
+            note = chroma + str(octave)
+            cachedNoteRows[note] = __note_to_row(note,freqs)
 
-
-
-
-
-
+    return cachedNoteRows
 
 
 
@@ -195,23 +199,5 @@ def __model_get_notes(processedAudioData,frame):
 
 
 
-def __note_to_row(note,freqs):
-    
-    hz = librosa.note_to_hz(note)
-    smallestDist = 10000
-    smallestRow = -1
 
-    for x,freq in enumerate(freqs):
-        dist = abs(freq - hz)
-        
-        if dist < smallestDist:
-            smallestRow = x
-            smallestDist = dist
-    
-    if smallestRow == -1:
-        CUI.warning("Row corresponding to note not found!")
-        return 0
-
-   # UI.diagnostic("NOTE_TO_ROW","{} => {}".format(note,smallestRow))
-    return smallestRow
   

@@ -1,2 +1,3 @@
-# transcription
+# PolyPmT
+A simple Polyphonic Piano music Transcriber. School project.
  

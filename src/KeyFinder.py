@@ -38,11 +38,10 @@ KEY_NAMES = [
 
 ]
 
-def __get_profile() -> None:
+def __get_profiles() -> None:
     """Load the profile specified in CONFIG.ADVANCED_OPTIONS.KEY_PROFILE"""
-    global MAJOR_PROFILE_, MINOR_PROFILE_
-    if MAJOR_PROFILE_ != None and MINOR_PROFILE_ != None:
-        return
+    majorProfile = []
+    minorProfile = []
     
 
 
@@ -52,22 +51,18 @@ def __get_profile() -> None:
         for row in reader:
 
             if row[0].upper() == "MAJOR":
-                MAJOR_PROFILE_ = []
                 for i in row[1:]:
-                    MAJOR_PROFILE_.append(float(i))
+                    majorProfile.append(float(i))
 
             elif row[0].upper() == "MINOR":
-                MINOR_PROFILE_ = []
                 for i in row[1:]:
-                    MINOR_PROFILE_.append(float(i))
+                    minorProfile.append(float(i))
 
-    return
+    return majorProfile,minorProfile
 
 
 
-MAJOR_PROFILE_ = None
 
-MINOR_PROFILE_ = None
 
 # https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
 def __pearson_correlation(x,y):
@@ -109,13 +104,9 @@ def __offset_notes(notes):
 
 CHROMAS = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
-PROFILE_ = None
-
-def __load_profile():
-    pass
 
 def guess_key(noteObjs):
-    __get_profile()
+    majorProfile, minorProfile = __get_profiles()
     
     chromaDurations = [0]*12
 
@@ -135,12 +126,12 @@ def guess_key(noteObjs):
     greatest = -1_000
     iGreatest = -1
     for i in range(12):
-        major = __pearson_correlation(MAJOR_PROFILE_,chromaDurations)
+        major = __pearson_correlation(majorProfile,chromaDurations)
         if major > greatest:
             iGreatest = i
             greatest = major
 
-        minor = __pearson_correlation(MINOR_PROFILE_,chromaDurations)
+        minor = __pearson_correlation(minorProfile,chromaDurations)
         if minor > greatest:
             iGreatest = i + 12
             greatest = minor

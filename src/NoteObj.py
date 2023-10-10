@@ -26,8 +26,8 @@ from enum import Enum
 
 
 class NoteObj:
-    start: float = 0
-    duration: float = 0
+    start: float
+    duration: float
     note: str
 
     
@@ -43,11 +43,11 @@ class NoteObj:
         self.__processedAudioData = _processedAudioData
 
 
-    def add_strength(self,strength):
+    def add_strength(self,strength) -> None:
         self.__lifetimeStrengths.append(strength)
         
 
-    def get_average_strength(self):
+    def get_average_strength(self) -> float:
         return np.mean(self.__lifetimeStrengths) # Median?
 
 
@@ -59,7 +59,7 @@ class NoteObj:
 
 
 
-    def finish_note(self,endFrame,isFinal=False):
+    def finish_note(self,endFrame,isFinal=False) -> bool:
 
 
   

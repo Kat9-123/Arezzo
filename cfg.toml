@@ -11,7 +11,8 @@ note_depth_power = 2
 
 export_type = "pdf" # pdf or png
 
-
+[ENVIRONMENT]
+musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 
 
 
@@ -24,8 +25,7 @@ key_profile = "Krumhansl-Kessler.csv"
 
 
 
-[ENVIRONMENT]
-musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
+
 
 
 

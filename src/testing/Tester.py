@@ -1,6 +1,6 @@
 import numpy as np
 
-import Scoring
+import testing.Scoring as Scoring
 import Main
 import cui.CUI as CUI
 
