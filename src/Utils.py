@@ -1,6 +1,6 @@
 import os
 import cui.CUI as CUI
-import Configurator as cfg
+from Configurator import CONFIG
 
 
 def sys_call(command: str) -> None:
@@ -20,7 +20,7 @@ def snap_to_beat(time: float) -> float:
         #UI.warning("Zero Time")
         return 0.0
     
-    noteDepth = 2**cfg.CONFIG["OPTIONS"]["note_depth_power"]
+    noteDepth = 2**CONFIG["OPTIONS"]["note_depth_power"]
 
     result = time * noteDepth
     result = round(result)

@@ -15,7 +15,7 @@ KEY_NAMES = [
     "Eb Major", # D# Major
     "E Major",
     "F Major",
-    "F# Major", #?
+    "Gb Major", # F# Major
     "G Major",
     "Ab Major",
     "A Major",
@@ -30,7 +30,7 @@ KEY_NAMES = [
     "F Minor",
     "F# Minor",
     "G Minor",
-    "G# Minor", #? 
+    "G# Minor",
     "A Minor",
     "Bb Minor",
     "B Minor"
