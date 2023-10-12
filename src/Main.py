@@ -1,5 +1,4 @@
 # MY_CONSTANT
-#? VALUE_SET_ONCE_ # Undefined when initialised, but afterwards set only once
 # my_function
 # myValue
 # MyClass
@@ -12,6 +11,7 @@
 # just be imported directly by other scripts
 import Configurator as cfg
 cfg.get_configuration()
+from Configurator import CONFIG, Modes
 
 import Graphing
 import AudioProcessor
@@ -20,8 +20,7 @@ import cui.CUI as CUI
 import testing.Tester as Tester
 import SheetMusicGenerator
 import network.Manager as Manager
-import Utils
-import Scoring
+
 import network.Trainer as NetTrainer
 import network.TrainingDataProcessor as TrainingDataProcessor
 
@@ -29,7 +28,7 @@ import network.TrainingDataProcessor as TrainingDataProcessor
 
 import time
 import os
-import pandas as pd
+
 import KeyFinder, TimeSigFinder
 
 #import network.training.RandomMIDIGenerator as RAND
@@ -44,41 +43,40 @@ import KeyFinder, TimeSigFinder
 
 
 
-def main():
+def main() -> None:
 
     
     CUI.init()
 
-
-    if cfg.mode == cfg.Modes.PROCESS_TRAINING_DATA:
+    if cfg.mode == Modes.PROCESS_TRAINING_DATA:
         print("Processing training data...")
         TrainingDataProcessor.process_training_data()
         return
 
-    if cfg.mode == cfg.Modes.TRAIN:
+    elif cfg.mode == Modes.TRAIN:
         print("Training network...")
         NetTrainer.train()
         return
 
-    if cfg.mode == cfg.Modes.TEST_MULTIPLE:
+    elif cfg.mode == Modes.TEST_MULTIPLE:
         print("Testing...")
         Tester.test()
         return
-    if cfg.mode == cfg.Modes.TEST_SINGLE:
+
+    elif cfg.mode == Modes.TEST_SINGLE:
         raise Exception("Single test mode hasnt been implemented yet!")
 
+    # Standard mode.
+    run(CONFIG["ARGS"]["audio"])
 
-    Manager.setup_trained_model()
 
+
+
+
+def run(path,*,testMode=False,tempoOverride=-1) -> (list,float):
     print("Generating sheet music...")
-    run(cfg.CONFIG["ARGS"]["audio"])
-
-
-
-
-
-def run(path,*,testMode=False,tempoOverride=-1):
     startTime = time.perf_counter()
+    Manager.setup_trained_model()
     outputName = f"{str(int(time.time()))}_{os.path.basename(path)}"
 
     CUI.print_colour(f"Processing {path}",CUI.GREEN,end="\n\n")
@@ -101,6 +99,7 @@ def run(path,*,testMode=False,tempoOverride=-1):
 
     KeyFinder.guess_key(notes)
     TimeSigFinder.guess_time_signature(notes)
+
 
     duration = time.perf_counter() - startTime
     perSecondOfAudioDuration = duration/processedAudioData.duration
