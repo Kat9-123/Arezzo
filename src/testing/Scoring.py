@@ -93,3 +93,24 @@ def __match_generated_original(generated,original):
             print("COULDNT FIND", i, "IN ORIGNAL")
 
     return score / len(generated) * 100
+
+
+
+def __key_sig_score(originalKeySig,generatedKeySig):
+    original = originalKeySig.lower()
+    generated = generatedKeySig.lower()
+
+
+    # Correct
+    if  generated == original:
+        return 100
+    
+    # Correct root, wrong mode
+    if generated[:-5] == original[:-5]:
+        return 50
+    
+    # Incorrect
+    return 0
+ 
+def __time_sig_score():
+    pass
