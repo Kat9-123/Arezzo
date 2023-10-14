@@ -56,7 +56,7 @@ def get_notes(processedAudioData):
         notes = __process_frame(currentNotes,notes,frame,processedAudioData)
         #__model_get_notes(processedAudioData,currentFrame)
 
-    CUI.stop_spinner()
+
     return notes
 
 

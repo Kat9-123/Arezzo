@@ -87,7 +87,7 @@ def run(path,*,testMode=False,tempoOverride=-1) -> (list,float):
 
 
     processedAudioData = AudioProcessor.process_audio(path,tempoOverride) 
-
+    Graphing.show_plot()
 
     notes = NoteGenerator.get_notes(processedAudioData)
     
@@ -109,7 +109,7 @@ def run(path,*,testMode=False,tempoOverride=-1) -> (list,float):
     CUI.newline()
    
     CUI.diagnostic("Processing time per second of audio",round(perSecondOfAudioDuration,3), "seconds")
-    CUI.print_colour(f"\nDone. Processing {round(processedAudioData.duration,3)} seconds of audio took {round(duration, 3)} seconds. Showing plots.\n",CUI.GREEN)
+    CUI.print_colour(f"\nDone. Processing {round(processedAudioData.duration,3)} seconds of audio took {round(duration, 3)} seconds.\n",CUI.GREEN)
 
 
     if not testMode:

@@ -1,23 +1,18 @@
 import AudioProcessor
 import MIDIManager
-import Utils
-import librosa  
+
 import numpy as np
-import csv
+
+import cui.CUI as CUI
 
 
-import torch
-from torch import nn
-
-from network.Network import Network
-import network.Trainer as Trainer
 
 import network.SpectrumCompressor as SpectrumCompressor
-from torch.utils.data import DataLoader
-import time
-from network.Network import Network
 
-import Configurator as cfg
+import time
+
+
+from Configurator import CONFIG
 
 
 AUDIO_PATH = "learning\\audio\\"
@@ -34,11 +29,13 @@ model = None
 
 def process_training_data():
     ## Process audio file -> spectrum & onsets
-    audioData = AudioProcessor.process_audio(f"{AUDIO_PATH}{cfg.CONFIG['ARGS']['audio']}")
+    audioData = AudioProcessor.process_audio(f"{AUDIO_PATH}{CONFIG['ARGS']['audio']}")
 
+    print("                                              TEST")
+    CUI.progress(f"Getting spectrum")
 
    # audioData.tempo = 120
-    midi = MIDIManager.get_midi(f"{MIDI_PATH}{cfg.CONFIG['ARGS']['midi']}",120)
+    midi = MIDIManager.get_midi(f"{MIDI_PATH}{CONFIG['ARGS']['midi']}",120)
     tempo = 120
     midiOnsets = []
     earliest = audioData.onsets[0]
@@ -95,10 +92,10 @@ def process_training_data():
     print(notes.shape)
     print(spectrum.shape)
     start = time.time()
-    print("COMPRESSING")
+    CUI.progress(f"Compressing")
 
-    fileName = cfg.CONFIG['ARGS']['audio'].split(".")[0]
+    fileName = CONFIG['ARGS']['audio'].split(".")[0]
 
     SpectrumCompressor.compress(notes,spectrum,fileName)
-    print("DONE!")
+    CUI.force_stop_progress()
     print(time.time() - start)

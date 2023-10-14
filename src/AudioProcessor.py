@@ -8,6 +8,7 @@ import librosa
 import scipy
 import numpy as np
 import scipy.stats
+import math
 
 
 
@@ -33,7 +34,7 @@ def process_audio(audioPath,tempoOverride=-1):
     """Takes the audio at the path and returns a spectrum, chroma classification, onsets, 
        estimated tempo and the duration of the file."""
     global samplingRate
-    CUI.progress("Processing {}".format(audioPath),prefixNewline=False)
+    CUI.progress(f"Loading {audioPath}",prefixNewline=False,spin=True)
 
     y, samplingRate = librosa.load(audioPath)
 
@@ -42,22 +43,32 @@ def process_audio(audioPath,tempoOverride=-1):
 
     stft = np.abs(librosa.stft(y,n_fft=N_FFT,win_length=WINDOW_LENGTH,hop_length=HOP_LENGTH))
 
+    CUI.progress("Processing audio",spin=True)
+
+
+
     spectrum = __get_spectrum(stft,samplingRate)
 
-    print(spectrum.shape)
+    
     frameCount = spectrum.shape[1]
 
-    chroma = __get_chroma(y,samplingRate)
+    #chroma = __get_chroma(y,samplingRate)
+    chroma = None
     onsets = __get_onset(y,stft, samplingRate,frameCount)
 
     pointDuration = duration/frameCount
-
 
     if tempoOverride == -1:
         tempo = __get_tempo(y,samplingRate)
     else:
         tempo = tempoOverride
-    
+    for i in onsets:
+        print(Utils.snap_to_beat((i-onsets[0]) * (tempo/60) * pointDuration))
+
+
+
+    CUI.force_stop_progress()
+    print(spectrum.shape)
     CUI.diagnostic("Frame Count",frameCount)
     CUI.diagnostic("Duration",duration, "s")
     CUI.diagnostic("Frame Duration",pointDuration * 1000, "ms")
@@ -71,7 +82,6 @@ def process_audio(audioPath,tempoOverride=-1):
    # for i in onsetTimes:
    #     print(Utils.snap_to_beat(i))
 
-    CUI.stop_spinner()
 
     processedAudioData = ProcessedAudioData(spectrum=spectrum,
                                             chroma=chroma,
@@ -128,20 +138,27 @@ def __get_chroma(y, samplingRate):
 
 def __get_tempo(y,sampleRate):
     """Estimate tempo"""
-    onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
-    
-    rawTempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate)
+    #print(librosa.beat.beat_track(y=y,sr=sampleRate))
+  # onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
+   # print(librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate,
+   #                            aggregate=None))
+
+
+   # onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
+   # 
+    #rawTempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate)
+   # print(rawTempo)
     tempo, beats = librosa.beat.beat_track(y=y,sr=sampleRate)
-    print(tempo)
+    #print(tempo)
     first_beat_time, last_beat_time = librosa.frames_to_time((beats[0],beats[-1]),sr=sampleRate,n_fft=N_FFT)
 
-    print("Tempo 2:", 60/((last_beat_time-first_beat_time)/(len(beats)-1)))
+    tempoBeat = 60/((last_beat_time-first_beat_time)/(len(beats)-1))
+    print(tempo,tempoBeat)
 
     
-    tempo =round(rawTempo[0])
+    tempo = math.floor(tempoBeat)
 
 
-    #tempo = (60/((last_beat_time-first_beat_time)/(len(beats)-1)))//1
 
     CUI.diagnostic("Est. Tempo",tempo, "bpm")
     #return tempo

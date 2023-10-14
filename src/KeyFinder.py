@@ -1,15 +1,13 @@
 from math import sqrt
 import csv
 from Configurator import CONFIG
-
+import cui.CUI as CUI
 
 def __average(x):
     return sum(x)/len(x)
 
 KEY_NAMES = [
     "C Major",
-    
-
     "C# Major",
     "D Major",
     "Eb Major", # D# Major
@@ -39,7 +37,7 @@ KEY_NAMES = [
 ]
 
 def __get_profiles() -> None:
-    """Load the profile specified in CONFIG.ADVANCED_OPTIONS.KEY_PROFILE"""
+    """Load the profile specified by ADVANCED_OPTIONS.KEY_PROFILE"""
     majorProfile = []
     minorProfile = []
     
@@ -135,8 +133,12 @@ def guess_key(noteObjs):
         if minor > greatest:
             iGreatest = i + 12
             greatest = minor
-        print(KEY_NAMES[i],major,minor)
+
+
+        CUI.diagnostic(f"{KEY_NAMES[i   ]:>8}",f"{round(major,2):>5}",end=" ")
+        CUI.diagnostic(f"{KEY_NAMES[i+12]:>8}",f"{round(minor,2):>5}")
 
         chromaDurations = __offset_notes(chromaDurations)
-    print(greatest,KEY_NAMES[iGreatest])
-    input()
+
+    CUI.newline()
+    CUI.diagnostic("Key",f"{KEY_NAMES[iGreatest]} ({round(greatest,2)})"," ")

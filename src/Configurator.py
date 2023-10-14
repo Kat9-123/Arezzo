@@ -105,5 +105,3 @@ def get_configuration() -> None:
 
     if args.model:
         CONFIG["ADVANCED_OPTIONS"]["model"] = args.model
-    
-

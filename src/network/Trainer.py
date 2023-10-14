@@ -1,15 +1,14 @@
+# Adapted from https://machinelearningmastery.com/building-a-multiclass-classification-model-in-pytorch/
 import copy
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import tqdm
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import accuracy_score
+
 from network.Network import Network
 import network.SpectrumCompressor as SpectrumCompressor
 import Configurator as cfg
@@ -21,8 +20,15 @@ INPUT_SIZE = 6222
 OUTPUT_SIZE = 88
 
 
+TRAIN_TEST_PERCENTAGE = 0.7
 
-def __accuracy(output, target):
+
+
+EPOCH_COUNT = 250
+BATCH_SIZE = 5
+
+
+def __accuracy(output, target) -> float:
     pred = (output > 0.5).float()
 
     maxScore = target.sum()
@@ -34,7 +40,7 @@ def __accuracy(output, target):
     return (score - mistakes)/maxScore
     
 
-def __save_model(model,dataPath):
+def __save_model(model,dataPath) -> None:
     if not cfg.CONFIG["DEBUG"]['save_model']:
         return
 
@@ -59,37 +65,40 @@ def __generate_noise(batchSize):
     DEVIATION = 3.5
     return (torch.rand((batchSize,6222)) * (DEVIATION*2)) - DEVIATION
 
+
+
+
+
+
+
 def train():
     dataPath = cfg.CONFIG["ARGS"]['training_data']
+
     notes,spectrum = SpectrumCompressor.decompress(dataPath)
 
 
 
-    #X = spectrum
-    #y = notess
 
-
-    # convert pandas DataFrame (X) and numpy array (y) into PyTorch tensors
     spectrum = torch.tensor(spectrum, dtype=torch.float32)
     notes = torch.tensor(notes, dtype=torch.float32)
 
     # split
-    spectrumTrain, spectrumTest, notesTrain, notesTest = train_test_split(spectrum, notes, train_size=0.7, shuffle=True)
+    spectrumTrain, spectrumTest, notesTrain, notesTest = train_test_split(spectrum, notes, train_size=TRAIN_TEST_PERCENTAGE, shuffle=True)
 
 
 
 
 
-    # loss metric and optimizer
+
     model = Network().to(DEVICE)
     criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.SGD(model.parameters(), lr=1e-3)
-    #optimizer = optim.Adam(model.parameters(), lr=1e-3)
+
+
 
     # prepare model and training parameters
-    n_epochs = 250
-    batch_size = 5
-    batches_per_epoch = len(spectrumTrain) // batch_size
+
+    batchesPerEpoch = len(spectrumTrain) // BATCH_SIZE
 
     best_acc = -np.inf   # init to negative infinity
     best_weights = None
@@ -102,49 +111,52 @@ def train():
 
 
     # training loop
-    for epoch in range(n_epochs):
+    for epoch in range(EPOCH_COUNT):
         epoch_loss = []
         epoch_acc = []
         # set model in training mode and run through each batch
         model.train()
-        with tqdm.trange(batches_per_epoch, unit="batch", mininterval=0) as bar:
+        with tqdm.trange(batchesPerEpoch, unit="batch", mininterval=0) as bar:
             bar.set_description(f"Epoch {epoch}")
             for i in bar:
 
                 # Get batch                
-                start = i * batch_size
-                spectrumBatch = spectrumTrain[start:start+batch_size]
-                noteBatch = notesTrain[start:start+batch_size]
+                start = i * BATCH_SIZE
+                spectrumBatch = spectrumTrain[start:start+BATCH_SIZE]
+                noteBatch = notesTrain[start:start+BATCH_SIZE]
 
 
                 # Add some noise to help prevent overfitting, and to hopefully give better results
-                noise = __generate_noise(batch_size)
+                noise = __generate_noise(BATCH_SIZE)
 
-
+                # Forward
                 prediction = model((spectrumBatch + noise).to(DEVICE))
 
-            
+                # Derivatives
                 loss = criterion(prediction.to(DEVICE), noteBatch.to(DEVICE))
-                # backward pas
+
+                # Backward
                 optimizer.zero_grad()
                 loss.backward()
 
                 optimizer.step()
+
                 # compute and store metrics
-                acc = __accuracy(prediction,noteBatch.to(DEVICE))
+                accuracy = __accuracy(prediction,noteBatch.to(DEVICE))
 
 
                 epoch_loss.append(float(loss))
-                epoch_acc.append(float(acc))
+                epoch_acc.append(float(accuracy))
                 bar.set_postfix(
                     loss=float(loss),
-                    acc=float(acc)
+                    acc=float(accuracy)
                 )
-        # set model in evaluation mode and run through the test set
+
+        # Set model in evaluation mode and run through the test set
         model.eval()
         prediction = model(spectrumTest.to(DEVICE))
         ce = criterion(prediction.to(DEVICE), notesTest.to(DEVICE))
-        #acc = (torch.argmax(prediction, 1) == torch.argmax(notesTest.to(DEVICE), 1)).float().mean()
+
         acc = __accuracy(prediction,notesTest.to(DEVICE))
         ce = float(ce)
         acc = float(acc)

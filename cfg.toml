@@ -7,7 +7,7 @@
 # 2 -> Semiquavers
 # 3 -> Demisemiquavers
 # etc.
-note_depth_power = 2
+note_depth = 2
 
 export_type = "pdf" # pdf or png
 
@@ -34,6 +34,7 @@ key_profile = "Krumhansl-Kessler.csv"
 
 [DEBUG]
 generate_sheet_music = false
-graphing = false
+graphing = true
 save_model = true
 show_network_graphs = true
+spin = false
