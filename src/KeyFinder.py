@@ -3,8 +3,6 @@ import csv
 from Configurator import CONFIG
 import cui.CUI as CUI
 
-def __average(x):
-    return sum(x)/len(x)
 
 KEY_NAMES = [
     "C Major",
@@ -35,6 +33,14 @@ KEY_NAMES = [
 
 
 ]
+
+CHROMAS = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
+
+
+def __average(x):
+    return sum(x)/len(x)
+
+
 
 def __get_profiles() -> None:
     """Load the profile specified by ADVANCED_OPTIONS.KEY_PROFILE"""
@@ -99,8 +105,6 @@ def __offset_notes(notes):
         notes[i] = notes[i+1]
     
     return notes
-
-CHROMAS = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
 
 def guess_key(noteObjs):

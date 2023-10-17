@@ -13,11 +13,11 @@ from network.Network import Network
 import network.SpectrumCompressor as SpectrumCompressor
 import Configurator as cfg
 #import SpectrumCompressor
+import Constants
 
 DEVICE = "cuda"
 
-INPUT_SIZE = 6222
-OUTPUT_SIZE = 88
+
 
 
 TRAIN_TEST_PERCENTAGE = 0.7
@@ -26,6 +26,7 @@ TRAIN_TEST_PERCENTAGE = 0.7
 
 EPOCH_COUNT = 250
 BATCH_SIZE = 5
+NOISE_DEVIATION = 3.5
 
 
 def __accuracy(output, target) -> float:
@@ -47,6 +48,8 @@ def __save_model(model,dataPath) -> None:
     netPath = dataPath.split(".")[0] + ".mdl"
     torch.save(model.state_dict(), netPath)
 
+
+
 def __eval_debug_samples(model,spectra,notes):
     for i in range(20):
         out = model(spectra[i].to(DEVICE))
@@ -61,9 +64,12 @@ def __eval_debug_samples(model,spectra,notes):
         
         print(__accuracy(out,notes[i].to(DEVICE)))
 
+
+
+
 def __generate_noise(batchSize):
-    DEVIATION = 3.5
-    return (torch.rand((batchSize,6222)) * (DEVIATION*2)) - DEVIATION
+    
+    return (torch.rand((batchSize,Constants.SPECTRUM_SIZE)) * (NOISE_DEVIATION*2)) - NOISE_DEVIATION
 
 
 
@@ -96,24 +102,24 @@ def train():
 
 
 
-    # prepare model and training parameters
 
     batchesPerEpoch = len(spectrumTrain) // BATCH_SIZE
 
-    best_acc = -np.inf   # init to negative infinity
-    best_weights = None
-    train_loss_hist = []
-    train_acc_hist = []
-    test_loss_hist = []
-    test_acc_hist = []
+    bestAccuracy = -np.inf
+    bestWeights = None
+
+    trainLossHist = []
+    trainAccuracyHist = []
+    testLossHist = []
+    testAccuracyHist = []
 
 
 
 
     # training loop
     for epoch in range(EPOCH_COUNT):
-        epoch_loss = []
-        epoch_acc = []
+        epochLoss = []
+        epochAccuracy = []
         # set model in training mode and run through each batch
         model.train()
         with tqdm.trange(batchesPerEpoch, unit="batch", mininterval=0) as bar:
@@ -145,8 +151,8 @@ def train():
                 accuracy = __accuracy(prediction,noteBatch.to(DEVICE))
 
 
-                epoch_loss.append(float(loss))
-                epoch_acc.append(float(accuracy))
+                epochLoss.append(float(loss))
+                epochAccuracy.append(float(accuracy))
                 bar.set_postfix(
                     loss=float(loss),
                     acc=float(accuracy)
@@ -155,19 +161,22 @@ def train():
         # Set model in evaluation mode and run through the test set
         model.eval()
         prediction = model(spectrumTest.to(DEVICE))
-        ce = criterion(prediction.to(DEVICE), notesTest.to(DEVICE))
+        crossEntropy = criterion(prediction.to(DEVICE), notesTest.to(DEVICE))
 
-        acc = __accuracy(prediction,notesTest.to(DEVICE))
-        ce = float(ce)
-        acc = float(acc)
-        train_loss_hist.append(np.mean(epoch_loss))
-        train_acc_hist.append(np.mean(epoch_acc))
-        test_loss_hist.append(ce)
-        test_acc_hist.append(acc)
-        if acc > best_acc:
-            best_acc = acc
+        accuracy = __accuracy(prediction,notesTest.to(DEVICE))
+        crossEntropy = float(crossEntropy)
+        accuracy = float(accuracy)
+
+        trainLossHist.append(np.mean(epochLoss))
+        trainAccuracyHist.append(np.mean(epochAccuracy))
+        testLossHist.append(crossEntropy)
+        testAccuracyHist.append(accuracy)
+
+        if accuracy > bestAccuracy:
+            bestAccuracy = accuracy
             best_weights = copy.deepcopy(model.state_dict())
-        print(f"Epoch {epoch} validation: Cross-entropy={ce:.2f}, Accuracy={acc*100:.1f}%")
+
+        print(f"Epoch {epoch} validation: Cross-entropy={crossEntropy:.2f}, Accuracy={accuracy*100:.1f}%")
 
     # Restore best model
     model.load_state_dict(best_weights)
@@ -181,15 +190,15 @@ def train():
 
 
     # Plot the loss and accuracy
-    plt.plot(train_loss_hist, label="train")
-    plt.plot(test_loss_hist, label="test")
+    plt.plot(trainLossHist, label="train")
+    plt.plot(testLossHist, label="test")
     plt.xlabel("epochs")
     plt.ylabel("cross entropy")
     plt.legend()
     plt.show()
 
-    plt.plot(train_acc_hist, label="train")
-    plt.plot(test_acc_hist, label="test")
+    plt.plot(trainAccuracyHist, label="train")
+    plt.plot(testAccuracyHist, label="test")
     plt.xlabel("epochs")
     plt.ylabel("accuracy")
     plt.legend()

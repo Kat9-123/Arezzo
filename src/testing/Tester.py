@@ -5,7 +5,7 @@ import Main
 import cui.CUI as CUI
 
 
-TESTS_PATH = "tests.csv"
+TESTS_PATH = "testing\\tests.csv"
 
 
 
@@ -24,12 +24,16 @@ def test():
         path = "audio\\" + row[0].replace(' ','')
         comparePath = "testing\\" + row[1].replace(' ','')
         origTempo = float(row[2].replace(' ',''))
-        minScore = float(row[3].replace(' ',''))
+        
+        origKeySig = row[4].replace(' ','')
+        origTimeSig = row[4].replace(' ','')
+
+        minScore = float(row[5].replace(' ',''))
 
         
-        notes,tempo = Main.run(path,testMode=True,tempoOverride=-1)
+        processedMusic = Main.run(path,testMode=True,tempoOverride=-1)
 
-        score = Scoring.score(notes,comparePath,tempo,origTempo)
+        score = Scoring.score(processedMusic.notes,comparePath,processedMusic.tempo,origTempo)
         results.append([path,score,minScore])
     
     CUI.newline()

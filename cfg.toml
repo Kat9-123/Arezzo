@@ -11,6 +11,8 @@ note_depth = 2
 
 export_type = "pdf" # pdf or png
 
+
+
 [ENVIRONMENT]
 musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 
@@ -22,18 +24,14 @@ onset_to_beat_lag = 0.06
 model = "models\\4VOICE.mdl"
 
 key_profile = "Krumhansl-Kessler.csv"
-
-
-
-
-
+training_device = "cuda"
 
 
 
 
 
 [DEBUG]
-generate_sheet_music = false
+generate_sheet_music = true
 graphing = true
 save_model = true
 show_network_graphs = true

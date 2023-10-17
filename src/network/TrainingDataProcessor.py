@@ -4,8 +4,7 @@ import MIDIManager
 import numpy as np
 
 import cui.CUI as CUI
-
-
+import Constants
 
 import network.SpectrumCompressor as SpectrumCompressor
 
@@ -20,10 +19,6 @@ MIDI_PATH = "learning\\midi\\"
 
 
 
-INPUT_SIZE = 6222
-OUTPUT_SIZE = 88
-
-MAX_ROW = 6222
 
 model = None
 
@@ -56,13 +51,13 @@ def process_training_data():
 
 
 
-    notes = np.ndarray((len(onsetBeats),OUTPUT_SIZE),dtype=np.uint8)
-    spectrum = np.ndarray((len(onsetBeats),MAX_ROW))
+    notes = np.ndarray((len(onsetBeats),Constants.NOTE_COUNT),dtype=np.uint8)
+    spectrum = np.ndarray((len(onsetBeats),Constants.SPECTRUM_SIZE))
 
     for x,onset in enumerate(onsetBeats):
     
 
-        newNotes = np.zeros(OUTPUT_SIZE,dtype=np.uint8)
+        newNotes = np.zeros(Constants.NOTE_COUNT,dtype=np.uint8)
         for i in range(0,len(midi)):
             note = midi[i]
             if note[2] - onset > 100:
@@ -87,7 +82,7 @@ def process_training_data():
 
 
 
-        spectrum[x] = audioData.spectrum[0:MAX_ROW,spectrumOnset]
+        spectrum[x] = audioData.spectrum[0:Constants.SPECTRUM_SIZE,spectrumOnset]
 
     print(notes.shape)
     print(spectrum.shape)

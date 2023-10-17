@@ -3,7 +3,7 @@
 
 
 
-
+import random
 import math
 import numpy as np
 
@@ -11,8 +11,6 @@ import numpy as np
 SPECTRA_PATH = "learning\\spectra\\"
 
 PRECISION = 10**3
-
-
 NOTE_COUNT_LOCATION = 0
 SPECTRUM_SIZE_LOCATION = 1
 SAMPLE_COUNT_LOCATION = 2
@@ -102,6 +100,9 @@ def compress(notes,spectrum,fileName):
     compressedNoteInts = __compress_notes(notes,noteCount,sampleCount)
 
     compressed = np.concatenate([header,compressedSpectrum, compressedNoteInts])
+    
+
+    
 
     compressed.tofile(f"{SPECTRA_PATH}{fileName}.csd")
 
@@ -132,7 +133,7 @@ def __retrieve_header(headerInts):
 def __decompress_spectrum(compressedSpectrum,spectrumSize):
 
     spectrum = compressedSpectrum.astype(float)
-  #  print(spectrum)
+
     spectrum /= (PRECISION / 2)
     spectrum -= 64
 
@@ -195,11 +196,15 @@ def decompress(fileName):
 def test():
     SPECTRUM_LOWER_BOUND = -50
     SPECTRUM_UPPER_BOUND = 50
-    SAMPLE_COUNT = 5000
-    SPECTRUM_SIZE = 10000
-    NOTE_COUNT = 88
-
     MAX_COMPRESSED_DIFFERENCE = 0.002
+    SAMPLE_COUNT = 5000
+    FILE_NAME = "TEST"
+
+
+    SPECTRUM_SIZE = random.randint(1000,10000)
+    NOTE_COUNT = random.randint(5,100)
+
+    
 
 
     spectrum = (SPECTRUM_UPPER_BOUND - SPECTRUM_LOWER_BOUND) * np.random.rand(SAMPLE_COUNT,SPECTRUM_SIZE) + SPECTRUM_LOWER_BOUND
@@ -212,13 +217,15 @@ def test():
 
     notes = fNotes.astype(np.uint8)
 
+    print("Spectrum size:",SPECTRUM_SIZE)
+    print("Note count:", NOTE_COUNT)
 
 
-    compress(np.copy(notes),np.copy(spectrum))
+    compress(np.copy(notes),np.copy(spectrum),FILE_NAME)
     print("DONE COMPRESSING")
 
 
-    rNotes,rSpectrum = decompress()
+    rNotes,rSpectrum = decompress(FILE_NAME + ".csd")
     print("DONE DECOMPRESSING")
     
     for y in range(spectrum.shape[0]):
@@ -231,4 +238,3 @@ def test():
 
 
     print("Passed tests!")
-

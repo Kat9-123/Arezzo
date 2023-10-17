@@ -1,6 +1,7 @@
 import os
 from torch import nn
 from torch.utils.data import DataLoader
+import Constants
 
 
 class Network(nn.Module):
@@ -11,9 +12,9 @@ class Network(nn.Module):
         
 
         self.relu_stack = nn.Sequential(
-            nn.Linear(6222, 1000),
+            nn.Linear(Constants.SPECTRUM_SIZE, 1000),
             nn.ReLU(),
-            nn.Linear(1000, 88)
+            nn.Linear(1000, Constants.NOTE_COUNT)
         )
 
         
