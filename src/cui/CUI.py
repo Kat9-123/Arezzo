@@ -1,3 +1,4 @@
+"""Module that handles Console User Interface"""
 import cui.Spinner as Spinner
 
 

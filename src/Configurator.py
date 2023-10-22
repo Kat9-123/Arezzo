@@ -3,7 +3,7 @@ from enum import Enum
 import tomli
 
 
-CONFIG_FILE = "cfg.toml"
+CONFIG_FILE = "config.toml"
 TESTS = "testing\\tests.csv"
 
 

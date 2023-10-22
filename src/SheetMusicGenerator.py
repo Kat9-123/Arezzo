@@ -58,10 +58,10 @@ def generate_midi_file(notes,tempo,outputName) -> None:
 def __generate_sheetmusic_musescore(midiPath: str,outputName: str) -> None:
     """Uses musescore to generate a pdf, given a midi file path."""
     CUI.progress("Generating Sheet music")
-    museScorePath = cfg.CONFIG["OPTIONS"]["musescore4_path"]
+    museScorePath = cfg.CONFIG["ENVIRONMENT"]["musescore4_path"]
     exportType = cfg.CONFIG["OPTIONS"]["export_type"]
     # Help
-    command = f'src\\MusescoreCaller.bat "{museScorePath}" "output\\sheet music\\{outputName}.{exportType}" "{midiPath}"'
+    command = f'"{museScorePath}" -o "output\\sheet music\\{outputName}.{exportType}" "{midiPath}"'
   
 
     Utils.sys_call(command)

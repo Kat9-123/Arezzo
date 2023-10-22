@@ -1,5 +1,6 @@
 from math import sqrt
 import csv
+
 from Configurator import CONFIG
 
 
@@ -8,8 +9,6 @@ def __average(x):
 
 KEY_NAMES = [
     "C Major",
-    
-
     "C# Major",
     "D Major",
     "Eb Major", # D# Major

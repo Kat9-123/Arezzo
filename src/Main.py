@@ -11,8 +11,13 @@
 # just be imported directly by other scripts
 import Configurator as cfg
 cfg.get_configuration()
-from Configurator import CONFIG, Modes
 
+
+import time
+import os
+
+
+from Configurator import CONFIG, Modes, mode
 import Graphing
 import AudioProcessor
 import NoteGenerator
@@ -23,12 +28,6 @@ import network.Manager as Manager
 
 import network.Trainer as NetTrainer
 import network.TrainingDataProcessor as TrainingDataProcessor
-
-
-
-import time
-import os
-
 import KeyFinder, TimeSigFinder
 
 #import network.training.RandomMIDIGenerator as RAND
@@ -48,22 +47,22 @@ def main() -> None:
     
     CUI.init()
 
-    if cfg.mode == Modes.PROCESS_TRAINING_DATA:
+    if mode == Modes.PROCESS_TRAINING_DATA:
         print("Processing training data...")
         TrainingDataProcessor.process_training_data()
         return
 
-    elif cfg.mode == Modes.TRAIN:
+    elif mode == Modes.TRAIN:
         print("Training network...")
         NetTrainer.train()
         return
 
-    elif cfg.mode == Modes.TEST_MULTIPLE:
+    elif mode == Modes.TEST_MULTIPLE:
         print("Testing...")
         Tester.test()
         return
 
-    elif cfg.mode == Modes.TEST_SINGLE:
+    elif mode == Modes.TEST_SINGLE:
         raise Exception("Single test mode hasnt been implemented yet!")
 
     # Standard mode.

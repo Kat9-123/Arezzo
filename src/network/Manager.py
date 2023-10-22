@@ -2,17 +2,18 @@
 
 import torch
 from network.Network import Network
-import Configurator as cfg
+from Configurator import CONFIG
 
 model = None
 
 
+USAGE_DEVICE = "cpu"
 
 
 def setup_trained_model():
     global model
     model = Network() 
-    model.load_state_dict(torch.load(cfg.CONFIG["ADVANCED_OPTIONS"]["model"],map_location=torch.device("cpu")))
+    model.load_state_dict(torch.load(CONFIG["ADVANCED_OPTIONS"]["model"],map_location=torch.device(USAGE_DEVICE)))
     model.eval()
 
     

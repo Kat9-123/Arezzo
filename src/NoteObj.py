@@ -1,16 +1,10 @@
-import cui.CUI as CUI
-from ProcessedAudioData import ProcessedAudioData
-import AudioProcessor
-import Utils
-
-
 import numpy as np
-import math
-import librosa
 from enum import Enum
 
 
-
+import cui.CUI as CUI
+from ProcessedAudioData import ProcessedAudioData
+import Utils
 
 # 2 -> Semiquavers
 # 3 -> Demisemiquavers

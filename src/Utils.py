@@ -1,12 +1,12 @@
 import os
 import cui.CUI as CUI
 from Configurator import CONFIG
-
+from subprocess import Popen
 
 def sys_call(command: str) -> None:
     """System call wrapper with diagnostic print."""
     CUI.print_colour(f"SYSTEM CALL: '{command}'", CUI.PURPLE, end="\n")
-    os.system(command)
+    Popen(command, shell=True).wait()
 
 
 

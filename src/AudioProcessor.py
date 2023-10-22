@@ -15,7 +15,7 @@ import scipy.stats
 
 SPECTRUM_DB_CUTOFF = -50
 CHROMA_CUTOFF = 0.2#0.9
-ONSET_TEMPORAL_LAG = 8
+ONSET_TEMPORAL_LAG = 0
 
 TEMPO_BOUNDRY = 140
 
@@ -27,6 +27,13 @@ samplingRate = 0
 
 
 
+
+def frames_to_time(frames):
+    return librosa.frames_to_time(frames,sr=samplingRate,hop_length=HOP_LENGTH)
+
+
+def time_to_frames(time):
+    return librosa.time_to_frames(time,sr=samplingRate,hop_length=HOP_LENGTH)
 
 
 def process_audio(audioPath,tempoOverride=-1):
