@@ -1,3 +1,4 @@
+import cui.CUI as CUI
 # 3 4  <- t
 # 4 4
 def __get_n_connected_notes(notes,t):
@@ -9,7 +10,6 @@ def __get_n_connected_notes(notes,t):
 
     
         x = end - (start-(start % t))
-        print(start,end,x)
         if x > t:
             count += 1
 
@@ -19,6 +19,13 @@ def __get_n_connected_notes(notes,t):
 
 
 def guess_time_signature(notes):
-    print("3/4:",__get_n_connected_notes(notes,3))
-    print("4/4:",__get_n_connected_notes(notes,4))
+    threeFour = __get_n_connected_notes(notes,3)
+    fourFour =__get_n_connected_notes(notes,4)
+
+    CUI.diagnostic("3/4 score",threeFour)
+    CUI.diagnostic("4/4 score",fourFour)
+
+    if threeFour == fourFour:
+        CUI.warning("Scores are equal, guessing 4/4")
+
     return

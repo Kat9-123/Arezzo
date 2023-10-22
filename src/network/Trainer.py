@@ -16,8 +16,9 @@ from Configurator import CONFIG
 import Constants
 
 
-INPUT_SIZE = 6222
-OUTPUT_SIZE = 88
+
+
+
 TRAIN_TEST_PERCENTAGE = 0.7
 
 

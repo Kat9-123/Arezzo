@@ -14,10 +14,6 @@ MIDI_PATH = "learning\\midi\\"
 
 
 
-INPUT_SIZE = 6222
-OUTPUT_SIZE = 88
-
-MAX_ROW = 6222
 
 model = None
 
@@ -39,6 +35,8 @@ def process_training_data():
     ## Process audio file -> spectrum & onsets
     audioData = AudioProcessor.process_audio(f"{AUDIO_PATH}{CONFIG['ARGS']['audio']}")
 
+    print("                                              TEST")
+    CUI.progress(f"Getting spectrum")
 
     midi = MIDIManager.get_midi(f"{MIDI_PATH}{CONFIG['ARGS']['midi']}")
 
@@ -69,10 +67,10 @@ def process_training_data():
     print(notes.shape)
     print(spectrum.shape)
     start = time.time()
-    print("COMPRESSING")
+    CUI.progress(f"Compressing")
 
-    fileName = cfg.CONFIG['ARGS']['audio'].split(".")[0]
+    fileName = CONFIG['ARGS']['audio'].split(".")[0]
 
     SpectrumCompressor.compress(notes,spectrum,fileName)
-    print("DONE!")
+    CUI.force_stop_progress()
     print(time.time() - start)

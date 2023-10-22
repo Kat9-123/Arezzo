@@ -20,7 +20,7 @@ def snap_to_beat(time: float) -> float:
         #UI.warning("Zero Time")
         return 0.0
     
-    noteDepth = 2**CONFIG["OPTIONS"]["note_depth_power"]
+    noteDepth = 2**CONFIG["OPTIONS"]["note_depth"]
 
     result = time * noteDepth
     result = round(result)

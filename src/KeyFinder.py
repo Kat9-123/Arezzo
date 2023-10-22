@@ -2,10 +2,8 @@ from math import sqrt
 import csv
 
 from Configurator import CONFIG
+import cui.CUI as CUI
 
-
-def __average(x):
-    return sum(x)/len(x)
 
 KEY_NAMES = [
     "C Major",
@@ -37,8 +35,16 @@ KEY_NAMES = [
 
 ]
 
+CHROMAS = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
+
+
+def __average(x):
+    return sum(x)/len(x)
+
+
+
 def __get_profiles() -> None:
-    """Load the profile specified in CONFIG.ADVANCED_OPTIONS.KEY_PROFILE"""
+    """Load the profile specified by ADVANCED_OPTIONS.KEY_PROFILE"""
     majorProfile = []
     minorProfile = []
     
@@ -101,8 +107,6 @@ def __offset_notes(notes):
     
     return notes
 
-CHROMAS = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
-
 
 def guess_key(noteObjs):
     majorProfile, minorProfile = __get_profiles()
@@ -134,8 +138,12 @@ def guess_key(noteObjs):
         if minor > greatest:
             iGreatest = i + 12
             greatest = minor
-        print(KEY_NAMES[i],major,minor)
+
+
+        CUI.diagnostic(f"{KEY_NAMES[i   ]:>8}",f"{round(major,2):>5}",end=" ")
+        CUI.diagnostic(f"{KEY_NAMES[i+12]:>8}",f"{round(minor,2):>5}")
 
         chromaDurations = __offset_notes(chromaDurations)
-    print(greatest,KEY_NAMES[iGreatest])
-    input()
+
+    CUI.newline()
+    CUI.diagnostic("Key",f"{KEY_NAMES[iGreatest]} ({round(greatest,2)})"," ")

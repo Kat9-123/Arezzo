@@ -2,6 +2,7 @@
 import cui.Spinner as Spinner
 
 
+import cui.Progress as Progress
 import threading
 import os
 
@@ -40,11 +41,6 @@ def init():
     print(HIDE_CONSOLE_CURSOR, end="")
 
 
-def stop_spinner():
-    global spinner
-    if not spinner is None:
-        spinner.stop()
-        spinner = None
 
 
 
@@ -63,14 +59,13 @@ def debug(value,*,end="\n",debugControl=True):
         print(value,end)
 
 def print_colour(text,colour,*,end="",debugControl=True):
-    #stop_spinner()
     if debugControl:
         print(f"{colour}{text}{WHITE}",end=end)
 
 
 
-def diagnostic(name,value,suffix=""):
-    print_colour("{}: {} {}                                                     \n".format(name,str(value),suffix),YELLOW)
+def diagnostic(name,value,suffix="",*,end="\n"):
+    print_colour(f"{name}: {value} {suffix}",YELLOW,end=end)
 
 
 
@@ -81,9 +76,9 @@ def newline(*,debugControl=True):
 
 
 
-def progress(value,prefixNewline=True):
-    global spinner
-    if prefixNewline:
-        print()
-    set_colour(GREEN)
-    spinner = Spinner.Spinner(value)
+def progress(value,prefixNewline=True,*,spin=False):
+    Progress.progress(value,spin)
+
+
+def force_stop_progress():
+    Progress.force_finish()
