@@ -8,10 +8,12 @@
             "args":[
                //"audio\\PWS_TEST_1b.wav"
                //"-nHOMO4-88.csd"
-               
-               "MAESTRO1b.mp3",
+                "-n1.csd"
+               /*
+               "1.mp3",
                "--net",
                "1.mid"
+               */
                
                //"MAESTRO1b.mp3"
                 

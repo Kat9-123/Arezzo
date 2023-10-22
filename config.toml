@@ -34,4 +34,4 @@ generate_sheet_music = false
 graphing = true
 save_model = true
 show_network_graphs = true
-spin = false
+spin = true

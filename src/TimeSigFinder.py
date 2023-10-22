@@ -19,9 +19,11 @@ def __get_n_connected_notes(notes,t):
 
 
 def guess_time_signature(notes):
+    twoFour = __get_n_connected_notes(notes,2)
     threeFour = __get_n_connected_notes(notes,3)
     fourFour =__get_n_connected_notes(notes,4)
 
+    CUI.diagnostic("2/4 score", twoFour)
     CUI.diagnostic("3/4 score",threeFour)
     CUI.diagnostic("4/4 score",fourFour)
 

@@ -1,5 +1,4 @@
 """Module that handles Console User Interface"""
-import cui.Spinner as Spinner
 
 
 import cui.Progress as Progress

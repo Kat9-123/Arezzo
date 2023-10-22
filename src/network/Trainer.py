@@ -176,12 +176,12 @@ def train():
 
         if accuracy > bestAccuracy:
             bestAccuracy = accuracy
-            best_weights = copy.deepcopy(model.state_dict())
+            bestWeights = copy.deepcopy(model.state_dict())
 
         print(f"Epoch {epoch} validation: Cross-entropy={crossEntropy:.2f}, Accuracy={accuracy*100:.1f}%")
 
     # Restore best model
-    model.load_state_dict(best_weights)
+    model.load_state_dict(bestWeights)
 
     __save_model(model,dataPath)
 

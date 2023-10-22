@@ -6,7 +6,8 @@ import AudioProcessor
 import MIDIManager
 from Configurator import CONFIG
 import network.SpectrumCompressor as SpectrumCompressor
-
+import cui.CUI  as CUI
+from Constants import *
 
 
 AUDIO_PATH = "learning\\audio\\"
@@ -15,62 +16,63 @@ MIDI_PATH = "learning\\midi\\"
 
 
 
-model = None
 
 def __is_note_playing_at_time(time,noteStart,noteEnd) -> bool:
     return noteStart <= time and noteEnd > time
 
 
-def __notes_to_one_encoded(notes):
-    newNotes = np.zeros(OUTPUT_SIZE,dtype=np.uint8)
-    for i in range(0,len(midi)):
-        note = midi[i]
-        if note[2] - onset > 100:
-            break
 
-        if note[1] < onset and note[2] > onset or note[1] == onset:
-            newNotes[note[0] - 21] = 1
+
 
 def process_training_data():
     ## Process audio file -> spectrum & onsets
     audioData = AudioProcessor.process_audio(f"{AUDIO_PATH}{CONFIG['ARGS']['audio']}")
 
-    print("                                              TEST")
-    CUI.progress(f"Getting spectrum")
+
+    CUI.progress(f"Getting spectrum",spin=False)
 
     midi = MIDIManager.get_midi(f"{MIDI_PATH}{CONFIG['ARGS']['midi']}")
 
+    print(len(midi),len(audioData.onsets))
 
-    chords = []
+    onsetCount = len(midi)
+
+    chords = np.zeros((onsetCount,NOTE_COUNT),dtype=np.uint8)
+    spectrum = np.ndarray((onsetCount,SPECTRUM_SIZE))
+
+
     currentlyPlaying = []
-    for note in midi:
-        time = note.start
+    for i,note in enumerate(midi):
+        currentlyPlaying.append(note)
+
+
+        onsetTime = note.start
+        frame = AudioProcessor.time_to_frames(onsetTime)
+
+        spectrum[i] = audioData.spectrum[0:SPECTRUM_SIZE,frame]
+
+
         finishedNotes = []
 
-
         for playingNote in currentlyPlaying:
-            if not __is_note_playing_at_time(time,playingNote.start,playingNote.end):
+            if not __is_note_playing_at_time(onsetTime,playingNote.start,playingNote.end):
                 finishedNotes.append(playingNote)
-                return
-            
+                continue
+
+            chords[i,playingNote.pitch - 21] = 1
+
 
 
         for finishedNote in finishedNotes:
-            playingNote.remove(finishedNote)
-
-
-        pass
+            currentlyPlaying.remove(finishedNote)
 
 
 
-
-    print(notes.shape)
-    print(spectrum.shape)
     start = time.time()
-    CUI.progress(f"Compressing")
+    CUI.progress(f"Compressing",spin=True)
 
     fileName = CONFIG['ARGS']['audio'].split(".")[0]
 
-    SpectrumCompressor.compress(notes,spectrum,fileName)
+    SpectrumCompressor.compress(chords,spectrum,fileName)
     CUI.force_stop_progress()
     print(time.time() - start)

@@ -16,9 +16,7 @@ def sys_call(command: str) -> None:
 def snap_to_beat(time: float) -> float:
     """Takes a rough estimate for beat alignment, and snaps it to the beat."""
     #time += cfg.CONFIG["OPTIONS"]["time_to_beat_lag"]
-    if time == 0.0:
-        #UI.warning("Zero Time")
-        return 0.0
+
     
     noteDepth = 2**CONFIG["OPTIONS"]["note_depth"]
 
