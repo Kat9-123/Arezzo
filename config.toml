@@ -1,0 +1,37 @@
+# Config file
+
+
+[OPTIONS]
+# 0 -> Crotchets
+# 1 -> Quavers
+# 2 -> Semiquavers
+# 3 -> Demisemiquavers
+# etc.
+note_depth = 2
+
+export_type = "pdf" # pdf or png
+
+
+
+[ENVIRONMENT]
+musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
+
+
+
+[ADVANCED_OPTIONS]
+onset_to_beat_lag = 0.06
+#model = "HOMO4-88.mdl"
+model = "models\\4VOICE.mdl"
+training_device = "cpu"
+key_profile = "Krumhansl-Kessler.csv"
+
+
+
+
+
+[DEBUG]
+generate_sheet_music = false
+graphing = true
+save_model = true
+show_network_graphs = true
+spin = true

@@ -2,12 +2,13 @@ import Utils
 import Graphing
 import NoteGenerator
 from ProcessedAudioData import ProcessedAudioData
-import ui.UI as UI
+import cui.CUI as CUI
 
 import librosa
 import scipy
 import numpy as np
 import scipy.stats
+import math
 
 
 
@@ -15,65 +16,79 @@ import scipy.stats
 
 SPECTRUM_DB_CUTOFF = -50
 CHROMA_CUTOFF = 0.2#0.9
-ONSET_TEMPORAL_LAG = 2
+ONSET_TEMPORAL_LAG = 0
 
 TEMPO_BOUNDRY = 140
 
 N_FFT = 2048*8#4096*
 WINDOW_LENGTH = 2048*2
+HOP_LENGTH=2048//4
 
 samplingRate = 0
 
 
 
 
-def network_process(audioPath):
-    print("Starting audio network process")
-    y, samplingRate = librosa.load(audioPath,offset=0,duration=50)
+def frames_to_time(frames):
+    return librosa.frames_to_time(frames,sr=samplingRate,hop_length=HOP_LENGTH)
 
-    spectrum = __get_spectrum(y,samplingRate)
-    frameCount = spectrum.shape[1]
-    rowCount = spectrum.shape[0]
-    onsets = __get_onset(y, samplingRate,frameCount)
 
-    return (spectrum,onsets,spectrum.shape)
-    
+def time_to_frames(time):
+    return librosa.time_to_frames(time,sr=samplingRate,hop_length=HOP_LENGTH)
+
 
 def process_audio(audioPath,tempoOverride=-1):
     """Takes the audio at the path and returns a spectrum, chroma classification, onsets, 
        estimated tempo and the duration of the file."""
     global samplingRate
-    UI.progress("Processing {}".format(audioPath),prefixNewline=False)
+    CUI.progress(f"Loading {audioPath}",prefixNewline=False,spin=True)
 
     y, samplingRate = librosa.load(audioPath)
 
     duration = librosa.get_duration(y=y, sr=samplingRate)
 
 
-    spectrum = __get_spectrum(y,samplingRate)
-    print(spectrum.shape)
+    stft = np.abs(librosa.stft(y,n_fft=N_FFT,win_length=WINDOW_LENGTH,hop_length=HOP_LENGTH))
+
+    CUI.progress("Processing audio",spin=True)
+
+
+
+    spectrum = __get_spectrum(stft,samplingRate)
+
+    
     frameCount = spectrum.shape[1]
 
-    chroma = __get_chroma(y,samplingRate)
-    onsets = __get_onset(y, samplingRate,frameCount)
+    #chroma = __get_chroma(y,samplingRate)
+    chroma = None
+    onsets = __get_onset(y,stft, samplingRate,frameCount)
 
     pointDuration = duration/frameCount
-
 
     if tempoOverride == -1:
         tempo = __get_tempo(y,samplingRate)
     else:
         tempo = tempoOverride
-    
-    UI.diagnostic("Frame Count",frameCount)
-    UI.diagnostic("Duration",duration, "s")
-    UI.diagnostic("Frame Duration",pointDuration * 1000, "ms")
-    UI.diagnostic("Softest",spectrum.min(), "db")
-    UI.diagnostic("Loudest",spectrum.max(),"db")
+    for i in onsets:
+        print(Utils.snap_to_beat((i-onsets[0]) * (tempo/60) * pointDuration))
 
 
 
-    UI.stop_spinner()
+    CUI.force_stop_progress()
+    print(spectrum.shape)
+    CUI.diagnostic("Frame Count",frameCount)
+    CUI.diagnostic("Duration",duration, "s")
+    CUI.diagnostic("Frame Duration",pointDuration * 1000, "ms")
+    CUI.diagnostic("Softest",spectrum.min(), "db")
+    CUI.diagnostic("Loudest",spectrum.max(),"db")
+
+
+   # onsetTimes = librosa.frames_to_time(onsets,sr=samplingRate,hop_length=HOP_LENGTH,n_fft=N_FFT)  * (120/60)
+   # onsetTimes -= onsetTimes[0]
+
+   # for i in onsetTimes:
+   #     print(Utils.snap_to_beat(i))
+
 
     processedAudioData = ProcessedAudioData(spectrum=spectrum,
                                             chroma=chroma,
@@ -94,10 +109,9 @@ def process_audio(audioPath,tempoOverride=-1):
 
 
 
-def __get_spectrum(y,samplingRate):
-    X = librosa.stft(y,n_fft=N_FFT,win_length=WINDOW_LENGTH,hop_length=2048//4)
+def __get_spectrum(stft,samplingRate):
 
-    spectrum = librosa.amplitude_to_db(abs(X))
+    spectrum = librosa.amplitude_to_db(stft)
 
     #spectrum = np.minimum(spectrum,
     #                       librosa.decompose.nn_filter(spectrum,
@@ -131,36 +145,43 @@ def __get_chroma(y, samplingRate):
 
 def __get_tempo(y,sampleRate):
     """Estimate tempo"""
-    onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
-    
-    rawTempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate)
+    #print(librosa.beat.beat_track(y=y,sr=sampleRate))
+  # onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
+   # print(librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate,
+   #                            aggregate=None))
+
+
+   # onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
+   # 
+    #rawTempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate)
+   # print(rawTempo)
     tempo, beats = librosa.beat.beat_track(y=y,sr=sampleRate)
-    print(tempo)
+    #print(tempo)
     first_beat_time, last_beat_time = librosa.frames_to_time((beats[0],beats[-1]),sr=sampleRate,n_fft=N_FFT)
 
-    print("Tempo 2:", 60/((last_beat_time-first_beat_time)/(len(beats)-1)))
+    tempoBeat = 60/((last_beat_time-first_beat_time)/(len(beats)-1))
+    print(tempo,tempoBeat)
 
     
-    tempo =round(rawTempo[0])
+    tempo = math.floor(tempoBeat)
 
 
-    tempo = (60/((last_beat_time-first_beat_time)/(len(beats)-1)))//1
 
-    UI.diagnostic("Est. Tempo",tempo, "bpm")
+    CUI.diagnostic("Est. Tempo",tempo, "bpm")
     #return tempo
 
     while tempo > TEMPO_BOUNDRY:
         tempo //= 2
     
-    UI.diagnostic("Corrected Tempo",tempo, "bpm")    
+    CUI.diagnostic("Corrected Tempo",tempo, "bpm")    
 
     return tempo
 
 
 
-def __get_onset(y,sampleRate,frameCount):
+def __get_onset(y,stft,sampleRate,frameCount):
 
-    D = np.abs(librosa.stft(y))
+    D = stft
     D[D < SPECTRUM_DB_CUTOFF] = 0
     times = librosa.times_like(D,sr=sampleRate)
     onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
@@ -168,11 +189,11 @@ def __get_onset(y,sampleRate,frameCount):
     Graphing.onset(times,onset_env,onset_frames,location=2)
     Graphing.vLine(times,onset_frames,onset_env,location=2,colour="b")
 
-
-    for x in range(len(onset_frames)):
-        val = onset_frames[x] + ONSET_TEMPORAL_LAG
-        if val < frameCount:
-            onset_frames[x] = val
+    onset_frames += ONSET_TEMPORAL_LAG
+  ##  for x in range(len(onset_frames)):
+    #    val = onset_frames[x] + ONSET_TEMPORAL_LAG
+   #     if val < frameCount:
+    #        onset_frames[x] = val
 
     
     Graphing.vLine(times,onset_frames,onset_env,location=2,colour="r")

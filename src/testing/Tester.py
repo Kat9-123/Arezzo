@@ -1,18 +1,18 @@
 import numpy as np
 
-import Scoring
+import testing.Scoring as Scoring
 import Main
-import ui.UI as UI
+import cui.CUI as CUI
 
 
-TESTS_PATH = "tests.csv"
+TESTS_PATH = "testing\\tests.csv"
 
 
 
 
 
 def test():
-    UI.print_colour("TESTING", UI.GREEN,end="\n")
+    CUI.print_colour("TESTING", CUI.GREEN,end="\n")
 
     data = np.loadtxt(TESTS_PATH, delimiter=",", dtype=str)
 
@@ -24,32 +24,36 @@ def test():
         path = "audio\\" + row[0].replace(' ','')
         comparePath = "testing\\" + row[1].replace(' ','')
         origTempo = float(row[2].replace(' ',''))
-        minScore = float(row[3].replace(' ',''))
+        
+        origKeySig = row[4].replace(' ','')
+        origTimeSig = row[4].replace(' ','')
+
+        minScore = float(row[5].replace(' ',''))
 
         
-        notes,tempo = Main.run(path,testMode=True,tempoOverride=-1)
+        processedMusic = Main.run(path,testMode=True,tempoOverride=-1)
 
-        score = Scoring.score(notes,comparePath,tempo,origTempo)
+        score = Scoring.score(processedMusic.notes,comparePath,processedMusic.tempo,origTempo)
         results.append([path,score,minScore])
     
-    UI.newline()
-    UI.newline()
+    CUI.newline()
+    CUI.newline()
 
-    UI.print_colour("FINAL SCORES",UI.WHITE,end="\n")
+    CUI.print_colour("FINAL SCORES",CUI.WHITE,end="\n")
 
-    UI.print_colour(f"{'FILE':<30} {'SCORE':<6} {'MIN. SCORE':<6}",UI.WHITE,end="\n")
+    CUI.print_colour(f"{'FILE':<30} {'SCORE':<6} {'MIN. SCORE':<6}",CUI.WHITE,end="\n")
     for result in results:
         path = result[0]
         score = result[1]
         origScore = result[2]
         
         
-        colour = UI.GREEN
+        colour = CUI.GREEN
     
         if score < origScore:
-            colour = UI.RED
+            colour = CUI.RED
         
-        UI.print_colour(f"{path:<30} {score:<6} {origScore:<6}",colour,end="\n")
+        CUI.print_colour(f"{path:<30} {score:<6} {origScore:<6}",colour,end="\n")
 
 
 
