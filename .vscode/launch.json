@@ -6,14 +6,23 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/Main.py",
             "args":[
-               //"audio\\PWS_TEST_1b.wav"
+               "audio\\PWS_TEST_1b.wav"
                //"-nHOMO4-88.csd"
+<<<<<<< HEAD
                 "-nM1.csd"
              //  
                //"M1.mp3",
                //"--net",
                //"M1.mid"
                
+=======
+               // "-n1.csd"
+               /*
+               "1.mp3",
+               "--net",
+               "1.mid"
+               */
+>>>>>>> 4615c21847e6791efacdacdd4c767cbedd52d084
                
                //"MAESTRO1b.mp3"
                 

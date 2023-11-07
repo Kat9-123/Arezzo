@@ -30,6 +30,8 @@ import network.Trainer as NetTrainer
 import network.TrainingDataProcessor as TrainingDataProcessor
 import KeyFinder, TimeSigFinder
 
+from ProcessedMusic import ProcessedMusic
+
 #import network.training.RandomMIDIGenerator as RAND
 
 
