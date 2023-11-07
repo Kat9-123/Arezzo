@@ -28,7 +28,6 @@ def process_training_data():
     ## Process audio file -> spectrum & onsets
     audioData = AudioProcessor.process_audio(f"{AUDIO_PATH}{CONFIG['ARGS']['audio']}")
 
-
     CUI.progress(f"Getting spectrum",spin=False)
 
     midi = MIDIManager.get_midi(f"{MIDI_PATH}{CONFIG['ARGS']['midi']}")
@@ -42,6 +41,7 @@ def process_training_data():
 
 
     currentlyPlaying = []
+
     for i,note in enumerate(midi):
         currentlyPlaying.append(note)
 
