@@ -22,7 +22,7 @@ musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 onset_to_beat_lag = 0.06
 #model = "HOMO4-88.mdl"
 model = "models\\4VOICE.mdl"
-training_device = "cpu"
+training_device = "cuda"
 key_profile = "Krumhansl-Kessler.csv"
 
 

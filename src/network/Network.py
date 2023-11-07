@@ -14,7 +14,9 @@ class Network(nn.Module):
         self.relu_stack = nn.Sequential(
             nn.Linear(Constants.SPECTRUM_SIZE, 1000),
             nn.ReLU(),
-            nn.Linear(1000, Constants.NOTE_COUNT)
+            nn.Linear(1000,500),
+            nn.ReLU(),
+            nn.Linear(500, Constants.NOTE_COUNT)
         )
 
         
