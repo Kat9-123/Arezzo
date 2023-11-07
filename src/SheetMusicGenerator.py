@@ -60,7 +60,7 @@ def __generate_sheetmusic_musescore(midiPath: str,outputName: str) -> None:
     CUI.progress("Generating Sheet music")
     museScorePath = cfg.CONFIG["ENVIRONMENT"]["musescore4_path"]
     exportType = cfg.CONFIG["OPTIONS"]["export_type"]
-    # Help
+
     command = f'"{museScorePath}" -o "output\\sheet music\\{outputName}.{exportType}" "{midiPath}"'
   
 
