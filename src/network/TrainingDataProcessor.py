@@ -17,7 +17,7 @@ MIDI_PATH = "learning\\midi\\"
 
 
 
-def __is_note_playing_at_time(time,noteStart,noteEnd) -> bool:
+def __is_note_playing_at_time(time: float,noteStart: float,noteEnd: float) -> bool:
     return noteStart <= time and noteEnd > time
 
 
@@ -35,36 +35,34 @@ def process_training_data():
 
     print(len(midi),len(audioData.onsets))
 
-    onsetCount = len(midi)
+    #https://stackoverflow.com/questions/7332841/add-single-element-to-array-in-numpy
 
-    chords = np.zeros((onsetCount,NOTE_COUNT),dtype=np.uint8)
-    spectrum = np.ndarray((onsetCount,SPECTRUM_SIZE))
+   
+
+    uniqueOnsets = []
+    for note in midi:
+         if note.start not in uniqueOnsets:
+              uniqueOnsets.append(note.start)
+
+    uniqueOnsetCount = len(uniqueOnsets)
+
+    print(uniqueOnsetCount)
 
 
-    currentlyPlaying = []
-    for i,note in enumerate(midi):
-        currentlyPlaying.append(note)
+    chords = np.zeros((uniqueOnsetCount,NOTE_COUNT),dtype=np.uint8)
+    spectrum = np.ndarray((uniqueOnsetCount,SPECTRUM_SIZE))
 
+    for i,uniqueOnsetTime in enumerate(uniqueOnsets):
+        
+        frame = AudioProcessor.time_to_frames(uniqueOnsetTime)
 
-        onsetTime = note.start
-        frame = AudioProcessor.time_to_frames(onsetTime)
 
         spectrum[i] = audioData.spectrum[0:SPECTRUM_SIZE,frame]
-
-
-        finishedNotes = []
-
-        for playingNote in currentlyPlaying:
-            if not __is_note_playing_at_time(onsetTime,playingNote.start,playingNote.end):
-                finishedNotes.append(playingNote)
+        for note in midi:
+            if not __is_note_playing_at_time(uniqueOnsetTime,note.start,note.end):
                 continue
-
-            chords[i,playingNote.pitch - 21] = 1
-
-
-
-        for finishedNote in finishedNotes:
-            currentlyPlaying.remove(finishedNote)
+        
+            chords[i,note.pitch - 21] = 1
 
 
 

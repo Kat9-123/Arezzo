@@ -1,0 +1,1 @@
+git log --no-merges --reverse --pretty=format:%ad,%s > testcommits.csv
