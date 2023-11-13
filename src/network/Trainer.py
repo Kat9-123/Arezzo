@@ -23,7 +23,7 @@ TRAIN_TEST_PERCENTAGE = 0.7
 
 
 
-EPOCH_COUNT = 250
+EPOCH_COUNT = 100
 BATCH_SIZE = 5
 NOISE_DEVIATION = 3.5
 
@@ -188,7 +188,7 @@ def train():
     model.eval()
 
 
-    __eval_debug_samples()
+    __eval_debug_samples(model,spectrum,notes)
 
 
     # Plot the loss and accuracy

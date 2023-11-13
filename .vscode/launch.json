@@ -18,11 +18,23 @@
                /*
                
                "1.mp3",
+               //"audio\\PWS_TEST_1b.wav"
+               //"-nHOMO4-88.csd"
+              // "-nM1.csd"
+             //  
+               //"M1.mp3",
+               //"--net",
+               //"M1.mid"
+
+
+              // "-nHOMO2-88.csd"
+               "HOMO4-88.mp3",
                "--net",
-               "1.mid"
-               */
+                "homo\\HOMO4-88.midi"
+               
                
                //"MAESTRO1b.mp3"
+               */
                 
             ],
             "justMyCode": true,
