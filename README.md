@@ -1,5 +1,4 @@
 # Arezzo
-A simple Polyphonic Piano music Transcriber. School project.
+A simple polyphonic piano music transcriber. School project.
 
 **STILL WIP!**
- 

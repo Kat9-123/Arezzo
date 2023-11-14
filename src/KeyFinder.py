@@ -6,34 +6,51 @@ import cui.CUI as CUI
 
 
 KEY_NAMES = [
-    "C Major",
-    "C# Major",
-    "D Major",
-    "Eb Major", # D# Major
-    "E Major",
-    "F Major",
-    "Gb Major", # F# Major
-    "G Major",
-    "Ab Major",
-    "A Major",
-    "Bb Major",
-    "B Major",
+    "C major",
+    "C# major",
+    "D major",
+    "Eb major", # D# Major
+    "E major",
+    "F major",
+    "Gb major", # F# Major
+    "G major",
+    "Ab major",
+    "A major",
+    "Bb major",
+    "B major",
 
-    "C Minor",
-    "C# Minor",
-    "D Minor",
-    "Eb Minor", # D# Minor
-    "E Minor",
-    "F Minor",
-    "F# Minor",
-    "G Minor",
-    "G# Minor",
-    "A Minor",
-    "Bb Minor",
-    "B Minor"
+
+
+    "C minor",
+    "C# minor",
+    "D minor",
+    "Eb minor", # D# Minor
+    "E minor",
+    "F minor",
+    "F# minor",
+    "G minor",
+    "G# minor",
+    "A minor",
+    "Bb minor",
+    "B minor"
 
 
 ]
+
+
+def relative_key_check(a: str,b: str) -> bool:
+
+    indexA = KEY_NAMES.index(a)
+    indexB = KEY_NAMES.index(b)
+
+    major = min(indexA,indexB)
+    minor = max(indexA,indexB)
+
+
+    minor += 3
+    minor %= 12
+
+    return major == minor
 
 CHROMAS = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
@@ -108,7 +125,7 @@ def __offset_notes(notes):
     return notes
 
 
-def guess_key(noteObjs):
+def guess_key(noteObjs) -> str:
     majorProfile, minorProfile = __get_profiles()
     
     chromaDurations = [0]*12
@@ -144,6 +161,10 @@ def guess_key(noteObjs):
         CUI.diagnostic(f"{KEY_NAMES[i+12]:>8}",f"{round(minor,2):>5}")
 
         chromaDurations = __offset_notes(chromaDurations)
+    key = KEY_NAMES[iGreatest]
+
 
     CUI.newline()
-    CUI.diagnostic("Key",f"{KEY_NAMES[iGreatest]} ({round(greatest,2)})"," ")
+    CUI.diagnostic("Key",f"{key} ({round(greatest,2)})"," ")
+
+    return key
