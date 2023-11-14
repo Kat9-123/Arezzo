@@ -6,14 +6,17 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/Main.py",
             "args":[
-                "-nMAESTRO1.csd"
+                //"-nMAESTRO1.csd"
+               // "HOMO4-88.mp3",
+             //  "--net",
+                //"homo\\HOMO4-88.midi"
                 
                 //"MAESTRO1.mp3",
                 //"--net",
                 //"1.mid"
                 
                //"audio\\PWS_TEST_1b.wav"
-               //"-nHOMO4-88.csd"
+               "-nHOMO4-88.csd"
                // "-n1.csd"
                /*
                

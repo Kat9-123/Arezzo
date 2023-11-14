@@ -16,7 +16,7 @@ import math
 
 SPECTRUM_DB_CUTOFF = -50
 CHROMA_CUTOFF = 0.2#0.9
-ONSET_TEMPORAL_LAG = 0
+ONSET_TEMPORAL_LAG = 2#4
 
 TEMPO_BOUNDRY = 140
 
@@ -34,7 +34,7 @@ def frames_to_time(frames):
 
 
 def time_to_frames(time):
-    return librosa.time_to_frames(time,sr=samplingRate,hop_length=HOP_LENGTH)
+    return librosa.time_to_frames(time,sr=samplingRate,hop_length=HOP_LENGTH,n_fft=N_FFT)
 
 
 def process_audio(audioPath,tempoOverride=-1):
@@ -70,7 +70,7 @@ def process_audio(audioPath,tempoOverride=-1):
     else:
         tempo = tempoOverride
     for i in onsets:
-        print(Utils.snap_to_beat((i-onsets[0]) * (tempo/60) * pointDuration))
+        print(Utils.snap_to_beat((i-onsets[0]) * (120/60) * pointDuration))
 
 
 

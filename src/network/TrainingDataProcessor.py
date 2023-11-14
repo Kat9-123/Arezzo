@@ -1,6 +1,7 @@
 import numpy as np
 import time
 import librosa
+import math
 
 import AudioProcessor
 import MIDIManager
@@ -42,7 +43,7 @@ def process_training_data():
     for note in midi:
          if note.start not in uniqueOnsets:
               uniqueOnsets.append(note.start)
-
+    print(uniqueOnsets)
     uniqueOnsetCount = len(uniqueOnsets)
 
     print(uniqueOnsetCount)
@@ -53,8 +54,7 @@ def process_training_data():
 
     for i,uniqueOnsetTime in enumerate(uniqueOnsets):
         
-        frame = AudioProcessor.time_to_frames(uniqueOnsetTime)
-
+        frame = math.ceil(uniqueOnsetTime/audioData.frameDuration) + 2
 
         spectrum[i] = audioData.spectrum[0:SPECTRUM_SIZE,frame]
         for note in midi:
