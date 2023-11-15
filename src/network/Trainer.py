@@ -23,12 +23,15 @@ TRAIN_TEST_PERCENTAGE = 0.7
 
 
 
-EPOCH_COUNT = 100
+EPOCH_COUNT = 60
 BATCH_SIZE = 5
 NOISE_DEVIATION = 3.5
 
-DEVICE = CONFIG["ADVANCED_OPTIONS"]["training_device"]
 
+
+DEVICE = "cpu"
+if torch.cuda.is_available() and CONFIG["ADVANCED_OPTIONS"]["use_cuda_if_available"]:
+    DEVICE = "cuda"
 
 
 def __accuracy(output, target) -> float:

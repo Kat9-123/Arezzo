@@ -1,5 +1,4 @@
-# PolyPmT
-A simple Polyphonic Piano music Transcriber. School project.
+# Arezzo
+A simple polyphonic piano music transcriber. School project.
 
 **STILL WIP!**
- 

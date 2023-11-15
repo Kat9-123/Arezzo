@@ -19,7 +19,7 @@ def __get_n_connected_notes(notes,t):
 
 TIME_SIGS = ["4/4","3/4","2/4"]
 
-def guess_time_signature(notes):
+def guess_time_signature(notes) -> str:
     twoFour = __get_n_connected_notes(notes,2)
     threeFour = __get_n_connected_notes(notes,3)
     fourFour =__get_n_connected_notes(notes,4)
@@ -37,4 +37,4 @@ def guess_time_signature(notes):
 
     CUI.diagnostic("Time signature", timeSig)
 
-    return
+    return timeSig

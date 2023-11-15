@@ -1,6 +1,8 @@
 import Utils
 from NoteObj import NoteObj
 import cui.CUI as CUI
+from testing.Scores import Scores
+import KeyFinder
 
 import pretty_midi
 import librosa
@@ -33,30 +35,52 @@ def __tempo_score(original,generated):
     return result * 100
 
 
-def score(notes,filePath,generatedTempo,originalTempo) -> float:
-    generatedNotes = __generated_note_list_parser(notes)
+
+
+
+def score(generatedMusic,originalTempo, origKeySig,origTimeSig,filePath) -> float:
+    generatedNotes = __generated_note_list_parser(generatedMusic.notes)
     originalNotes = __get_orig_notes(filePath,originalTempo)
 
 
-    lengthScore = __length_score(generatedNotes,originalNotes)
+
     generatedOrignalScore = __match_generated_original(generatedNotes,originalNotes)
     orignalGeneratedScore = __match_original_generated(generatedNotes,originalNotes)
-    tempoScore = __tempo_score(originalTempo,generatedTempo)
 
-    CUI.diagnostic("Length Score", round(lengthScore,2), "%")
-    CUI.diagnostic("Tempo Score", round(tempoScore,2), "%")
+    noteScore = (generatedOrignalScore + orignalGeneratedScore) / 2
+
+    tempoScore = __tempo_score(originalTempo,generatedMusic.tempo)
+    keyScore = __key_sig_score(generatedMusic.key,origKeySig)
+    timeScore = __time_sig_score(generatedMusic.timeSig,origTimeSig)
+
+
+    
+    
     CUI.diagnostic("Generated-Orignal Score", round(generatedOrignalScore,2), "%")
     CUI.diagnostic("Original-Generated Score", round(orignalGeneratedScore,2), "%")
+    CUI.diagnostic("Total Note Score", round(noteScore,2), "%")
+    CUI.newline()
+    CUI.diagnostic("Tempo Score", round(tempoScore,2), "%")
+    CUI.diagnostic("Key Signature Score", round(keyScore,2), "%")
+    CUI.diagnostic("Time Signature Score", round(timeScore,2), "%")
 
 
-    total = lengthScore           * 1 + \
-            generatedOrignalScore * 2 + \
-            orignalGeneratedScore * 2 + \
-            tempoScore            * 1
-    score = round(total / (6.0),2)
+
+
+
+    total = noteScore * 8 +  \
+            tempoScore * 1 + \
+            keyScore * 0.5 + \
+            timeScore * 0.5
+            
+    score = round(total / (10.0),2)
     CUI.diagnostic("SCORE", score, "%")
     
-    return score
+    return Scores(note=round(noteScore),
+                  tempo=round(tempoScore),
+                  key=round(keyScore),
+                  time=round(timeScore),
+                  total=round(score))
 
 def __generated_note_list_parser(notes):
     result = []
@@ -65,10 +89,7 @@ def __generated_note_list_parser(notes):
     return result
 
 
-def __length_score(generated,original):
-    ratio = len(generated)/len(original)
-    result = 1 - abs(-ratio + 1)
-    return result * 100
+
 
 
 def __match_original_generated(generated, original):
@@ -84,6 +105,13 @@ def __match_original_generated(generated, original):
     
 
 
+def __time_sig_score(generated,original):
+    if generated[0] == original[0]:
+        return 100
+    
+
+    return 0
+
 def __match_generated_original(generated,original):
     score = 0
     for i in generated:
@@ -96,7 +124,7 @@ def __match_generated_original(generated,original):
 
 
 
-def __key_sig_score(originalKeySig,generatedKeySig):
+def __key_sig_score(generatedKeySig,originalKeySig):
     original = originalKeySig.lower()
     generated = generatedKeySig.lower()
 
@@ -105,12 +133,16 @@ def __key_sig_score(originalKeySig,generatedKeySig):
     if  generated == original:
         return 100
     
-    # Correct root, wrong mode
+    # Correct number of flats and sharps, wrong root. (Relative key)
+    if KeyFinder.relative_key_check(originalKeySig,generatedKeySig):
+        return 75
+
+    # Correct root, wrong mode (Parallel key)
     if generated[:-5] == original[:-5]:
         return 50
+    
+
     
     # Incorrect
     return 0
  
-def __time_sig_score():
-    pass
