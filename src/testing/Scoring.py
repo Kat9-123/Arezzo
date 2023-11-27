@@ -38,50 +38,6 @@ def __tempo_score(original,generated):
 
 
 
-def score(generatedMusic,originalTempo, origKeySig,origTimeSig,filePath) -> float:
-    generatedNotes = __generated_note_list_parser(generatedMusic.notes)
-    originalNotes = __get_orig_notes(filePath,originalTempo)
-
-
-
-    generatedOrignalScore = __match_generated_original(generatedNotes,originalNotes)
-    orignalGeneratedScore = __match_original_generated(generatedNotes,originalNotes)
-
-    noteScore = (generatedOrignalScore + orignalGeneratedScore) / 2
-
-    tempoScore = __tempo_score(originalTempo,generatedMusic.tempo)
-    keyScore = __key_sig_score(generatedMusic.key,origKeySig)
-    timeScore = __time_sig_score(generatedMusic.timeSig,origTimeSig)
-
-
-    
-    
-    CUI.diagnostic("Generated-Orignal Score", round(generatedOrignalScore,2), "%")
-    CUI.diagnostic("Original-Generated Score", round(orignalGeneratedScore,2), "%")
-    CUI.diagnostic("Total Note Score", round(noteScore,2), "%")
-    CUI.newline()
-    CUI.diagnostic("Tempo Score", round(tempoScore,2), "%")
-    CUI.diagnostic("Key Signature Score", round(keyScore,2), "%")
-    CUI.diagnostic("Time Signature Score", round(timeScore,2), "%")
-
-
-
-
-
-    total = noteScore * 8 +  \
-            tempoScore * 1 + \
-            keyScore * 0.5 + \
-            timeScore * 0.5
-            
-    score = round(total / (10.0),2)
-    CUI.diagnostic("SCORE", score, "%")
-    
-    return Scores(note=round(noteScore),
-                  tempo=round(tempoScore),
-                  key=round(keyScore),
-                  time=round(timeScore),
-                  total=round(score))
-
 def __generated_note_list_parser(notes):
     result = []
     for note in notes:
@@ -146,3 +102,48 @@ def __key_sig_score(generatedKeySig,originalKeySig):
     # Incorrect
     return 0
  
+
+
+def score(generatedMusic,originalTempo, origKeySig,origTimeSig,filePath) -> float:
+    generatedNotes = __generated_note_list_parser(generatedMusic.notes)
+    originalNotes = __get_orig_notes(filePath,originalTempo)
+
+
+
+    generatedOrignalScore = __match_generated_original(generatedNotes,originalNotes)
+    orignalGeneratedScore = __match_original_generated(generatedNotes,originalNotes)
+
+    noteScore = (generatedOrignalScore + orignalGeneratedScore) / 2
+
+    tempoScore = __tempo_score(originalTempo,generatedMusic.tempo)
+    keyScore = __key_sig_score(generatedMusic.key,origKeySig)
+    timeScore = __time_sig_score(generatedMusic.timeSig,origTimeSig)
+
+
+    
+    
+    CUI.diagnostic("Generated-Orignal Score", round(generatedOrignalScore,2), "%")
+    CUI.diagnostic("Original-Generated Score", round(orignalGeneratedScore,2), "%")
+    CUI.diagnostic("Total Note Score", round(noteScore,2), "%")
+    CUI.newline()
+    CUI.diagnostic("Tempo Score", round(tempoScore,2), "%")
+    CUI.diagnostic("Key Signature Score", round(keyScore,2), "%")
+    CUI.diagnostic("Time Signature Score", round(timeScore,2), "%")
+
+
+
+
+
+    total = noteScore * 8 +  \
+            tempoScore * 1 + \
+            keyScore * 0.5 + \
+            timeScore * 0.5
+            
+    score = round(total / (10.0),2)
+    CUI.diagnostic("SCORE", score, "%")
+    
+    return Scores(note=round(noteScore),
+                  tempo=round(tempoScore),
+                  key=round(keyScore),
+                  time=round(timeScore),
+                  total=round(score))

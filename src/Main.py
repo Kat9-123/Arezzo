@@ -65,7 +65,7 @@ def main() -> None:
         return
 
     elif mode == Modes.TEST_SINGLE:
-        raise Exception("Single test mode hasnt been implemented yet!")
+        raise Exception("Single test mode hasn't been implemented yet!")
 
     # Standard mode.
     run(CONFIG["ARGS"]["audio"])
