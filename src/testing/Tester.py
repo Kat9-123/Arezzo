@@ -8,19 +8,23 @@ import cui.CUI as CUI
 TESTS_PATH = "testing\\tests.csv"
 
 
-
+def test_single():
+    pass
 
 
 def test():
-    CUI.print_colour("TESTING", CUI.GREEN,end="\n")
+
 
     data = np.loadtxt(TESTS_PATH, delimiter=",", dtype=str)
 
     results = []
     for x,row in enumerate(data):
+
+        # The first line and lines starting with # are skippes
         if x == 0 or row[0][0] == '#':
             continue
         
+
         path = "audio\\" + row[0].replace(' ','')
         comparePath = "testing\\" + row[1].replace(' ','')
         origTempo = float(row[2].replace(' ',''))
@@ -28,7 +32,7 @@ def test():
         origKeySig = row[3]
 
 
-        while origKeySig[-1] == " ":
+        while origKeySig[-1] == ' ':
             origKeySig = origKeySig[:-1]
         
 

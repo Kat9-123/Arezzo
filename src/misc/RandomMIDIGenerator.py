@@ -69,7 +69,7 @@ def generate_random_midi(lower,upper,randomDurations,notesPerOnset,beatCount=250
 
 #generate_random_midi(21,109,True,1)
 
-generate_random_midi(21,109,False,4,beatCount=2500)
+generate_random_midi(21,109,True,4,beatCount=2500)
 
 #generate_random_midi(60,72,True,2)
 #generate_random_midi(48,84,True,2)
