@@ -8,34 +8,47 @@
 if __name__ == "__main__":
     print("Initialising...")
 
+
+
 # The first thing we do is load the config. Because we do this
 # before initialising anything else, the global var CONFIG can
 # just be imported directly by other scripts
-import Configurator as cfg
-cfg.get_configuration()
+try:
+    import Configurator as cfg
+    cfg.get_configuration()
 
 
-import time
-import os
+    import time
+    import os
 
 
-from Configurator import CONFIG, Modes, mode
-import Graphing
-import AudioProcessor
-import NoteGenerator
-import cui.CUI as CUI
-import testing.Tester as Tester
-import SheetMusicGenerator
-import network.Manager as Manager
+    from Configurator import CONFIG, Modes, mode
+    import Graphing
+    import AudioProcessor
+    import NoteGenerator
+    import cui.CUI as CUI
+    import testing.Tester as Tester
+    import SheetMusicGenerator
+    import network.Manager as Manager
 
-import network.Trainer as NetTrainer
-import network.TrainingDataProcessor as TrainingDataProcessor
-import KeyFinder, TimeSigFinder
+    import network.Trainer as NetTrainer
+    import network.TrainingDataProcessor as TrainingDataProcessor
+    import KeyFinder, TimeSigFinder
 
-from ProcessedMusic import ProcessedMusic
+    from ProcessedMusic import ProcessedMusic
 
-#import network.training.RandomMIDIGenerator as RAND
+    import Utils
+except ModuleNotFoundError:
+    from subprocess import Popen
+    print("One or more module(s) were not found. Please see requirements.txt")
+    print("or do you want to automatically install them? (yes/no)")
+    x = input(">").lower()
 
+    if x != 'y' and x != "yes":
+        exit()
+    Popen("src\\setup.bat", shell=True).wait()
+    input()
+    exit()
 
 
 
@@ -50,6 +63,9 @@ def main() -> None:
 
     
     CUI.init()
+
+
+
 
     if mode == Modes.PROCESS_TRAINING_DATA:
         print("Processing training data...")
@@ -138,6 +154,9 @@ def run(path,*,testMode=False,tempoOverride=-1) -> (list,float):
 
 
     
+
+def __module_not_found():
+    pass
 
 if __name__ == "__main__":
     main()

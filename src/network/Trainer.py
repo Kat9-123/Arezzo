@@ -14,6 +14,7 @@ import network.SpectrumCompressor as SpectrumCompressor
 from Configurator import CONFIG
 #import SpectrumCompressor
 import Constants
+import Utils
 
 
 
@@ -49,9 +50,14 @@ def __accuracy(output, target) -> float:
 def __save_model(model,dataPath) -> None:
     if not CONFIG["DEBUG"]['save_model']:
         return
+    
+
 
     netPath = dataPath.split(".")[0] + ".mdl"
-    torch.save(model.state_dict(), netPath)
+
+
+    path = Utils.generate_filepath_handle_duplicates(netPath)
+    torch.save(model.state_dict(), path)
 
 
 

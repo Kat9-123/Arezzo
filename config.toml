@@ -24,7 +24,7 @@ onset_to_beat_lag = 0.06
 model = "MAESTRO.mdl"
 training_device = "cuda"
 use_cuda_if_available = true
-key_profile = "Krumhansl-Kessler.csv"
+key_profile = "data\\Krumhansl-Kessler.csv"
 
 
 

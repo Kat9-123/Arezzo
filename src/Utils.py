@@ -10,6 +10,18 @@ def sys_call(command: str) -> None:
 
 
 
+def generate_filepath_handle_duplicates(basePath: str) -> str:
+
+    baseName, extension = basePath.split('.')
+    path = basePath
+    i = 0
+
+    while os.path.isfile(path):
+        i += 1
+        path = f"{baseName} ({i}).{extension}"
+
+    return path
+
 
 
 
