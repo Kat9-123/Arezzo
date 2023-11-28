@@ -3,10 +3,12 @@ import numpy as np
 import testing.Scoring as Scoring
 import Main
 import cui.CUI as CUI
+import time
 
 
 TESTS_PATH = "testing\\tests.csv"
 
+TEST_RESULTS_FOLDER = "testing\\results\\"
 
 def test_single():
     pass
@@ -54,6 +56,9 @@ def test():
     CUI.print_colour("FINAL SCORES",CUI.WHITE,end="\n")
 
     CUI.print_colour(f"{'FILE':<30} {'NOTES':<6} {'TEMPO':<6} {'KEY':<6} {'TIME':<6} {'TOTAL':<6} {'MIN. SCORE':<6}",CUI.WHITE,end="\n")
+
+    data = "FILE,NOTES,TEMPO,KEY,TIME,TOTAL,MIN. SCORE\n"
+
     for result in results:
         path = result[0]
         score = result[1]
@@ -66,6 +71,14 @@ def test():
             colour = CUI.RED
         
         CUI.print_colour(f"{path:<30} {score.note:<6} {score.tempo:<6} {score.key:<6} {score.time:<6} {score.total:<6} {origScore:<6}",colour,end="\n")
+        data += f"{path},{score.note},{score.tempo},{score.key},{score.time},{score.total},{origScore}\n"
+
+    data = data[:-1]
+    name = TEST_RESULTS_FOLDER + f"TEST_{int(time.time())}.csv"
+
+    with open(name, "w") as f:
+        f.write(data)
+
 
 
 
