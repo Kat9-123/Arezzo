@@ -44,15 +44,9 @@ except ModuleNotFoundError:
 
     if x != 'y' and x != "yes":
         exit()
-    
     Popen("src\\setup.bat", shell=True).wait()
     input()
     exit()
-
-
-
-#import network.training.RandomMIDIGenerator as RAND
-
 
 
 
