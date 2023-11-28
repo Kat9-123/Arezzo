@@ -5,6 +5,8 @@
 
 # __privateFunction
 # _overridableFunction
+if __name__ == "__main__":
+    print("Initialising...")
 
 # The first thing we do is load the config. Because we do this
 # before initialising anything else, the global var CONFIG can
@@ -51,7 +53,12 @@ def main() -> None:
 
     if mode == Modes.PROCESS_TRAINING_DATA:
         print("Processing training data...")
-        TrainingDataProcessor.process_training_data()
+        TrainingDataProcessor.process_single()
+        return
+    
+    elif mode == Modes.PROCESS_MULTIPLE_TRAINING_DATA:
+        print("Processing multiple training data files...")
+        TrainingDataProcessor.process_multiple()
         return
 
     elif mode == Modes.TRAIN:

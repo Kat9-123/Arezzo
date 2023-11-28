@@ -14,9 +14,10 @@ mode = -1
 class Modes(Enum):
     GENERATE_SHEETMUSIC = 0
     PROCESS_TRAINING_DATA = 1
-    TRAIN = 2
-    TEST_MULTIPLE = 3
-    TEST_SINGLE = 4
+    PROCESS_MULTIPLE_TRAINING_DATA = 2
+    TRAIN = 3
+    TEST_MULTIPLE = 4
+    TEST_SINGLE = 5
     
 
 def __parse_args():
@@ -24,17 +25,17 @@ def __parse_args():
                                      epilog=f"For more advanced options, please see {CONFIG_FILE}")
 
     parser.add_argument('path', type=str,
-                    help='Path of the AUDIO file to be processed', nargs='?',default="")
+                    help='Path of the AUDIO file to be processed. A folder containing only audio files will also be accepted', nargs='?',default="")
     
 
     parser.add_argument("-c",'--cfg','--config', type=str,
                     help=f"Path to a ---.toml file. Default is {CONFIG_FILE}",
                     dest="config", default=CONFIG_FILE,metavar="CONFIG")
     
-    parser.add_argument("-n","--net","--network",dest="network",type=str,metavar=".MIDI/.CSD",
+    parser.add_argument("-n","--net","--network",dest="network",type=str,metavar=".MIDI/.CSD/DIR",
                         
                         help="""If a .csd file is passed, it will train the network on that. Otherwise it will
-                        generate a new .csd using the audio and midi file specified""")
+                        generate a new .csd using the audio and midi file specified. You can also pass a folder containing only MIDI files""")
     
     parser.add_argument("-t","--test", dest="test",type=str,metavar=".MIDI/.CSV",const=TESTS,
                         help=f"""Activates test mode. If a MIDI file is passed, 
@@ -83,9 +84,13 @@ def get_configuration() -> None:
         elif s.endswith(".mid") or s.endswith(".midi"):
             CONFIG["ARGS"]["midi"] = args.network
             mode = Modes.PROCESS_TRAINING_DATA
-            if CONFIG["ARGS"]["audio"] == "":
+            if CONFIG["ARGS"]["audio"] == "" or CONFIG["ARGS"]["audio"].endswith(".mid") or CONFIG["ARGS"]["audio"].endswith(".midi"):
                 raise Exception("Invalid usage. Please pass the audio file BEFORE the network argument")
-        
+        elif '.' not in s:
+            mode = Modes.PROCESS_MULTIPLE_TRAINING_DATA
+            CONFIG["ARGS"]["midi"] = args.network
+
+
     elif args.test:
         s = args.test.lower()
         if s.endswith(".csv"):

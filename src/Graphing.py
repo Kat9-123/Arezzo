@@ -1,9 +1,9 @@
-import Main
+
 import cui.CUI as CUI
 
 import librosa
 import matplotlib.pyplot as plt
-import time
+
 
 ax = None
 

@@ -1,7 +1,7 @@
 import numpy as np
 import time
-import librosa
 import math
+import os
 
 import AudioProcessor
 import MIDIManager
@@ -14,7 +14,7 @@ from Constants import *
 AUDIO_PATH = "learning\\audio\\"
 MIDI_PATH = "learning\\midi\\"
 
-
+SPECTRA_PATH = "learning\\spectra\\"
 
 
 
@@ -22,21 +22,41 @@ def __is_note_playing_at_time(time: float,noteStart: float,noteEnd: float) -> bo
     return noteStart <= time and noteEnd > time
 
 
+def process_multiple():
+    os.mkdir(f"{SPECTRA_PATH}{CONFIG['ARGS']['audio']}")
+    for audioFile in os.listdir(f"{AUDIO_PATH}{CONFIG['ARGS']['audio']}"):
 
 
+        baseMidiPath = f"{MIDI_PATH}{CONFIG['ARGS']['midi']}\\{audioFile}"[:-4] # Remove .wav or .mp3 from extension
+        
 
-def process_training_data():
+        if os.path.isfile(f"{baseMidiPath}.mid"):
+            midiPath = f"{baseMidiPath}.mid"
+
+        elif os.path.isfile(f"{baseMidiPath}.midi"):
+            midiPath = f"{baseMidiPath}.midi"
+        else:
+            raise Exception(f"Couldn't find midi file matching {audioFile}")
+
+
+        __generate(f"{AUDIO_PATH}{audioFile}",midiPath,f"{SPECTRA_PATH}{CONFIG['ARGS']['audio']}\\{audioFile.split('.')[0]}")
+
+
+def process_single():
+    __generate(f"{AUDIO_PATH}{CONFIG['ARGS']['audio']}",
+               f"{MIDI_PATH}{CONFIG['ARGS']['midi']}",
+               f"{SPECTRA_PATH}{CONFIG['ARGS']['audio'].split('.')[0]}")
+
+
+def __generate(audioPath,midiPath,basePath):
     ## Process audio file -> spectrum & onsets
-    audioData = AudioProcessor.process_audio(f"{AUDIO_PATH}{CONFIG['ARGS']['audio']}")
+    audioData = AudioProcessor.process_audio(audioPath)
 
     CUI.progress(f"Getting spectrum",spin=False)
 
-    midi = MIDIManager.get_midi(f"{MIDI_PATH}{CONFIG['ARGS']['midi']}")
+    midi = MIDIManager.get_midi(midiPath)
 
     print(len(midi),len(audioData.onsets))
-
-    #https://stackoverflow.com/questions/7332841/add-single-element-to-array-in-numpy
-
    
 
     uniqueOnsets = []
@@ -68,8 +88,8 @@ def process_training_data():
     start = time.time()
     CUI.progress(f"Compressing",spin=True)
 
-    fileName = CONFIG['ARGS']['audio'].split(".")[0]
+    
 
-    SpectrumCompressor.compress(chords,spectrum,fileName)
+    SpectrumCompressor.compress(chords,spectrum,basePath)
     CUI.force_stop_progress()
     print(time.time() - start)

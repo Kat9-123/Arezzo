@@ -82,7 +82,7 @@ def __generate_header(noteCount,spectrumSize,sampleCount):
 
 
 
-def compress(notes,spectrum,fileName):
+def compress(notes,spectrum,basePath):
     
     noteCount = notes.shape[1]
     spectrumSize = spectrum.shape[1]
@@ -104,7 +104,7 @@ def compress(notes,spectrum,fileName):
 
     
 
-    compressed.tofile(f"{SPECTRA_PATH}{fileName}.csd")
+    compressed.tofile(f"{basePath}.csd")
 
 
 

@@ -1,5 +1,4 @@
 from midiutil.MidiFile import MIDIFile
-import Main
 import os
 import subprocess
 import time
