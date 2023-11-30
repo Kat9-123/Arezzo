@@ -23,7 +23,8 @@ def __is_note_playing_at_time(time: float,noteStart: float,noteEnd: float) -> bo
 
 
 def process_multiple():
-    os.mkdir(f"{SPECTRA_PATH}{CONFIG['ARGS']['audio']}")
+    if not os.path.isdir(f"{SPECTRA_PATH}{CONFIG['ARGS']['audio']}"):
+        os.mkdir(f"{SPECTRA_PATH}{CONFIG['ARGS']['audio']}")
     for audioFile in os.listdir(f"{AUDIO_PATH}{CONFIG['ARGS']['audio']}"):
 
 
@@ -39,7 +40,7 @@ def process_multiple():
             raise Exception(f"Couldn't find midi file matching {audioFile}")
 
 
-        __generate(f"{AUDIO_PATH}{audioFile}",midiPath,f"{SPECTRA_PATH}{CONFIG['ARGS']['audio']}\\{audioFile.split('.')[0]}")
+        __generate(f"{AUDIO_PATH}{CONFIG['ARGS']['audio']}\\{audioFile}",midiPath,f"{SPECTRA_PATH}{CONFIG['ARGS']['audio']}\\{audioFile.split('.')[0]}")
 
 
 def process_single():
@@ -50,6 +51,7 @@ def process_single():
 
 def __generate(audioPath,midiPath,basePath):
     ## Process audio file -> spectrum & onsets
+    print("tset")
     audioData = AudioProcessor.process_audio(audioPath)
 
     CUI.progress(f"Getting spectrum",spin=False)
