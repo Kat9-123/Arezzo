@@ -52,9 +52,9 @@ except ModuleNotFoundError:
 
 
 
-
-
-
+import numpy as np
+import network.SpectrumCompressor as compressor
+import network.Dataset as Set
 
 
 
@@ -63,10 +63,21 @@ def main() -> None:
 
     
     CUI.init()
+    """
+    test = Set.SpectrumDataset("learning\\spectra\\MAESTRO1.csd")
 
+    print(len(test))
+    print(test[0])
 
+    with open("learning\\spectra\\MAESTRO1.csd", "rb") as f:
+        header = f.read(8)
+    
+    headerArray = np.frombuffer(header,dtype=np.uint16)
+    print(headerArray)
 
-
+    _, _, sampleCount = compressor.__retrieve_header(headerArray)
+    return
+    """
     if mode == Modes.PROCESS_TRAINING_DATA:
         print("Processing training data...")
         TrainingDataProcessor.process_single()

@@ -112,7 +112,7 @@ def compress(notes,spectrum,basePath):
 
 
 
-def __retrieve_header(headerInts):
+def retrieve_header(headerInts):
     noteCount = int(headerInts[NOTE_COUNT_LOCATION])
     spectrumSize = int(headerInts[SPECTRUM_SIZE_LOCATION])
 
@@ -128,6 +128,12 @@ def __retrieve_header(headerInts):
 
 
 
+def decompress_line(compressedSpectrum):
+    spectrum = compressedSpectrum.astype(float)
+
+    spectrum /= (PRECISION / 2)
+    spectrum -= 64
+    return spectrum
 
 
 def __decompress_spectrum(compressedSpectrum,spectrumSize):
@@ -151,7 +157,9 @@ def __decompress_notes(compressedNotes,noteCount,sampleCount):
         
         currentWord = noteWordCount * i
         currentBit = 0
+
         for note in range(len(sample)):
+            
 
             curWord = compressedNotes[currentWord]
 
@@ -168,6 +176,29 @@ def __decompress_notes(compressedNotes,noteCount,sampleCount):
     return notes
 
 
+def decompress_note_line(compressedNoteLine,noteCount):
+    notes = np.zeros(noteCount)
+    currentWord = 0
+    currentBit = 0
+    for note in range(noteCount):
+        
+
+        curWord = compressedNoteLine[currentWord]
+
+        notes[note] = (curWord & (1 << (15 - currentBit))) >> (15-currentBit)
+
+        currentBit += 1
+
+        # If the currentInt16 is full, move on to the next
+        if currentBit == 16:
+            currentBit = 0
+            currentWord += 1
+
+    return notes
+
+
+
+
 def decompress(fileName):
     
     compressed = np.fromfile(f"{SPECTRA_PATH}{fileName}",dtype=np.uint16)
@@ -175,7 +206,7 @@ def decompress(fileName):
     # First 64 bits are header (4 uint16s)
     header = compressed[0:4]
 
-    noteCount,spectrumSize,sampleCount = __retrieve_header(header)
+    noteCount,spectrumSize,sampleCount = retrieve_header(header)
 
 
     spectrumEndIndex = 4 + spectrumSize*sampleCount

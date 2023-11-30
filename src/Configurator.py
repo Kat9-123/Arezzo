@@ -77,7 +77,7 @@ def get_configuration() -> None:
 
     if args.network:
         s = args.network.lower()
-        if s.endswith(".csd"):
+        if s.endswith(".csd") or (CONFIG["ARGS"]["audio"] == "" and '.' not in s):
             CONFIG["ARGS"]["training_data"] = args.network
             mode = Modes.TRAIN
 

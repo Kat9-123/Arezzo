@@ -7,14 +7,11 @@
             "program": "${workspaceFolder}/src/Main.py",
             "args":[
                 //"-t"
-                //"-nMAESTRO1.csd"
+                "-nMAESTRO1.csd"
                // "HOMO4-88.mp3",
              //  "--net",
                 //"homo\\HOMO4-88.midi"\
 
-                "PEER",
-                "--net",
-                "TEST"
 
                // "-nMAESTRO.csd"
                // "MAESTRO.mp3",

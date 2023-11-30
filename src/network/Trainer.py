@@ -7,14 +7,14 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import tqdm
-from sklearn.model_selection import train_test_split
 
 from network.Network import Network
-import network.SpectrumCompressor as SpectrumCompressor
+
 from Configurator import CONFIG
 #import SpectrumCompressor
 import Constants
 import Utils
+from network.Dataset import SpectrumDataset
 
 
 
@@ -91,16 +91,17 @@ def __generate_noise(batchSize):
 def train():
     dataPath = CONFIG["ARGS"]['training_data']
 
-    notes,spectrum = SpectrumCompressor.decompress(dataPath)
 
+    dataset = SpectrumDataset(dataPath)
 
+    trainSet, testSet = torch.utils.data.random_split(dataset, [TRAIN_TEST_PERCENTAGE, 1-TRAIN_TEST_PERCENTAGE])
 
+    # Creating data indices for training and validation splits:
+    train_loader = torch.utils.data.DataLoader(trainSet, batch_size=BATCH_SIZE, 
+                                            shuffle=True)
+    validation_loader = torch.utils.data.DataLoader(testSet, batch_size=BATCH_SIZE,
+                                                    shuffle=True)
 
-    spectrum = torch.tensor(spectrum, dtype=torch.float32)
-    notes = torch.tensor(notes, dtype=torch.float32)
-
-    # split
-    spectrumTrain, spectrumTest, notesTrain, notesTest = train_test_split(spectrum, notes, train_size=TRAIN_TEST_PERCENTAGE, shuffle=True)
 
 
 
@@ -114,7 +115,7 @@ def train():
 
 
 
-    batchesPerEpoch = len(spectrumTrain) // BATCH_SIZE
+    batchesPerEpoch = len(train_loader)
 
     bestAccuracy = -np.inf
     bestWeights = None
@@ -135,16 +136,13 @@ def train():
         model.train()
         with tqdm.trange(batchesPerEpoch, unit="batch", mininterval=0) as bar:
             bar.set_description(f"Epoch {epoch}")
-            for i in bar:
 
-                # Get batch                
-                start = i * BATCH_SIZE
-                spectrumBatch = spectrumTrain[start:start+BATCH_SIZE]
-                noteBatch = notesTrain[start:start+BATCH_SIZE]
+            for i, (spectrumBatch, noteBatch) in enumerate(train_loader):
+
 
 
                 # Add some noise to help prevent overfitting, and to hopefully give better results
-                noise = __generate_noise(BATCH_SIZE)
+                noise = __generate_noise(len(spectrumBatch))
 
                 # Forward
                 prediction = model((spectrumBatch + noise).to(DEVICE))
@@ -168,20 +166,27 @@ def train():
                     loss=float(loss),
                     acc=float(accuracy)
                 )
-
+                bar.update()
         # Set model in evaluation mode and run through the test set
         model.eval()
-        prediction = model(spectrumTest.to(DEVICE))
-        crossEntropy = criterion(prediction.to(DEVICE), notesTest.to(DEVICE))
+        testAccuracy = []
+        for spectrum,note in validation_loader:
 
-        accuracy = __accuracy(prediction,notesTest.to(DEVICE))
-        crossEntropy = float(crossEntropy)
-        accuracy = float(accuracy)
+            prediction = model(spectrum.to(DEVICE))
+            crossEntropy = criterion(prediction.to(DEVICE), note.to(DEVICE))
 
+            batchAccuracy = __accuracy(prediction,note.to(DEVICE))
+            crossEntropy = float(crossEntropy)
+            batchAccuracy = float(batchAccuracy)
+
+            testAccuracy.append(batchAccuracy)
+
+
+        accuracy = np.mean(testAccuracy)
         trainLossHist.append(np.mean(epochLoss))
         trainAccuracyHist.append(np.mean(epochAccuracy))
-        testLossHist.append(crossEntropy)
-        testAccuracyHist.append(accuracy)
+       # testLossHist.append(crossEntropy)
+        #testAccuracyHist.append(accuracy)
 
         if accuracy > bestAccuracy:
             bestAccuracy = accuracy
@@ -197,7 +202,7 @@ def train():
     model.eval()
 
 
-    __eval_debug_samples(model,spectrum,notes)
+    #__eval_debug_samples(model,spectrum,notes)
 
 
     # Plot the loss and accuracy
