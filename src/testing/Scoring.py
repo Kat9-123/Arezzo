@@ -142,8 +142,16 @@ def score(generatedMusic,originalTempo, origKeySig,origTimeSig,filePath) -> floa
     score = round(total / (10.0),2)
     CUI.diagnostic("SCORE", score, "%")
     
-    return Scores(note=round(noteScore),
-                  tempo=round(tempoScore),
-                  key=round(keyScore),
-                  time=round(timeScore),
-                  total=round(score))
+    return Scores(noteScore=round(noteScore),
+                  tempoOrig=round(originalTempo),
+                  tempoGen=round(generatedMusic.tempo),
+                  tempoScore=round(tempoScore),
+
+                  keyOrig=origKeySig,
+                  keyGen=generatedMusic.key,
+                  keyScore=round(keyScore),
+
+                  timeOrig=origTimeSig,
+                  timeGen=generatedMusic.timeSig,
+                  timeScore=round(timeScore),
+                  totalScore=round(score))

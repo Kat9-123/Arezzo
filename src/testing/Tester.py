@@ -41,13 +41,14 @@ def test():
 
         origTimeSig = row[4].replace(' ','')
 
-        minScore = float(row[5].replace(' ',''))
+        minScore = round(float(row[5].replace(' ','')))
 
         
         processedMusic = Main.run(path,testMode=True,tempoOverride=-1)
 
     
         score = Scoring.score(processedMusic,origTempo,origKeySig,origTimeSig,comparePath)
+
         results.append([path,score,minScore])
     
     CUI.newline()
@@ -57,7 +58,7 @@ def test():
 
     CUI.print_colour(f"{'FILE':<30} {'NOTES':<6} {'TEMPO':<6} {'KEY':<6} {'TIME':<6} {'TOTAL':<6} {'MIN. SCORE':<6}",CUI.WHITE,end="\n")
 
-    data = "FILE,NOTES,TEMPO,KEY,TIME,TOTAL,MIN. SCORE\n"
+    data = "FILE,NOTES,TEMPO O,TEMPO G,TEMPO S,KEY O,KEY G, KEY S,TIME O,TIME G,TIME S,TOTAL,MIN. SCORE\n"
 
     for result in results:
         path = result[0]
@@ -67,11 +68,11 @@ def test():
         
         colour = CUI.GREEN
     
-        if score.total < origScore:
+        if score.totalScore < origScore:
             colour = CUI.RED
         
-        CUI.print_colour(f"{path:<30} {score.note:<6} {score.tempo:<6} {score.key:<6} {score.time:<6} {score.total:<6} {origScore:<6}",colour,end="\n")
-        data += f"{path},{score.note},{score.tempo},{score.key},{score.time},{score.total},{origScore}\n"
+        CUI.print_colour(f"{path:<30} {score.noteScore:<6} {score.tempoScore:<6} {score.keyScore:<6} {score.timeScore:<6} {score.totalScore:<6} {origScore:<6}",colour,end="\n")
+        data += f"{path},{score.noteScore}%,{score.tempoOrig},{score.tempoGen},{score.tempoScore}%,{score.keyOrig},{score.keyGen},{score.keyScore}%,{score.timeOrig},{score.timeGen},{score.timeScore}%,{score.totalScore}%,{origScore}%\n"
 
     data = data[:-1]
     name = TEST_RESULTS_FOLDER + f"TEST_{int(time.time())}.csv"

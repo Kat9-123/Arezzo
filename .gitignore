@@ -1,6 +1,7 @@
 # Project-specific
 learning/audio/
 learning/spectra/
+screenshots/
 *.tags
 
 # Byte-compiled / optimized / DLL files

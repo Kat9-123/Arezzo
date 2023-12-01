@@ -1,8 +1,19 @@
 from typing import NamedTuple
 
 class Scores(NamedTuple):
-    note: float
-    tempo: float
-    key: float
-    time: float
-    total: float
+    noteScore: float
+
+    tempoOrig: int
+    tempoGen: int
+    tempoScore: float
+
+    keyOrig: str
+    keyGen: str
+    keyScore: float
+
+    timeOrig: str
+    timeGen: str
+    timeScore: float
+
+
+    totalScore: float
