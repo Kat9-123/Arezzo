@@ -10,10 +10,10 @@ import tqdm
 
 from network.Network import Network
 
-from Configurator import CONFIG
+from core.Configurator import CONFIG
 #import SpectrumCompressor
-import Constants
-import Utils
+import core.Constants as Constants
+import core.Utils as Utils
 from network.Dataset import SpectrumDataset
 import cui.CUI as CUI
 

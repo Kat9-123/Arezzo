@@ -14,7 +14,7 @@ if __name__ == "__main__":
 # before initialising anything else, the global var CONFIG can
 # just be imported directly by other scripts
 try:
-    import Configurator as cfg
+    import core.Configurator as cfg
     cfg.get_configuration()
 
 
@@ -22,22 +22,22 @@ try:
     import os
 
 
-    from Configurator import CONFIG, Modes, mode
-    import Graphing
-    import AudioProcessor
-    import NoteGenerator
+    from core.Configurator import CONFIG, Modes, mode
+    import misc.Graphing as Graphing
+    import core.AudioProcessor as AudioProcessor
+    import transcription.NoteGenerator as NoteGenerator
     import cui.CUI as CUI
     import testing.Tester as Tester
-    import SheetMusicGenerator
+    import transcription.SheetMusicGenerator as SheetMusicGenerator
     import network.Manager as Manager
 
     import network.Trainer as NetTrainer
     import network.TrainingDataProcessor as TrainingDataProcessor
-    import KeyFinder, TimeSigFinder
+    import transcription.KeyFinder as KeyFinder
+    import transcription.TimeSigFinder as TimeSigFinder
 
-    from ProcessedMusic import ProcessedMusic
+    from transcription.ProcessedMusic import ProcessedMusic
 
-    import Utils
 except ModuleNotFoundError:
     from subprocess import Popen
     print("One or more module(s) were not found. Please see requirements.txt")
@@ -146,6 +146,8 @@ def run(path,*,testMode=False,tempoOverride=-1) -> (list,float):
     perSecondOfAudioDuration = duration/processedAudioData.duration
 
    
+    for file in os.listdir("temp\\"):
+        os.remove(f"temp\\{file}")
     
     CUI.newline()
    

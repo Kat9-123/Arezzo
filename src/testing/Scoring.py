@@ -1,8 +1,8 @@
-import Utils
-from NoteObj import NoteObj
+import core.Utils as Utils
+from transcription.NoteObj import NoteObj
 import cui.CUI as CUI
 from testing.Scores import Scores
-import KeyFinder
+import transcription.KeyFinder as KeyFinder
 
 import pretty_midi
 import librosa

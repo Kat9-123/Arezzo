@@ -6,7 +6,7 @@ import torch
 
 from torch.utils.data import Dataset
 import network.SpectrumCompressor as SpectrumCompressor
-from Constants import *
+from core.Constants import *
 
 
 

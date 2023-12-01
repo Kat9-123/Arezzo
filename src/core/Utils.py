@@ -1,6 +1,6 @@
 import os
 import cui.CUI as CUI
-from Configurator import CONFIG
+from core.Configurator import CONFIG
 from subprocess import Popen
 
 def sys_call(command: str) -> None:

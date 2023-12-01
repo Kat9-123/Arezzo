@@ -2,7 +2,7 @@
 
 import torch
 from network.Network import Network
-from Configurator import CONFIG
+from core.Configurator import CONFIG
 
 model = None
 

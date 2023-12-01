@@ -26,6 +26,8 @@ training_device = "cuda"
 use_cuda_if_available = true
 key_profile = "data\\Krumhansl-Kessler.csv"
 
+output_cleanly = true
+
 
 
 

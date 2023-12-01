@@ -1,7 +1,7 @@
 import cui.CUI as CUI
 import threading
 import time
-from Configurator import CONFIG
+from core.Configurator import CONFIG
 
 
 FRAMES = [

@@ -2,7 +2,16 @@
 learning/audio/
 learning/spectra/
 screenshots/
+temp/
+src/launch/bin/
+src/launch/obj/
+
 *.tags
+
+
+src/launch/launch.layout
+src/launch/launch.depend
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

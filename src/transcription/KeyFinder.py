@@ -1,7 +1,7 @@
 from math import sqrt
 import csv
 
-from Configurator import CONFIG
+from core.Configurator import CONFIG
 import cui.CUI as CUI
 
 

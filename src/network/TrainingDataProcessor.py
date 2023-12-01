@@ -3,12 +3,12 @@ import time
 import math
 import os
 
-import AudioProcessor
-import MIDIManager
-from Configurator import CONFIG
+import core.AudioProcessor as AudioProcessor
+import core.MIDIManager as MIDIManager
+from core.Configurator import CONFIG
 import network.SpectrumCompressor as SpectrumCompressor
 import cui.CUI  as CUI
-from Constants import *
+from core.Constants import *
 
 
 AUDIO_PATH = "learning\\audio\\"

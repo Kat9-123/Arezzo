@@ -1,7 +1,6 @@
-import Utils
-import Graphing
-import NoteGenerator
-from ProcessedAudioData import ProcessedAudioData
+import core.Utils as Utils
+import misc.Graphing as Graphing
+from core.ProcessedAudioData import ProcessedAudioData
 import cui.CUI as CUI
 
 import librosa

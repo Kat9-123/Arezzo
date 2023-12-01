@@ -3,8 +3,8 @@ from enum import Enum
 
 
 import cui.CUI as CUI
-from ProcessedAudioData import ProcessedAudioData
-import Utils
+from core.ProcessedAudioData import ProcessedAudioData
+import core.Utils as Utils
 
 # 2 -> Semiquavers
 # 3 -> Demisemiquavers

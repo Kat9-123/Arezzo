@@ -1,6 +1,6 @@
 
-import AudioProcessor
-from NoteObj import NoteObj
+import core.AudioProcessor as AudioProcessor
+from transcription.NoteObj import NoteObj
 
 import cui.CUI as CUI
 
