@@ -15,16 +15,15 @@ from Configurator import CONFIG
 import Constants
 import Utils
 from network.Dataset import SpectrumDataset
+import cui.CUI as CUI
 
 
 
 
-
-TRAIN_TEST_PERCENTAGE = 0.7
-
+TRAIN_VALIDATION_TEST_SPLIT = [0.65,0.3,0.05]
 
 
-EPOCH_COUNT = 75
+EPOCH_COUNT = 2
 BATCH_SIZE = 50
 NOISE_DEVIATION = 3.5
 
@@ -57,6 +56,8 @@ def __save_model(model,dataPath) -> None:
 
 
     path = Utils.generate_filepath_handle_duplicates(netPath)
+
+    print(f"Saving model to {path}")
     torch.save(model.state_dict(), path)
 
 
@@ -85,7 +86,27 @@ def __generate_noise(batchSize):
 
 
 
+def __eval_model(loader,model,criterion):
 
+    model.eval()
+    batchCount = len(loader)
+    accuracies = np.zeros(batchCount)
+    losses = np.zeros(batchCount)
+
+    for i, (spectrum,note) in enumerate(loader):
+
+        prediction = model(spectrum.to(DEVICE))
+        batchLoss = criterion(prediction.to(DEVICE), note.to(DEVICE))
+
+        batchAccuracy = __accuracy(prediction,note.to(DEVICE))
+
+        batchLoss = float(batchLoss)
+        batchAccuracy = float(batchAccuracy)
+
+        accuracies[i] = batchAccuracy
+        losses[i] = batchLoss
+    
+    return np.mean(accuracies), np.mean(losses)
 
 
 def train():
@@ -94,15 +115,16 @@ def train():
 
     dataset = SpectrumDataset(dataPath)
 
-    trainSet, testSet = torch.utils.data.random_split(dataset, [TRAIN_TEST_PERCENTAGE, 1-TRAIN_TEST_PERCENTAGE])
+    trainDataset, validationDataset, testDataset = torch.utils.data.random_split(dataset, TRAIN_VALIDATION_TEST_SPLIT)
 
     # Creating data indices for training and validation splits:
-    train_loader = torch.utils.data.DataLoader(trainSet, batch_size=BATCH_SIZE, 
-                                            shuffle=True)
-    validation_loader = torch.utils.data.DataLoader(testSet, batch_size=BATCH_SIZE,
+    trainLoader = torch.utils.data.DataLoader(trainDataset, batch_size=BATCH_SIZE, 
                                                     shuffle=True)
+    validationLoader = torch.utils.data.DataLoader(validationDataset, batch_size=BATCH_SIZE,
+                                                   shuffle=True)
 
-
+    testLoader = torch.utils.data.DataLoader(testDataset, batch_size=BATCH_SIZE,
+                                                    shuffle=True)
 
 
 
@@ -115,91 +137,96 @@ def train():
 
 
 
-    batchesPerEpoch = len(train_loader)
+    batchesPerEpoch = len(trainLoader)
 
     bestAccuracy = -np.inf
     bestWeights = None
 
     trainLossHist = []
     trainAccuracyHist = []
-    testLossHist = []
-    testAccuracyHist = []
+    validationLossHist = []
+    validationAccuracyHist = []
 
 
 
 
     # training loop
     for epoch in range(EPOCH_COUNT):
-        epochLoss = []
-        epochAccuracy = []
-        # set model in training mode and run through each batch
-        model.train()
-        with tqdm.trange(batchesPerEpoch, unit="batch", mininterval=0) as bar:
-            bar.set_description(f"Epoch {epoch}")
+        try:
+            trainLoss = []
+            trainAccuracy = []
+            # set model in training mode and run through each batch
+            model.train()
+            with tqdm.trange(batchesPerEpoch, unit="batch", mininterval=0,ascii = True) as bar:
+                bar.set_description(f"Epoch {epoch}")
 
-            for i, (spectrumBatch, noteBatch) in enumerate(train_loader):
-
-
-
-                # Add some noise to help prevent overfitting, and to hopefully give better results
-                noise = __generate_noise(len(spectrumBatch))
-
-                # Forward
-                prediction = model((spectrumBatch + noise).to(DEVICE))
-
-                # Derivatives
-                loss = criterion(prediction.to(DEVICE), noteBatch.to(DEVICE))
-
-                # Backward
-                optimizer.zero_grad()
-                loss.backward()
-
-                optimizer.step()
-
-                # compute and store metrics
-                accuracy = __accuracy(prediction,noteBatch.to(DEVICE))
+                for spectrumBatch, noteBatch in trainLoader:
 
 
-                epochLoss.append(float(loss))
-                epochAccuracy.append(float(accuracy))
-                bar.set_postfix(
-                    loss=float(loss),
-                    acc=float(accuracy)
-                )
-                bar.update()
-        # Set model in evaluation mode and run through the test set
-        model.eval()
-        testAccuracy = []
-        for spectrum,note in validation_loader:
 
-            prediction = model(spectrum.to(DEVICE))
-            crossEntropy = criterion(prediction.to(DEVICE), note.to(DEVICE))
+                    # Add some noise to help prevent overfitting, and to hopefully give better results
+                    noise = __generate_noise(len(spectrumBatch))
 
-            batchAccuracy = __accuracy(prediction,note.to(DEVICE))
-            crossEntropy = float(crossEntropy)
-            batchAccuracy = float(batchAccuracy)
+                    # Forward
+                    prediction = model((spectrumBatch + noise).to(DEVICE))
 
-            testAccuracy.append(batchAccuracy)
+                    # Derivatives
+                    loss = criterion(prediction.to(DEVICE), noteBatch.to(DEVICE))
+
+                    # Backward
+                    optimizer.zero_grad()
+                    loss.backward()
+
+                    optimizer.step()
+
+                    # compute and store metrics
+                    accuracy = __accuracy(prediction,noteBatch.to(DEVICE))
 
 
-        accuracy = np.mean(testAccuracy)
-        trainLossHist.append(np.mean(epochLoss))
-        trainAccuracyHist.append(np.mean(epochAccuracy))
-       # testLossHist.append(crossEntropy)
-        #testAccuracyHist.append(accuracy)
+                    trainLoss.append(float(loss))
+                    trainAccuracy.append(float(accuracy))
+                    bar.set_postfix(
+                        loss=f"{float(loss):5.2f}",
+                        acc=f"{float(accuracy):5.2f}",
+                    )
+                    bar.update()
+            # Set model in evaluation mode and run through the validation set
+            print("Validating...",end="\r")
 
-        if accuracy > bestAccuracy:
-            bestAccuracy = accuracy
-            bestWeights = copy.deepcopy(model.state_dict())
+            trainLossHist.append(np.mean(trainLoss))
+            trainAccuracyHist.append(np.mean(trainAccuracy))
 
-        print(f"Epoch {epoch} validation: Cross-entropy={crossEntropy:.2f}, Accuracy={accuracy*100:.1f}%")
+            validationAccuracy,validationLoss = __eval_model(validationLoader,model,criterion)
+
+
+
+
+
+
+            validationLossHist.append(validationLoss)
+            validationAccuracyHist.append(validationAccuracy)
+
+            if validationAccuracy > bestAccuracy:
+                bestAccuracy = validationAccuracy
+                bestWeights = copy.deepcopy(model.state_dict())
+
+            print(f"Epoch {epoch} validation: Loss={validationLoss:.2f}, Accuracy={validationAccuracy*100:.1f}%")
+        except KeyboardInterrupt:
+            print("Stopping training...")
+            break
+    
+    if bestWeights == None:
+        CUI.warning("At least one epoch has to finish for results!")
+        input()
+        exit()
 
     # Restore best model
     model.load_state_dict(bestWeights)
 
     __save_model(model,dataPath)
 
-    model.eval()
+    testAccuracy, testLoss = __eval_model(testLoader,model,criterion)
+    print(f"Test: Loss={testLoss:.2f}, Accuracy={testAccuracy*100:.1f}%")
 
 
     #__eval_debug_samples(model,spectrum,notes)
@@ -207,15 +234,17 @@ def train():
 
     # Plot the loss and accuracy
     plt.plot(trainLossHist, label="train")
-    plt.plot(testLossHist, label="test")
-    plt.xlabel("epochs")
-    plt.ylabel("cross entropy")
+    plt.plot(validationLossHist, label="validation")
+    plt.axhline(y = testLoss, color = 'r', linestyle = 'dashed',label="test")  
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
     plt.legend()
     plt.show()
 
     plt.plot(trainAccuracyHist, label="train")
-    plt.plot(testAccuracyHist, label="test")
-    plt.xlabel("epochs")
-    plt.ylabel("accuracy")
+    plt.plot(validationLossHist, label="validation")
+    plt.axhline(y = testAccuracy, color = 'r', linestyle = 'dashed',label="test")  
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")
     plt.legend()
     plt.show()

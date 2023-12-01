@@ -7,6 +7,9 @@ import torch
 from torch.utils.data import Dataset
 import network.SpectrumCompressor as SpectrumCompressor
 from Constants import *
+
+
+
 class SpectrumDataset(Dataset):
 
     size: int = 0
@@ -105,7 +108,7 @@ class SpectrumDataset(Dataset):
         notes = torch.tensor(notes, dtype=torch.float32)
         #spectrum = torch.tensor(spectrum, dtype=torch.float32)
         #notes = torch.tensor(notes, dtype=torch.float32)
-        return spectrum, notes
+        return spectrum.to, notes
     
 
     def __del__(self):
