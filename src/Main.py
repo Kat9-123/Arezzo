@@ -38,6 +38,8 @@ try:
 
     from transcription.ProcessedMusic import ProcessedMusic
 
+    import core.Utils as Utils
+
 except ModuleNotFoundError:
     from subprocess import Popen
     print("One or more module(s) were not found. Please see requirements.txt")
@@ -57,21 +59,9 @@ def main() -> None:
 
     
     CUI.init()
-    """
-    test = Set.SpectrumDataset("learning\\spectra\\MAESTRO1.csd")
 
-    print(len(test))
-    print(test[0])
+    Utils.confirm_temp()
 
-    with open("learning\\spectra\\MAESTRO1.csd", "rb") as f:
-        header = f.read(8)
-    
-    headerArray = np.frombuffer(header,dtype=np.uint16)
-    print(headerArray)
-
-    _, _, sampleCount = compressor.__retrieve_header(headerArray)
-    return
-    """
     if mode == Modes.PROCESS_TRAINING_DATA:
         print("Processing training data...")
         TrainingDataProcessor.process_single()
@@ -92,8 +82,6 @@ def main() -> None:
         Tester.test()
         return
 
-    elif mode == Modes.TEST_SINGLE:
-        raise Exception("Single test mode hasn't been implemented yet!")
 
     # Standard mode.
     run(CONFIG["ARGS"]["audio"])
@@ -145,9 +133,9 @@ def run(path,*,testMode=False,tempoOverride=-1) -> (list,float):
     duration = time.perf_counter() - startTime
     perSecondOfAudioDuration = duration/processedAudioData.duration
 
-   
-    for file in os.listdir("temp\\"):
-        os.remove(f"temp\\{file}")
+    if CONFIG["ADVANCED_OPTIONS"]["clear_temp"]:
+        for file in os.listdir("temp\\"):
+            os.remove(f"temp\\{file}")
     
     CUI.newline()
    

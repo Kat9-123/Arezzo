@@ -7,6 +7,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import tqdm
+import datetime
+import time
+
 
 from network.Network import Network
 
@@ -21,9 +24,10 @@ import cui.CUI as CUI
 
 
 TRAIN_VALIDATION_TEST_SPLIT = [0.65,0.3,0.05]
+SUBSET_SPLIT = [0.13,0.06,0.01,0.8]
 
 
-EPOCH_COUNT = 2
+EPOCH_COUNT = 10000
 BATCH_SIZE = 50
 NOISE_DEVIATION = 3.5
 
@@ -113,7 +117,7 @@ def train():
     dataPath = CONFIG["ARGS"]['training_data']
 
 
-    dataset = SpectrumDataset(dataPath)
+    dataset = SpectrumDataset(dataPath,DEVICE)
 
     trainDataset, validationDataset, testDataset = torch.utils.data.random_split(dataset, TRAIN_VALIDATION_TEST_SPLIT)
 
@@ -147,20 +151,29 @@ def train():
     validationLossHist = []
     validationAccuracyHist = []
 
+    CUI.diagnostic("Dataset size",len(dataset))
+    CUI.diagnostic("Batch size",BATCH_SIZE)
 
+    CUI.diagnostic("Training size",len(trainLoader)*BATCH_SIZE)
+    CUI.diagnostic("Validation size",len(validationLoader)*BATCH_SIZE)
+    CUI.diagnostic("Test size",len(testLoader)*BATCH_SIZE)
 
+    CUI.progress("Training...")
 
     # training loop
+    startTime = time.time()
+    previousAccuracy = 0.0
     for epoch in range(EPOCH_COUNT):
         try:
-            trainLoss = []
-            trainAccuracy = []
+
+            trainLoss = np.zeros(batchesPerEpoch)
+            trainAccuracy = np.zeros(batchesPerEpoch)
             # set model in training mode and run through each batch
             model.train()
-            with tqdm.trange(batchesPerEpoch, unit="batch", mininterval=0,ascii = True) as bar:
+            with tqdm.trange(batchesPerEpoch, unit="batch", mininterval=0,ascii=True) as bar:
                 bar.set_description(f"Epoch {epoch}")
 
-                for spectrumBatch, noteBatch in trainLoader:
+                for i,(spectrumBatch, noteBatch) in enumerate(trainLoader):
 
 
 
@@ -183,8 +196,8 @@ def train():
                     accuracy = __accuracy(prediction,noteBatch.to(DEVICE))
 
 
-                    trainLoss.append(float(loss))
-                    trainAccuracy.append(float(accuracy))
+                    trainLoss[i] = float(loss)
+                    trainAccuracy[i] = float(accuracy)
                     bar.set_postfix(
                         loss=f"{float(loss):5.2f}",
                         acc=f"{float(accuracy):5.2f}",
@@ -192,9 +205,14 @@ def train():
                     bar.update()
             # Set model in evaluation mode and run through the validation set
             print("Validating...",end="\r")
+            avgTrainLoss = np.mean(trainLoss)
+            avgTrainAccuracy = np.mean(trainAccuracy)
 
-            trainLossHist.append(np.mean(trainLoss))
-            trainAccuracyHist.append(np.mean(trainAccuracy))
+
+            trainLossHist.append(avgTrainLoss)
+            trainAccuracyHist.append(avgTrainAccuracy)
+
+
 
             validationAccuracy,validationLoss = __eval_model(validationLoader,model,criterion)
 
@@ -210,7 +228,19 @@ def train():
                 bestAccuracy = validationAccuracy
                 bestWeights = copy.deepcopy(model.state_dict())
 
-            print(f"Epoch {epoch} validation: Loss={validationLoss:.2f}, Accuracy={validationAccuracy*100:.1f}%")
+
+
+            print(f"Epoch {epoch}              ")
+            print(f"     Train - Loss: {avgTrainLoss:.2f}, Accuracy: {avgTrainAccuracy*100:.1f}%")
+            print(f"Validation - Loss: {validationLoss:.2f}, Accuracy: {validationAccuracy*100:.1f}%")
+            print(f"ΔAccuracy: {(validationAccuracy-previousAccuracy)*100:.1f} Train-Validation diff: {(avgTrainAccuracy-validationAccuracy)*100:.1f}")
+            
+            timeSpent = round(time.time()-startTime)
+
+            print(f"Time spent: {str(datetime.timedelta(seconds=timeSpent))}, Time per epoch: {str(datetime.timedelta(seconds=round(timeSpent/(epoch+1))))}")
+            print()
+            previousAccuracy = validationAccuracy
+
         except KeyboardInterrupt:
             print("Stopping training...")
             break
@@ -226,7 +256,7 @@ def train():
     __save_model(model,dataPath)
 
     testAccuracy, testLoss = __eval_model(testLoader,model,criterion)
-    print(f"Test: Loss={testLoss:.2f}, Accuracy={testAccuracy*100:.1f}%")
+    print(f"Test - Loss: {testLoss:.2f}, Accuracy: {testAccuracy*100:.1f}%")
 
 
     #__eval_debug_samples(model,spectrum,notes)
@@ -242,7 +272,7 @@ def train():
     plt.show()
 
     plt.plot(trainAccuracyHist, label="train")
-    plt.plot(validationLossHist, label="validation")
+    plt.plot(validationAccuracyHist, label="validation")
     plt.axhline(y = testAccuracy, color = 'r', linestyle = 'dashed',label="test")  
     plt.xlabel("Epochs")
     plt.ylabel("Accuracy")

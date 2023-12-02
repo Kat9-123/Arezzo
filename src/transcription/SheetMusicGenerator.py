@@ -1,8 +1,6 @@
-from midiutil.MidiFile import MIDIFile
 import cui.CUI as CUI
 import core.Utils as Utils
 from core.Configurator import CONFIG
-import librosa
 import core.MIDIManager as MIDIManager
 
 

@@ -4,9 +4,7 @@ import testing.Scoring as Scoring
 import Main
 import cui.CUI as CUI
 import time
-
-
-TESTS_PATH = "testing\\tests.csv"
+from core.Configurator import CONFIG
 
 TEST_RESULTS_FOLDER = "testing\\results\\"
 
@@ -17,7 +15,7 @@ def test_single():
 def test():
 
 
-    data = np.loadtxt(TESTS_PATH, delimiter=",", dtype=str)
+    data = np.loadtxt(CONFIG["ARGS"]["test"], delimiter=",", dtype=str)
 
     results = []
     for x,row in enumerate(data):

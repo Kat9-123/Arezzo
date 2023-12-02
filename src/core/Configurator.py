@@ -17,7 +17,6 @@ class Modes(Enum):
     PROCESS_MULTIPLE_TRAINING_DATA = 2
     TRAIN = 3
     TEST_MULTIPLE = 4
-    TEST_SINGLE = 5
     
 
 def __parse_args():
@@ -38,9 +37,7 @@ def __parse_args():
                         generate a new .csd using the audio and midi file specified. You can also pass a folder containing only MIDI files""")
     
     parser.add_argument("-t","--test", dest="test",type=str,metavar=".MIDI/.CSV",const=TESTS,
-                        help=f"""Activates test mode. If a MIDI file is passed, 
-                        it will compare the result of the given audio file against that.
-                        If a CSV is passed, it will use the files specified. 
+                        help=f"""Activates test mode. If a CSV is passed, it will use the files specified. 
                         If no arg is passed it will default to {TESTS}""",nargs="?")
 
     parser.add_argument("-m","--model",dest="model",type=str,metavar=".MDL",
@@ -93,15 +90,11 @@ def get_configuration() -> None:
 
     elif args.test:
         s = args.test.lower()
+        mode = Modes.TEST_MULTIPLE
         if s.endswith(".csv"):
             CONFIG["ARGS"]["test"] = args.test
-            mode = Modes.TEST_MULTIPLE
-
-        elif s.endswith(".mid") or s.endswith(".midi"):
-            CONFIG["ARGS"]["midi"] = args.test
-            mode = Modes.TEST_SINGLE
-            if CONFIG["ARGS"]["audio"] == "":
-                raise Exception("Invalid usage. Please pass the audio file BEFORE the test argument")
+        else:
+            CONFIG["ARGS"]["test"] = TESTS
 
     else:
         if args.path == "":
