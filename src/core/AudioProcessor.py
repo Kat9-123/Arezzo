@@ -40,6 +40,7 @@ def process_audio(audioPath,tempoOverride=-1):
     """Takes the audio at the path and returns a spectrum, chroma classification, onsets, 
        estimated tempo and the duration of the file."""
     global samplingRate
+    Graphing.create_plot(rows=3)
     CUI.progress(f"Loading {audioPath}",prefixNewline=False,spin=True)
 
     y, samplingRate = librosa.load(audioPath)
@@ -68,13 +69,9 @@ def process_audio(audioPath,tempoOverride=-1):
         tempo = __get_tempo(y,samplingRate)
     else:
         tempo = tempoOverride
-    for i in onsets:
-        print(Utils.snap_to_beat((i-onsets[0]) * (120/60) * pointDuration))
-
 
 
     CUI.force_stop_progress()
-    print(spectrum.shape)
     CUI.diagnostic("Frame Count",frameCount)
     CUI.diagnostic("Duration",duration, "s")
     CUI.diagnostic("Frame Duration",pointDuration * 1000, "ms")
@@ -120,24 +117,9 @@ def __get_spectrum(stft,samplingRate):
     #spectrum[spectrum < SPECTRUM_DB_CUTOFF] = 0
 
 
-    Graphing.specshow(spectrum,samplingRate,location=0,xType="s",yType="log")
+    Graphing.specshow(spectrum,samplingRate,xType="s",yType="log")
 
     return spectrum
-def __get_chroma(y, samplingRate):
-
-    chroma = librosa.feature.chroma_stft(y=y,sr=samplingRate)
-
-    #chroma[chroma < CHROMA_CUTOFF] = 0
-   # chroma = np.minimum(chroma,
-   #                        librosa.decompose.nn_filter(chroma,
-    #                                                   aggregate=np.median,
-    #                                                   metric='cosine'))
-
-    #chroma = scipy.ndimage.median_filter(chroma, size=(1, 9))
-
-    Graphing.specshow(chroma,samplingRate,location=1,xType="s",yType="chroma",yLabel="Note")
-
-    return chroma
 
 
 
@@ -185,8 +167,13 @@ def __get_onset(y,stft,sampleRate,frameCount):
     times = librosa.times_like(D,sr=sampleRate)
     onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
     onset_frames = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sampleRate)
-    Graphing.onset(times,onset_env,onset_frames,location=2)
-    Graphing.vLine(times,onset_frames,onset_env,location=2,colour="b")
+
+
+    Graphing.polygon(times,2 + onset_env / onset_env.max(),xLabel="",yLabel="Strength & Onsets")
+    
+
+    Graphing.vLines(times[onset_frames],0,onset_env.max(),colour="b")
+
 
     onset_frames += ONSET_TEMPORAL_LAG
   ##  for x in range(len(onset_frames)):
@@ -194,8 +181,9 @@ def __get_onset(y,stft,sampleRate,frameCount):
    #     if val < frameCount:
     #        onset_frames[x] = val
 
+    Graphing.vLines(times[onset_frames],0,onset_env.max(),colour="r")
     
-    Graphing.vLine(times,onset_frames,onset_env,location=2,colour="r")
+
     
     return onset_frames
 

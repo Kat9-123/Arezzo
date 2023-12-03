@@ -3,65 +3,66 @@ import cui.CUI as CUI
 
 import librosa
 import matplotlib.pyplot as plt
+from core.Configurator import CONFIG
+
+plot = None
 
 
-ax = None
 
-SHOW_PLOT = False
+SPECTRUM = 0
+ONSETS = 1
 
-def specshow(data,samplingRate:int, location:int, xType:str = None, yType:str = None,xLabel:str ="",yLabel:str = ""):
+SIZE = 2
+
+def specshow(data,samplingRate:int, xType:str = None, yType:str = None,xLabel:str ="",yLabel:str = ""):
     """Uses Librosa specshow to display a two dimensional numpy array. See Librosa documentation for xType and yType."""
 
-    if not SHOW_PLOT:
+    if not CONFIG["DEBUG"]["graphing"]:
         return
 
    # if ax == None:
    #     raise Exception("Attempting specshow w/o a plot")
 
-    img = librosa.display.specshow(data, sr = samplingRate, x_axis = xType,ax=ax[location],y_axis=yType)
-    ax[location].set(xlabel=xLabel,ylabel=yLabel)
+    img = librosa.display.specshow(data, sr = samplingRate, x_axis = xType,ax=plot[SPECTRUM],y_axis=yType)
+    plot[SPECTRUM].set(xlabel=xLabel,ylabel=yLabel)
 
 
 
 def create_plot(rows):
     "Initialise the matplotlib plot"
-    global ax
-    if not SHOW_PLOT:
+    global plot
+    if not CONFIG["DEBUG"]["graphing"]:
         return
-    fig, ax = plt.subplots(nrows=rows,sharex=True)
+    fig, plot = plt.subplots(nrows=SIZE,sharex=True)
     #wm = plt.get_current_fig_manager()
     #wm.window.state('zoomed')
 
 
 
-def onset(times,onset_env,onset_frames,location):
-    if not SHOW_PLOT:
+def polygon(x,y,xLabel,yLabel):
+    if not CONFIG["DEBUG"]["graphing"]:
         return
-    ax[location].plot(times, 2 + onset_env / onset_env.max(), alpha=0.8,
+    plot[ONSETS].plot(x,y, alpha=0.8,
             color='r')
     
 
+    plot[ONSETS].set(xlabel=xLabel, ylabel=yLabel, yticks=[])
+
+
+
 
     
 
-    ax[location].set(xlabel="", ylabel='Strength & Onsets', yticks=[])
-
-
-
-def vLine(times, onset_frames,onset_env,location,colour):
-    if not SHOW_PLOT:
+    
+def vLines(values,min,max,colour):
+    if not CONFIG["DEBUG"]["graphing"]:
         return
-
-    ax[location].vlines(times[onset_frames], 0, onset_env.max(), color=colour, alpha=0.9,
+    plot[ONSETS].vlines(values, min, max, color=colour, alpha=0.9,
        linestyle='dotted')
-    
-
-
-
 
 
 def save_plot(name):
-    if not SHOW_PLOT:
+    if not CONFIG["DEBUG"]["graphing"]:
         return
     
     
@@ -70,7 +71,7 @@ def save_plot(name):
     plt.savefig(path,dpi=1200)
 
 def show_plot():
-    if not SHOW_PLOT:
+    if not CONFIG["DEBUG"]["graphing"]:
         return
 
     plt.show()

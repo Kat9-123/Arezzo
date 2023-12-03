@@ -7,11 +7,13 @@
             "program": "${workspaceFolder}/src/Main.py",
             "args":[
               //"PWS_TEST_12.wav"
-
-                //"-t"
+              //"MAESTROTEST",
+            // "--net",
+             // "MAESTROTEST"
+              "-t"
               //  "audio\\PWS_TEST_1b.wav"
-              "--net",
-              "MAESTROTEST"
+             // "--net",
+              //"MAESTROTEST"
                // "-nMAESTRO1.csd"
                // "HOMO4-88.mp3",
              //  "--net",

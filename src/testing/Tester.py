@@ -1,7 +1,7 @@
 import numpy as np
 
 import testing.Scoring as Scoring
-import Main
+import transcription.Transcriber as Transcriber
 import cui.CUI as CUI
 import time
 from core.Configurator import CONFIG
@@ -42,7 +42,7 @@ def test():
         minScore = round(float(row[5].replace(' ','')))
 
         
-        processedMusic = Main.run(path,testMode=True,tempoOverride=-1)
+        processedMusic = Transcriber.transcribe(path,testMode=True,tempoOverride=-1)
 
     
         score = Scoring.score(processedMusic,origTempo,origKeySig,origTimeSig,comparePath)

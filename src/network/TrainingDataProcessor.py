@@ -9,6 +9,7 @@ from core.Configurator import CONFIG
 import network.SpectrumCompressor as SpectrumCompressor
 import cui.CUI  as CUI
 from core.Constants import *
+import misc.Graphing as Graphing
 
 
 AUDIO_PATH = "learning\\audio\\"
@@ -17,6 +18,7 @@ MIDI_PATH = "learning\\midi\\"
 SPECTRA_PATH = "learning\\spectra\\"
 
 
+ADDED_DELAY = 0.05
 
 def __is_note_playing_at_time(time: float,noteStart: float,noteEnd: float) -> bool:
     return noteStart <= time and noteEnd > time
@@ -51,29 +53,29 @@ def process_single():
 
 def __generate(audioPath,midiPath,basePath):
     ## Process audio file -> spectrum & onsets
-    print("tset")
     audioData = AudioProcessor.process_audio(audioPath)
 
     CUI.progress(f"Getting spectrum",spin=False)
 
     midi = MIDIManager.get_midi(midiPath)
 
-    print(len(midi),len(audioData.onsets))
-   
+
 
     uniqueOnsets = []
     for note in midi:
          if note.start not in uniqueOnsets:
-              uniqueOnsets.append(note.start)
-    print(uniqueOnsets)
+              uniqueOnsets.append(note.start + ADDED_DELAY)
+
     uniqueOnsetCount = len(uniqueOnsets)
 
-    print(uniqueOnsetCount)
+
 
 
     chords = np.zeros((uniqueOnsetCount,NOTE_COUNT),dtype=np.uint8)
     spectrum = np.ndarray((uniqueOnsetCount,SPECTRUM_SIZE))
+    Graphing.vLines(uniqueOnsets,0,10,colour="g")
 
+    Graphing.show_plot()
     for i,uniqueOnsetTime in enumerate(uniqueOnsets):
         
         frame = math.ceil(uniqueOnsetTime/audioData.frameDuration) + 2
@@ -94,4 +96,5 @@ def __generate(audioPath,midiPath,basePath):
 
     SpectrumCompressor.compress(chords,spectrum,basePath)
     CUI.force_stop_progress()
+    
     print(time.time() - start)
