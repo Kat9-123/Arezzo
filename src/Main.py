@@ -37,7 +37,6 @@ try:
     import transcription.TimeSigFinder as TimeSigFinder
 
     from transcription.ProcessedMusic import ProcessedMusic
-
 except ModuleNotFoundError:
     from subprocess import Popen
     print("One or more module(s) were not found. Please see requirements.txt")
@@ -46,8 +45,8 @@ except ModuleNotFoundError:
 
     if x != 'y' and x != "yes":
         exit()
-    Popen("src\\setup.bat", shell=True).wait()
-    input()
+    print("Attempting to install dependencies...")
+    Popen("pip install -r requirements.txt", shell=True).wait()
     exit()
 
 

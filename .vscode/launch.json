@@ -6,8 +6,9 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/Main.py",
             "args":[
-                "-t"
-              //  "audio\\PWS_TEST_1b.wav"
+                //"--net",
+                //"1.csd"
+                "audio\\PWS_TEST_1b.wav"
                 //"--net",
                 //"MAESTROTEST"
                // "-nMAESTRO1.csd"

@@ -1,9 +1,8 @@
-from midiutil.MidiFile import MIDIFile
 import cui.CUI as CUI
 import core.Utils as Utils
 from core.Configurator import CONFIG
-import librosa
 import core.MIDIManager as MIDIManager
+import os
 
 
 def generate_midi_file(notes,tempo,outputName) -> None:
@@ -36,6 +35,11 @@ def __generate_sheetmusic_musescore(midiPath: str,outputName: str) -> None:
     CUI.progress("Generating Sheet music")
     museScorePath = CONFIG["ENVIRONMENT"]["musescore4_path"]
     exportType = CONFIG["OPTIONS"]["export_type"]
+
+    if not os.path.isfile(museScorePath):
+        CUI.warning("""MuseScore4 was not found, if you do want to use it, 
+                    please install it and confirm that musescore4_path in config.toml
+                    Do you want to save the MIDI file?""")
 
     if not CONFIG["ADVANCED_OPTIONS"]["output_cleanly"]:
         outputPath = f"output\\sheet music\\"

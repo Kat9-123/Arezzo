@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char FILE_NAME[] = "Arezzo.bat";
+const char FILE_NAME[] = "start \"Arezzo \" /d Arezzo Arezzo.bat";
 
 int main(int argc, char *argv[])
 {
-    /*We need to pass the given arguments to the bat file 
+    /*We need to pass the given arguments to the bat file
     to do that we need to create a buffer with the correct size*/
-    
+
     int bufferSize = strlen(FILE_NAME);
 
     // Loop through the args, the first arg is skipped because that is the path to the exe
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         command[i] = FILE_NAME[i];
     }
 
-   
+
 
     // Add the args
     int pos = strlen(FILE_NAME);

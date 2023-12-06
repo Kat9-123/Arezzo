@@ -21,7 +21,7 @@ class Modes(Enum):
     
 
 def __parse_args():
-    parser = argparse.ArgumentParser(description='Automatic polyphonic piano music transcription in Python.',
+    parser = argparse.ArgumentParser(prog="TEST",description='Automatic polyphonic piano music transcription in Python.',
                                      epilog=f"For more advanced options, please see {CONFIG_FILE}")
 
     parser.add_argument('path', type=str,
@@ -38,9 +38,7 @@ def __parse_args():
                         generate a new .csd using the audio and midi file specified. You can also pass a folder containing only MIDI files""")
     
     parser.add_argument("-t","--test", dest="test",type=str,metavar=".MIDI/.CSV",const=TESTS,
-                        help=f"""Activates test mode. If a MIDI file is passed, 
-                        it will compare the result of the given audio file against that.
-                        If a CSV is passed, it will use the files specified. 
+                        help=f"""Activates test mode. If a CSV is passed, it will use the files specified. 
                         If no arg is passed it will default to {TESTS}""",nargs="?")
 
     parser.add_argument("-m","--model",dest="model",type=str,metavar=".MDL",
@@ -105,7 +103,7 @@ def get_configuration() -> None:
 
     else:
         if args.path == "":
-            raise Exception("Invalid usage. To transcribe please pass an audio file as an argument. For other options use -h or --help")
+            raise Exception("Invalid usage. To transcribe please pass an audio file as an argument or drag it onto Arezzo.exe/.bat. For other options use -h or --help")
         mode = Modes.GENERATE_SHEETMUSIC
 
     if args.model:
