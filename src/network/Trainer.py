@@ -247,7 +247,6 @@ def train():
     
     if bestWeights == None:
         CUI.warning("At least one epoch has to finish for results!")
-        input()
         exit()
 
     # Restore best model

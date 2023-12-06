@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include<unistd.h>
 
-const char FILE_NAME[] = "start \"Arezzo \" /d Arezzo Arezzo.bat";
+const char FILE_NAME[] = "Arezzo.bat";
 
 int main(int argc, char *argv[])
 {
@@ -53,6 +54,7 @@ int main(int argc, char *argv[])
 
     command[pos] = '\0';
 
+    chdir("Arezzo");
     system(command);
     return 0;
 }

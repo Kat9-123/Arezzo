@@ -8,14 +8,14 @@
             "args":[
                 //"--net",
                 //"1.csd"
-                "audio\\PWS_TEST_1b.wav",
-                //"--net",
-                //"MAESTROTEST"
+                //"audio\\PWS_TEST_1b.wav",
+                "--net",
+                "1.csd"
               //"PWS_TEST_12.wav"
               //"MAESTROTEST",
             // "--net",
              // "MAESTROTEST"
-              "-t"
+             // "-t"
               //  "audio\\PWS_TEST_1b.wav"
              // "--net",
               //"MAESTROTEST"
