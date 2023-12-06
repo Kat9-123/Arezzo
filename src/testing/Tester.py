@@ -1,12 +1,10 @@
 import numpy as np
 
 import testing.Scoring as Scoring
-import Main
+import transcription.Transcriber as Transcriber
 import cui.CUI as CUI
 import time
-
-
-TESTS_PATH = "testing\\tests.csv"
+from core.Configurator import CONFIG
 
 TEST_RESULTS_FOLDER = "testing\\results\\"
 
@@ -17,7 +15,7 @@ def test_single():
 def test():
 
 
-    data = np.loadtxt(TESTS_PATH, delimiter=",", dtype=str)
+    data = np.loadtxt(CONFIG["ARGS"]["test"], delimiter=",", dtype=str)
 
     results = []
     for x,row in enumerate(data):
@@ -44,7 +42,7 @@ def test():
         minScore = round(float(row[5].replace(' ','')))
 
         
-        processedMusic = Main.run(path,testMode=True,tempoOverride=-1)
+        processedMusic = Transcriber.transcribe(path,testMode=True,tempoOverride=-1)
 
     
         score = Scoring.score(processedMusic,origTempo,origKeySig,origTimeSig,comparePath)

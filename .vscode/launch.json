@@ -8,9 +8,17 @@
             "args":[
                 //"--net",
                 //"1.csd"
-                "audio\\PWS_TEST_1b.wav"
+                "audio\\PWS_TEST_1b.wav",
                 //"--net",
                 //"MAESTROTEST"
+              //"PWS_TEST_12.wav"
+              //"MAESTROTEST",
+            // "--net",
+             // "MAESTROTEST"
+              "-t"
+              //  "audio\\PWS_TEST_1b.wav"
+             // "--net",
+              //"MAESTROTEST"
                // "-nMAESTRO1.csd"
                // "HOMO4-88.mp3",
              //  "--net",
@@ -26,7 +34,7 @@
                //"-nHOMO4-88.csd"
                // "-n1.csd"
                /*
-               
+  
                "1.mp3",
                //"audio\\PWS_TEST_1b.wav"
                //"-nHOMO4-88.csd"

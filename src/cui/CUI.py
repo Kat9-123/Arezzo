@@ -2,8 +2,8 @@
 
 
 import cui.Progress as Progress
-import threading
 import os
+from core.Constants import *
 
 
 ## https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124
@@ -38,6 +38,8 @@ def init():
 
     # Hide console cursor
     print(HIDE_CONSOLE_CURSOR, end="")
+
+    #os.system(f"title Arezzo - {VERSION}")
 
 
 

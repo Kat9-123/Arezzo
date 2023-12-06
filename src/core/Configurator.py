@@ -17,7 +17,6 @@ class Modes(Enum):
     PROCESS_MULTIPLE_TRAINING_DATA = 2
     TRAIN = 3
     TEST_MULTIPLE = 4
-    TEST_SINGLE = 5
     
 
 def __parse_args():
@@ -91,15 +90,11 @@ def get_configuration() -> None:
 
     elif args.test:
         s = args.test.lower()
+        mode = Modes.TEST_MULTIPLE
         if s.endswith(".csv"):
             CONFIG["ARGS"]["test"] = args.test
-            mode = Modes.TEST_MULTIPLE
-
-        elif s.endswith(".mid") or s.endswith(".midi"):
-            CONFIG["ARGS"]["midi"] = args.test
-            mode = Modes.TEST_SINGLE
-            if CONFIG["ARGS"]["audio"] == "":
-                raise Exception("Invalid usage. Please pass the audio file BEFORE the test argument")
+        else:
+            CONFIG["ARGS"]["test"] = TESTS
 
     else:
         if args.path == "":

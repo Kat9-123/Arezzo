@@ -26,12 +26,13 @@ musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 [ADVANCED_OPTIONS]
 onset_to_beat_lag = 0.06
 #model = "HOMO4-88.mdl"
-model = "models\\MAESTROTEST.mdl"
+model = "MAESTROTEST.mdl"
 training_device = "cuda"
 use_cuda_if_available = true
 key_profile = "data\\Krumhansl-Kessler.csv"
 
 output_cleanly = true
+clear_temp = false
 
 
 
@@ -39,7 +40,7 @@ output_cleanly = true
 
 [DEBUG]
 generate_sheet_music = true
-graphing = true
+graphing = false
 save_model = true
 show_network_graphs = true
 spin = true

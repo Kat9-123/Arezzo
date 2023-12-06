@@ -16,6 +16,7 @@ class SpectrumDataset(Dataset):
     path: str
     spectrumSize: int
     noteCount: int
+    device = ""
 
     fileSizes: list = []
     files: list = []
@@ -30,12 +31,11 @@ class SpectrumDataset(Dataset):
 
     
         headerArray = np.frombuffer(header,dtype=np.uint16)
-        print(headerArray)
 
         return f,SpectrumCompressor.retrieve_header(headerArray)
 
-    def __init__(self, _path):
-        
+    def __init__(self, _path,_device):
+        self.device = _device
 
 
         if os.path.isdir(f"learning\\spectra\\{_path}"):
@@ -52,13 +52,16 @@ class SpectrumDataset(Dataset):
             #self.singleFile = True
     
         for file in files:
-            fileHandler,(_,_,fileSize) = self.__get_info(f"{self.path}\\{file}")
+            fileHandler,(noteCount,spectrumSize,fileSize) = self.__get_info(f"{self.path}\\{file}")
+            if noteCount != NOTE_COUNT:
+                raise Exception(f"Note count of {file} ({noteCount}) does not match expected value ({NOTE_COUNT})")
+            if spectrumSize != SPECTRUM_SIZE:
+                raise Exception(f"Spectrum size of {file} ({spectrumSize}) does not match expected value ({NOTE_COUNT})")
+
             self.fileSizes.append(fileSize)
             self.size += fileSize
             self.files.append(fileHandler)
         print(self.fileSizes)
-        print(self.files)
-        print(self.size)
         #self.noteCount, self.spectrumSize, self.size = 
     
         
@@ -108,7 +111,7 @@ class SpectrumDataset(Dataset):
         notes = torch.tensor(notes, dtype=torch.float32)
         #spectrum = torch.tensor(spectrum, dtype=torch.float32)
         #notes = torch.tensor(notes, dtype=torch.float32)
-        return spectrum.to, notes
+        return spectrum, notes
     
 
     def __del__(self):
