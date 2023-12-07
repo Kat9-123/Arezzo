@@ -4,10 +4,14 @@ import random
 
 NAME = "MONO-36-R.midi"
 
-BEAT_COUNT = 2500
+BEAT_COUNT = 5000
 
 
 durations = [
+    3,
+    2.75,
+    2.5,
+    2.25,
     2,
     1.75,
     1.5,
@@ -15,7 +19,7 @@ durations = [
     1,
     0.75,
     0.5,
-    0.25,
+    0.25
 
 
 ]
@@ -27,7 +31,7 @@ def generate_random_midi(lower,upper,randomDurations,notesPerOnset,beatCount=250
 
 
 
-    midiFile = MIDIFile()
+    midiFile = MIDIFile(deinterleave=False)
 
     track = 0
     time = 0
@@ -38,18 +42,20 @@ def generate_random_midi(lower,upper,randomDurations,notesPerOnset,beatCount=250
     midiFile.addTempo(track, time, 120) 
 
 
-    
-    for i in range(BEAT_COUNT):
-        duration = 1 if not randomDurations else durations[random.randint(0,len(durations)-1)]
-        for note in range(notesPerOnset):
-            
+    currentNotes = []
+
+    for voice in range(4):
+        time = 0
+        while time < BEAT_COUNT:
+
+            duration = durations[random.randint(0,len(durations)-1)]  
             volume = random.randint(0,127)
-            midiFile.addNote(track, channel, random.randint(lower,upper-1), time, duration, volume)
-        time += duration
+            midiFile.addNote(track, voice, random.randint(lower,upper-1), time, duration, volume)
+            time += duration
 
     # write it to disk
 
-    type = "MONO" if notesPerOnset == 1 else f"HOMO{notesPerOnset}"
+    type = "POLY4"
     noteRange = upper - lower
 
     name = f"{type}-{noteRange}" + ("-R" if randomDurations else "")

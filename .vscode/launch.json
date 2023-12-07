@@ -9,14 +9,16 @@
                 //"--net",
                 //"1.csd"
                 //"audio\\PWS_TEST_1b.wav",
-                "--net",
-                "1.csd",
-              //"PWS_TEST_12.wav"
+               // "--net",
+               // "1.csd",
+              ///"PWS_TEST_12.wav"
               //"MAESTROTEST",
               //"--net",
              //"MAESTROTEST"
-              "--net",
-             "HOMO4-88.csd"
+            //"POLY4-88-R.wav",
+              "--test",
+              //"POLY4-88-R.csd"
+           //  "HOMO4-88.csd"
              // "SHORT.mp3"
             // "--net",
              // "MAESTROTEST"

@@ -5,9 +5,10 @@ import librosa
 
 def get_midi(path):
     midi_data = pretty_midi.PrettyMIDI(path)
-    
+    allNotes = []
     for instrument in midi_data.instruments:
-        return instrument.notes
+        allNotes += instrument.notes
+    return allNotes
 
 
 def write_midi(notes,tempo,path) -> None:
