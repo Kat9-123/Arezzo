@@ -19,7 +19,7 @@ def write_midi(notes,tempo,path) -> None:
     earliestStartTime = __get_earliest_start_time(notes)
 
 
-    midiFile = MIDIFile(len(notes))
+    midiFile = MIDIFile(len(notes),deinterleave=False)
 
     track = 0
     time = 0
@@ -33,6 +33,7 @@ def write_midi(notes,tempo,path) -> None:
 
     for note in notes:
         midi = librosa.note_to_midi(note.note)
+        print(note.duration)
         midiFile.addNote(track, channel, midi, note.start - earliestStartTime, note.duration, volume)
 
     # write it to disk
