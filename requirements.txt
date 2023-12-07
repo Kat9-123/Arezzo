@@ -3,7 +3,6 @@ matplotlib==3.7.2
 MIDIUtil==1.2.1
 numpy==1.24.4
 pretty_midi==0.2.10
-scipy==1.11.4
 tomli==2.0.1
-torch==2.0.1+cu118
+torch==2.0.1
 tqdm==4.66.1

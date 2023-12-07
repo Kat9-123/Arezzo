@@ -1,7 +1,4 @@
 import numpy as np
-from enum import Enum
-
-
 import cui.CUI as CUI
 from core.ProcessedAudioData import ProcessedAudioData
 import core.Utils as Utils
