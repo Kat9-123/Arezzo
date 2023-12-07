@@ -8,9 +8,11 @@
             "args":[
               //"PWS_TEST_12.wav"
               //"MAESTROTEST",
-            // "--net",
-             // "MAESTROTEST"
-              "-t"
+              //"--net",
+             //"MAESTROTEST"
+              "--net",
+             "HOMO4-88.csd"
+             // "SHORT.mp3"
               //  "audio\\PWS_TEST_1b.wav"
              // "--net",
               //"MAESTROTEST"

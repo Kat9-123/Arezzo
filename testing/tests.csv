@@ -1,5 +1,7 @@
-ORIGINAL         ,COMPARE         ,TEMPO ,KEY     ,TIME ,MIN. SCORE
+ORIGINAL        ,COMPARE         ,TEMPO ,KEY     ,TIME ,MIN. SCORE
 PWS_TEST_1b.wav ,PWS_TEST_1.mid  ,   80 ,A minor ,4/4  ,        80
-PWS_TEST_4b.wav  ,PWS_TEST_4.mid  ,   92 ,E minor ,3/4  ,        95
-PWS_TEST_6.wav   ,PWS_TEST_6.mid  ,   94 ,D major ,4/4  ,        95
-PWS_TEST_12.wav ,PWS_TEST_12.mid ,  86 ,A minor ,2/2  ,        80
+PWS_TEST_4b.wav ,PWS_TEST_4.mid  ,   92 ,E minor ,3/4  ,        95
+PWS_TEST_6.wav  ,PWS_TEST_6.mid  ,   94 ,D major ,4/4  ,        95
+PWS_TEST_12.wav ,PWS_TEST_12.mid ,   86 ,A minor ,2/2  ,        80
+
+

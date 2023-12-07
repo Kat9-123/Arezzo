@@ -1,10 +1,12 @@
 # Project-specific
 learning/audio/
 learning/spectra/
+learning/midi
 screenshots/
 temp/
 src/launch/bin/
 src/launch/obj/
+learning/MAESTRO/
 
 *.tags
 
