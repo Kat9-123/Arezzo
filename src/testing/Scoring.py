@@ -1,5 +1,4 @@
 import core.Utils as Utils
-from transcription.NoteObj import NoteObj
 import cui.CUI as CUI
 from testing.Scores import Scores
 import transcription.KeyFinder as KeyFinder

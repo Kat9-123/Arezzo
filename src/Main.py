@@ -5,8 +5,8 @@
 
 # __privateFunction
 # _overridableFunction
-if __name__ == "__main__":
-    print("Initialising...")
+
+print("Initialising...")
 
 
 
@@ -31,7 +31,6 @@ try:
 
 
 
-
 except ModuleNotFoundError:
     from subprocess import Popen
     print("One or more module(s) were not found. Please see requirements.txt")
@@ -48,7 +47,6 @@ except ModuleNotFoundError:
 
 
 def main() -> None:
-
     
     CUI.init()
 

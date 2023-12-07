@@ -1,5 +1,4 @@
 
-
 import torch
 from network.Network import Network
 from core.Configurator import CONFIG
