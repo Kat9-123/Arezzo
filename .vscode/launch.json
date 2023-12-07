@@ -6,6 +6,11 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/Main.py",
             "args":[
+                //"--net",
+                //"1.csd"
+                //"audio\\PWS_TEST_1b.wav",
+                "--net",
+                "1.csd",
               //"PWS_TEST_12.wav"
               //"MAESTROTEST",
               //"--net",
@@ -13,6 +18,9 @@
               "--net",
              "HOMO4-88.csd"
              // "SHORT.mp3"
+            // "--net",
+             // "MAESTROTEST"
+             // "-t"
               //  "audio\\PWS_TEST_1b.wav"
              // "--net",
               //"MAESTROTEST"

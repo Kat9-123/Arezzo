@@ -40,8 +40,8 @@ except ModuleNotFoundError:
 
     if x != 'y' and x != "yes":
         exit()
-    Popen("src\\setup.bat", shell=True).wait()
-    input()
+    print("Attempting to install dependencies...")
+    Popen("pip install -r requirements.txt", shell=True).wait()
     exit()
 
 

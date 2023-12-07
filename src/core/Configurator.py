@@ -20,7 +20,7 @@ class Modes(Enum):
     
 
 def __parse_args():
-    parser = argparse.ArgumentParser(description='Automatic polyphonic piano music transcription in Python.',
+    parser = argparse.ArgumentParser(prog="TEST",description='Automatic polyphonic piano music transcription in Python.',
                                      epilog=f"For more advanced options, please see {CONFIG_FILE}")
 
     parser.add_argument('path', type=str,
@@ -98,7 +98,7 @@ def get_configuration() -> None:
 
     else:
         if args.path == "":
-            raise Exception("Invalid usage. To transcribe please pass an audio file as an argument. For other options use -h or --help")
+            raise Exception("Invalid usage. To transcribe please pass an audio file as an argument or drag it onto Arezzo.exe/.bat. For other options use -h or --help")
         mode = Modes.GENERATE_SHEETMUSIC
 
     if args.model:

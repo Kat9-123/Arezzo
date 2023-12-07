@@ -18,6 +18,11 @@ musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 
 
 
+
+
+
+
+
 [ADVANCED_OPTIONS]
 onset_to_beat_lag = 0.06
 model = "HOMO4-88.mdl"
