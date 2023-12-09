@@ -20,7 +20,6 @@ from transcription.ProcessedMusic import ProcessedMusic
 
 
 def transcribe(path,*,testMode=False,tempoOverride=-1) -> (list,float):
-    print("Generating sheet music...")
     startTime = time.perf_counter()
 
     
@@ -28,23 +27,26 @@ def transcribe(path,*,testMode=False,tempoOverride=-1) -> (list,float):
     Manager.setup_trained_model()
     outputName = f"{str(int(time.time()))}_{os.path.basename(path)}"
 
-    CUI.print_colour(f"Processing {path}",CUI.GREEN,end="\n\n")
+   # CUI.print_colour(f"Processing {path}",CUI.GREEN,end="\n\n")
     
 
     if not testMode:
         Graphing.create_plot(rows=2)
 
 
-    processedAudioData = AudioProcessor.process_audio(path,tempoOverride) 
+    processedAudioData = AudioProcessor.process_audio(path,tempoOverride=tempoOverride)
     Graphing.show_plot()
+
+
 
     notes = NoteGenerator.get_notes(processedAudioData)
 
     key = KeyFinder.guess_key(notes)
+    CUI.newline()
     timeSig = TimeSigFinder.guess_time_signature(notes)
 
     processedMusic = ProcessedMusic(notes=notes,
-                                    tempo=processedAudioData.tempo,
+                                    tempo=processedAudioData.origTempo,
                                     key=key,
                                     timeSig=timeSig)
 
@@ -69,7 +71,7 @@ def transcribe(path,*,testMode=False,tempoOverride=-1) -> (list,float):
     CUI.newline()
    
     CUI.diagnostic("Processing time per second of audio",round(perSecondOfAudioDuration,3), "seconds")
-    CUI.print_colour(f"\nDone. Processing {round(processedAudioData.duration,3)} seconds of audio took {round(duration, 3)} seconds.\n",CUI.GREEN)
+    CUI.important(f"\nDone. Processing {round(processedAudioData.duration,3)} seconds of audio took {round(duration, 3)} seconds.\n")
 
 
     if not testMode:

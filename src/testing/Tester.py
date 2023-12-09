@@ -8,9 +8,6 @@ from core.Configurator import CONFIG
 
 TEST_RESULTS_FOLDER = "testing\\results\\"
 
-def test_single():
-    pass
-
 
 def test():
 
@@ -20,7 +17,7 @@ def test():
     results = []
     for x,row in enumerate(data):
 
-        # The first line and lines starting with # are skippes
+        # The first line and lines starting with # are skipped
         if x == 0 or row[0][0] == '#':
             continue
         
@@ -42,7 +39,7 @@ def test():
         minScore = round(float(row[5].replace(' ','')))
 
         
-        processedMusic = Transcriber.transcribe(path,testMode=True,tempoOverride=-1)
+        processedMusic = Transcriber.transcribe(path,testMode=True,tempoOverride=origTempo)
 
     
         score = Scoring.score(processedMusic,origTempo,origKeySig,origTimeSig,comparePath)
@@ -52,7 +49,7 @@ def test():
     CUI.newline()
     CUI.newline()
 
-    CUI.print_colour("FINAL SCORES",CUI.WHITE,end="\n")
+    CUI.important("FINAL SCORES")
 
     CUI.print_colour(f"{'FILE':<30} {'NOTES':<6} {'TEMPO':<6} {'KEY':<6} {'TIME':<6} {'TOTAL':<6} {'MIN. SCORE':<6}",CUI.WHITE,end="\n")
 

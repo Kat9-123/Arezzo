@@ -6,40 +6,48 @@
 # __privateFunction
 # _overridableFunction
 
-print("Initialising...")
 
 
 
-# The first thing we do is load the config. Because we do this
-# before initialising anything else, the global var CONFIG can
-# just be imported directly by other scripts
 try:
+    # The first thing we do is load the config. Because we do this
+    # before initialising anything else, the global var CONFIG can
+    # just be imported directly by other scripts
     import core.Configurator as cfg
     cfg.get_configuration()
 
-    from core.Configurator import CONFIG, Modes, mode
 
+    
     import cui.CUI as CUI
+    CUI.init()
 
+    CUI.progress("Initialising",spin=True)
+
+
+
+    from core.Configurator import CONFIG, Modes, mode
     import core.Utils as Utils
 
     import transcription.Transcriber as Transcriber
     import testing.Tester as Tester
     import network.Trainer as NetTrainer
     import network.TrainingDataProcessor as TrainingDataProcessor
-    import os
-    import sys
+    CUI.force_stop_progress()
 
 
 except ModuleNotFoundError:
-    from subprocess import Popen
-    print("One or more module(s) were not found. Please see requirements.txt")
-    print("or do you want to automatically install them? (yes/no)")
-    x = input(">").lower()
+    CUI.force_stop_progress(succesful=False)
 
-    if x != 'y' and x != "yes":
+    from subprocess import Popen
+
+
+    CUI.warning("One or more module(s) were not found. Please see requirements.txt")
+    CUI.warning("or do you want to automatically install them? (yes/no)")
+
+
+    if not CUI.yesno():
         exit()
-    print("Attempting to install dependencies...")
+    CUI.important("Attempting to install dependencies...")
     Popen("pip install -r requirements.txt", shell=True).wait()
     exit()
 
@@ -48,32 +56,31 @@ except ModuleNotFoundError:
 
 def main() -> None:
     
-    CUI.init()
-
-    Utils.confirm_temp()
+    Utils.confirm_temp() # Make sure temp folder exists
 
     if mode == Modes.PROCESS_TRAINING_DATA:
-        print("Processing training data...")
+        CUI.important("Processing training data...")
         TrainingDataProcessor.process_single()
         return
     
     elif mode == Modes.PROCESS_MULTIPLE_TRAINING_DATA:
-        print("Processing multiple training data files...")
+        CUI.important("Processing multiple training data files...")
         TrainingDataProcessor.process_multiple()
         return
 
     elif mode == Modes.TRAIN:
-        print("Training network...")
+        CUI.important("Training network...")
         NetTrainer.train()
         return
 
     elif mode == Modes.TEST_MULTIPLE:
-        print("Testing...")
+        CUI.important("Testing...")
         Tester.test()
         return
 
     
     # Standard mode.
+    CUI.important("Generating sheet music...")
     Transcriber.transcribe(CONFIG["ARGS"]["audio"])
 
 
@@ -86,4 +93,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    CUI.notify()
 

@@ -12,7 +12,7 @@ import math
 
 SPECTRUM_DB_CUTOFF = -50
 CHROMA_CUTOFF = 0.2#0.9
-ONSET_TEMPORAL_LAG = 2#4
+ONSET_TEMPORAL_LAG = 3#4
 
 TEMPO_BOUNDRY = 140
 
@@ -38,7 +38,7 @@ def process_audio(audioPath,tempoOverride=-1):
        estimated tempo and the duration of the file."""
     global samplingRate
     Graphing.create_plot(rows=3)
-    CUI.progress(f"Loading {audioPath}",prefixNewline=False,spin=True)
+    CUI.progress(f"Loading {audioPath}",spin=True)
 
     y, samplingRate = librosa.load(audioPath)
 
@@ -56,19 +56,17 @@ def process_audio(audioPath,tempoOverride=-1):
     
     frameCount = spectrum.shape[1]
 
-    #chroma = __get_chroma(y,samplingRate)
-    chroma = None
+
     onsets = __get_onset(y,stft, samplingRate,frameCount)
 
     pointDuration = duration/frameCount
 
-    if tempoOverride == -1:
-        tempo = __get_tempo(y,samplingRate)
-    else:
-        tempo = tempoOverride
+
+    tempo = __get_tempo(y,samplingRate)
 
 
     CUI.force_stop_progress()
+    CUI.diagnostic("Tempo",tempo, "bpm")    
     CUI.diagnostic("Frame Count",frameCount)
     CUI.diagnostic("Duration",duration, "s")
     CUI.diagnostic("Frame Duration",pointDuration * 1000, "ms")
@@ -81,16 +79,19 @@ def process_audio(audioPath,tempoOverride=-1):
 
    # for i in onsetTimes:
    #     print(Utils.snap_to_beat(i))
+    origTempo = tempo
+    if tempoOverride != -1:
+        tempo = tempoOverride
 
 
     processedAudioData = ProcessedAudioData(spectrum=spectrum,
-                                            chroma=chroma,
                                             onsets=onsets,
                                             tempo=tempo,
                                             duration=duration,
                                             frameCount=frameCount,
                                             frameDuration=pointDuration,
-                                            loudest=spectrum.max())
+                                            loudest=spectrum.max(),
+                                            origTempo=origTempo)
 
 
 
@@ -138,20 +139,21 @@ def __get_tempo(y,sampleRate):
     first_beat_time, last_beat_time = librosa.frames_to_time((beats[0],beats[-1]),sr=sampleRate,n_fft=N_FFT)
 
     tempoBeat = 60/((last_beat_time-first_beat_time)/(len(beats)-1))
-    print(tempo,tempoBeat)
+    CUI.debug(f"Beat track tempo: {tempo}")
+    CUI.debug(f"Delta tempo: {tempoBeat}")
 
     
-    tempo = math.floor(tempoBeat)
+    tempo = round(tempoBeat)
 
 
 
-    CUI.diagnostic("Est. Tempo",tempo, "bpm")
+    
     #return tempo
 
     while tempo > TEMPO_BOUNDRY:
         tempo //= 2
     
-    CUI.diagnostic("Corrected Tempo",tempo, "bpm")    
+    
 
     return tempo
 

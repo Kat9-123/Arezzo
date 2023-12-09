@@ -28,7 +28,7 @@ SUBSET_SPLIT = [0.13,0.06,0.01,0.8]
 
 
 EPOCH_COUNT = 10000
-BATCH_SIZE = 10
+BATCH_SIZE = 35
 NOISE_DEVIATION = 2.5
 
 
@@ -119,7 +119,7 @@ def train():
 
     dataset = SpectrumDataset(dataPath,DEVICE)
 
-    trainDataset, validationDataset, testDataset = torch.utils.data.random_split(dataset, TRAIN_VALIDATION_TEST_SPLIT)
+    trainDataset, validationDataset, testDataset,_ = torch.utils.data.random_split(dataset, SUBSET_SPLIT)
 
     # Creating data indices for training and validation splits:
     trainLoader = torch.utils.data.DataLoader(trainDataset, batch_size=BATCH_SIZE, 
@@ -157,9 +157,7 @@ def train():
     CUI.diagnostic("Training size",len(trainLoader)*BATCH_SIZE)
     CUI.diagnostic("Validation size",len(validationLoader)*BATCH_SIZE)
     CUI.diagnostic("Test size",len(testLoader)*BATCH_SIZE)
-
-    CUI.progress("Training...")
-
+    CUI.newline()
     # training loop
     startTime = time.time()
     previousAccuracy = 0.0
@@ -199,12 +197,13 @@ def train():
                     trainLoss[i] = float(loss)
                     trainAccuracy[i] = float(accuracy)
                     bar.set_postfix(
-                        loss=f"{float(loss):5.2f}",
+                        loss=f"{float(loss):5.4f}",
                         acc=f"{float(accuracy):5.2f}",
                     )
                     bar.update()
             # Set model in evaluation mode and run through the validation set
-            print("Validating...",end="\r")
+            CUI.progress("Validating", spin=True)
+            #print("Validating...",end="\r")
             avgTrainLoss = np.mean(trainLoss)
             avgTrainAccuracy = np.mean(trainAccuracy)
 
@@ -227,13 +226,13 @@ def train():
             if validationAccuracy > bestAccuracy:
                 bestAccuracy = validationAccuracy
                 bestWeights = copy.deepcopy(model.state_dict())
-
+            CUI.force_stop_progress()
 
 
             print(f"Epoch {epoch}              ")
-            print(f"     Train - Loss: {avgTrainLoss:.2f}, Accuracy: {avgTrainAccuracy*100:.1f}%")
-            print(f"Validation - Loss: {validationLoss:.2f}, Accuracy: {validationAccuracy*100:.1f}%")
-            print(f"ΔAccuracy: {(validationAccuracy-previousAccuracy)*100:.1f} Train-Validation diff: {(avgTrainAccuracy-validationAccuracy)*100:.1f}")
+            print(f"     Train - Loss: {avgTrainLoss:.4f}, Accuracy: {avgTrainAccuracy*100:.1f}%")
+            print(f"Validation - Loss: {validationLoss:.4f}, Accuracy: {validationAccuracy*100:.1f}%")
+            CUI.important(f"ΔAccuracy: {(validationAccuracy-previousAccuracy)*100:.1f} Train-Validation diff: {(avgTrainAccuracy-validationAccuracy)*100:.1f}")
             
             timeSpent = round(time.time()-startTime)
 
@@ -244,7 +243,7 @@ def train():
         except KeyboardInterrupt:
             print("Stopping training...")
             break
-    
+    CUI.force_stop_progress()
     if bestWeights == None:
         CUI.warning("At least one epoch has to finish for results!")
         exit()
@@ -255,7 +254,7 @@ def train():
     __save_model(model,dataPath)
 
     testAccuracy, testLoss = __eval_model(testLoader,model,criterion)
-    print(f"Test - Loss: {testLoss:.2f}, Accuracy: {testAccuracy*100:.1f}%")
+    CUI.important(f"Test - Loss: {testLoss:.6f}, Accuracy: {testAccuracy*100:.5f}%")
 
 
     #__eval_debug_samples(model,spectrum,notes)

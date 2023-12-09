@@ -8,6 +8,7 @@ import librosa
 import numpy as np
 
 import network.Manager as netManager
+from core.Constants import *
 
 
 #https://en.wikipedia.org/wiki/Chroma_feature
@@ -29,12 +30,13 @@ cachedNoteRows = {}
 def get_notes(processedAudioData):
     """Takes in spectrum, chroma, onsets and tempo and returns all of the voices with their respective notes."""
     global cachedNoteRows
-    print(processedAudioData.onsets)
+
 
     cachedNoteRows = __get_note_to_row_cache()
 
-    print(cachedNoteRows)
+    CUI.debug(cachedNoteRows)
    # freqs = 
+    CUI.newline()
     CUI.progress("Generating Notes")
     #print(__note_to_row("C9"))
 
@@ -56,7 +58,7 @@ def get_notes(processedAudioData):
         notes = __process_frame(currentNotes,notes,frame,processedAudioData)
         #__model_get_notes(processedAudioData,currentFrame)
 
-
+    CUI.force_stop_progress()
     return notes
 
 
@@ -94,6 +96,8 @@ def __get_note_to_row_cache():
             note = chroma + str(octave)
             cachedNoteRows[note] = __note_to_row(note,freqs)
 
+    cachedNoteRows[note] = __note_to_row("C8",freqs)
+
     return cachedNoteRows
 
 
@@ -107,6 +111,7 @@ def __delete_queued_notes(notes: list,queue: list):
 
 
 def __get_volume(note,frame,processedAudioData):
+
     return processedAudioData.spectrum[cachedNoteRows[note],frame]
 
 def __process_frame(currentNotes: list,finishedNotes: list,frame: int,processedAudioData):
@@ -123,6 +128,7 @@ def __process_frame(currentNotes: list,finishedNotes: list,frame: int,processedA
 
 
 def __get_notes_at_frame(currentNotes: list,finishedNotes: list,frame: int,processedAudioData) -> list:
+    CUI.diagnostic("Frame",frame)
     playingNotes = __model_get_notes(processedAudioData,frame)
 
 
@@ -137,22 +143,26 @@ def __get_notes_at_frame(currentNotes: list,finishedNotes: list,frame: int,proce
             newStrength = __get_volume(curNoteObj.note,frame-AudioProcessor.ONSET_TEMPORAL_LAG,processedAudioData)
             
             avgStrength = curNoteObj.get_average_strength()
-            print(newStrength,avgStrength, (newStrength - avgStrength))
-
+            strengthDiff = (newStrength - avgStrength)
+            CUI.debug((curNoteObj.note,newStrength,avgStrength, strengthDiff),debugControl=False)
+            #print(curNoteObj._NoteObj__lifetimeStrengths)
 
             # Not a repeat note 
-            if (newStrength - avgStrength) < -8:
+            if strengthDiff < -1:
                 playingNotes.remove(curNoteObj.note)
+                CUI.print_colour(f"-- {curNoteObj.note} ({strengthDiff:.2f})",CUI.YELLOW,end="\n")
                 continue
 
         
         # curNote wasnt found, and should be ended
         curNoteObj.finish_note(frame)
-        print(curNoteObj, curNoteObj.get_average_strength())
+        CUI.print_colour(f"<- {curNoteObj}",CUI.YELLOW,end="\n")
+       # print(curNoteObj, curNoteObj.get_average_strength())
         finishedNotes.append(curNoteObj)
         noteDeletionQueue.append(curNoteObj)
             
 
+    CUI.newline()
     currentNotes = __delete_queued_notes(currentNotes,noteDeletionQueue)
 
     for newNote in playingNotes:
@@ -179,7 +189,7 @@ def __get_notes_at_frame(currentNotes: list,finishedNotes: list,frame: int,proce
 
 
 def __model_get_notes(processedAudioData,frame):
-    data = processedAudioData.spectrum[0:6222,frame]
+    data = processedAudioData.spectrum[0:SPECTRUM_SIZE,frame]
     modelOutput = netManager.get_model_output(data)
 
 
@@ -191,8 +201,9 @@ def __model_get_notes(processedAudioData,frame):
         octave, chroma = divmod(x + 9,12)
         chroma = CHROMA[chroma]
         note = chroma + str(octave)
-        CUI.print_colour(note,CUI.RED,end="\n")
+        CUI.print_colour(f"-> {note}",CUI.YELLOW,end="\n")
         notes.append(note)
+
 
     return notes
 

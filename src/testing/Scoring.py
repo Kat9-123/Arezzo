@@ -53,7 +53,7 @@ def __match_original_generated(generated, original):
         if i in generated:
             score += 1
         else:
-            print("COULDNT FIND", i, "IN GENERATED")
+            CUI.debug(f"{i} not in GENERATED")
 
     return score / len(original) * 100
 
@@ -73,7 +73,7 @@ def __match_generated_original(generated,original):
         if i in original:
             score += 1
         else:
-            print("COULDNT FIND", i, "IN ORIGNAL")
+            CUI.debug(f"{i} not in ORIGINAL")
 
     return score / len(generated) * 100
 
@@ -139,7 +139,8 @@ def score(generatedMusic,originalTempo, origKeySig,origTimeSig,filePath) -> floa
             timeScore * 0.5
             
     score = round(total / (10.0),2)
-    CUI.diagnostic("SCORE", score, "%")
+    CUI.newline
+    CUI.important(f"Score: {score}%")
     
     return Scores(noteScore=round(noteScore),
                   tempoOrig=round(originalTempo),

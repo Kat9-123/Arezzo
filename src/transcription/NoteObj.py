@@ -17,21 +17,17 @@ import core.Utils as Utils
 
 
 class NoteObj:
-    start: float
-    duration: float
-    note: str
 
-    
-    __startFrame: int
-    __processedAudioData: ProcessedAudioData
-    __lifetimeStrengths: list = []
 
 
     def __init__(self,_note,_startFrame,_processedAudioData) -> None:
+        self.start = 0
+        self.duration = 0
         self.note = _note
 
         self.__startFrame = _startFrame
         self.__processedAudioData = _processedAudioData
+        self.__lifetimeStrengths = []
 
 
     def add_strength(self,strength) -> None:
@@ -39,7 +35,7 @@ class NoteObj:
         
 
     def get_average_strength(self) -> float:
-        return np.mean(self.__lifetimeStrengths) # Median?
+        return np.median(self.__lifetimeStrengths) # Median?
 
 
     def __repr__(self) -> str:
@@ -69,6 +65,6 @@ class NoteObj:
         else:
             self.duration = 2
         
-        CUI.print_colour(f"{self.note} {round(self.start,4)} {round(self.duration,4)}                                \n",CUI.CYAN)
+        #CUI.print_colour(f"{self.note} {round(self.start,4)} {round(self.duration,4)}                                \n",CUI.CYAN)
     
         return True

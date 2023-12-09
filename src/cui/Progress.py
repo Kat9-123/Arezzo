@@ -24,30 +24,30 @@ FRAMES = [
 
 ]
 
-currentText = ""
+currentFinishedText = ""
 
-def progress(text,spin=False) -> None:
-    global currentText
+def progress(text,spin=False,finishedText="") -> None:
+    global currentFinishedText
 
 
-    __finish(currentText)
-    currentText = text
+    __finish(currentFinishedText)
+    currentFinishedText = finishedText
 
     if spin and CONFIG["DEBUG"]["spin"]:
-        __start_spinning(currentText)
+        __start_spinning(text)
         return
 
-    CUI.print_colour(f"[.....] {currentText}",CUI.GREEN,end="\n")
+    CUI.print_colour(f"[.....] {text}",CUI.GREEN,end="\n")
 
 
-def force_finish() -> None:
-    __finish(currentText)
+def force_finish(succesful) -> None:
+    __finish(currentFinishedText,succesful)
 
-def __finish(text) -> None:
+def __finish(text,succesful=True) -> None:
     if text == "":
         return
 
-    if __stop_spinner():
+    if __stop_spinner(succesful):
         return
 
     CUI.print_colour(f"[  √  ] {text}",CUI.GREEN,end="\n\n")
@@ -81,17 +81,20 @@ def __spin():
         if spinnerStopEvent.is_set():
             return
 
-def __stop_spinner() -> bool:
-    global spinnerThread, spinnerStopEvent,spinnerText,currentText
+def __stop_spinner(succesful=True) -> bool:
+    global spinnerThread, spinnerStopEvent,spinnerText,currentFinishedText
     if spinnerThread == None:
         return False
 
-    currentText = ""
+    
     spinnerStopEvent.set()
     spinnerThread.join()
 
     spinnerThread = None
 
-
-    CUI.print_colour(f"[  √  ] {currentText}\n",CUI.GREEN,end="\n")
+    if succesful:
+        CUI.print_colour(f"[  √  ] {currentFinishedText}\n",CUI.GREEN,end="\n")
+    else:
+        CUI.print_colour(f"[  x  ] {currentFinishedText}\n",CUI.RED,end="\n")
+    currentFinishedText = ""
     return True

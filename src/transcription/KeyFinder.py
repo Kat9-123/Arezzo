@@ -163,8 +163,6 @@ def guess_key(noteObjs) -> str:
         chromaDurations = __offset_notes(chromaDurations)
     key = KEY_NAMES[iGreatest]
 
-
-    CUI.newline()
-    CUI.diagnostic("Key",f"{key} ({round(greatest,2)})"," ")
+    CUI.important(f"Key: {key} ({round(greatest,2)})")
 
     return key
