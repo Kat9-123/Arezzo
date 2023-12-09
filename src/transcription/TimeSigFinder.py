@@ -35,6 +35,6 @@ def guess_time_signature(notes) -> str:
     x = [fourFour,threeFour,twoFour]
     timeSig = TIME_SIGS[x.index(min(x))]
 
-    CUI.diagnostic("Time signature", timeSig)
+    CUI.important(f"Time signature: {timeSig}")
 
     return timeSig

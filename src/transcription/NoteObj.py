@@ -65,6 +65,6 @@ class NoteObj:
         else:
             self.duration = 2
         
-        CUI.print_colour(f"{self.note} {round(self.start,4)} {round(self.duration,4)}                                \n",CUI.CYAN)
+        #CUI.print_colour(f"{self.note} {round(self.start,4)} {round(self.duration,4)}                                \n",CUI.CYAN)
     
         return True

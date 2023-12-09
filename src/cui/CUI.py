@@ -5,6 +5,8 @@ import cui.Progress as Progress
 import os
 from core.Constants import *
 
+from core.Configurator import CONFIG
+
 
 ## https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124
 YELLOW = "\x1b[0;33m"
@@ -28,6 +30,15 @@ spinner = None
 def setY(y):
     print("\033[{};{}H".format(y,1))
 
+
+def yesno() -> bool:
+    answer = input(">")
+    answer = answer.lower()
+
+    if answer == "y" or answer == "yes":
+        return True
+    
+    return False
 
 def init():
     ## https://stackoverflow.com/questions/12492810/python-how-can-i-make-the-ansi-escape-codes-to-work-also-in-windows
@@ -57,8 +68,8 @@ def warning(value):
 
 
 def debug(value,*,end="\n",debugControl=True):
-    if debugControl:
-        print(value,end)
+    if debugControl and not CONFIG["DEBUG"]["blanket_disable_debug_print"]:
+        print_colour(value,colour=WHITE,end=end)
 
 def print_colour(text,colour,*,end="",debugControl=True):
     if debugControl:
@@ -67,7 +78,7 @@ def print_colour(text,colour,*,end="",debugControl=True):
 
 
 def diagnostic(name,value,suffix="",*,end="\n"):
-    print_colour(f"{name}: {value} {suffix}",YELLOW,end=end)
+    print_colour(f"{name}: {value} {suffix}",WHITE,end=end)
 
 
 
@@ -75,12 +86,20 @@ def newline(*,debugControl=True):
     if debugControl:
         print()
 
+def important(text,*,end="\n"):
+    print_colour(text,CYAN,end=end)
+
+
+def progress(value,*,spin=False,finishedText=""):
+    if finishedText == "":
+        finishedText = value
+    Progress.progress(value,spin,finishedText)
+
+
+def force_stop_progress(succesful=True):
+    Progress.force_finish(succesful)
 
 
 
-def progress(value,prefixNewline=True,*,spin=False):
-    Progress.progress(value,spin)
-
-
-def force_stop_progress():
-    Progress.force_finish()
+def notify():
+    print("\a")

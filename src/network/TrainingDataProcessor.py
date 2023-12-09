@@ -55,7 +55,7 @@ def __generate(audioPath,midiPath,basePath):
     ## Process audio file -> spectrum & onsets
     audioData = AudioProcessor.process_audio(audioPath)
 
-    CUI.progress(f"Getting spectrum",spin=False)
+    CUI.progress(f"Getting spectrum",spin=True)
 
     midi = MIDIManager.get_midi(midiPath)
 
@@ -89,12 +89,9 @@ def __generate(audioPath,midiPath,basePath):
 
 
 
-    start = time.time()
     CUI.progress(f"Compressing",spin=True)
 
     
 
     SpectrumCompressor.compress(chords,spectrum,basePath)
     CUI.force_stop_progress()
-    
-    print(time.time() - start)

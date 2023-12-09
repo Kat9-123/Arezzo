@@ -157,9 +157,7 @@ def train():
     CUI.diagnostic("Training size",len(trainLoader)*BATCH_SIZE)
     CUI.diagnostic("Validation size",len(validationLoader)*BATCH_SIZE)
     CUI.diagnostic("Test size",len(testLoader)*BATCH_SIZE)
-
-    CUI.progress("Training...")
-
+    CUI.newline()
     # training loop
     startTime = time.time()
     previousAccuracy = 0.0
@@ -204,7 +202,8 @@ def train():
                     )
                     bar.update()
             # Set model in evaluation mode and run through the validation set
-            print("Validating...",end="\r")
+            CUI.progress("Validating", spin=True)
+            #print("Validating...",end="\r")
             avgTrainLoss = np.mean(trainLoss)
             avgTrainAccuracy = np.mean(trainAccuracy)
 
@@ -227,13 +226,13 @@ def train():
             if validationAccuracy > bestAccuracy:
                 bestAccuracy = validationAccuracy
                 bestWeights = copy.deepcopy(model.state_dict())
-
+            CUI.force_stop_progress()
 
 
             print(f"Epoch {epoch}              ")
             print(f"     Train - Loss: {avgTrainLoss:.4f}, Accuracy: {avgTrainAccuracy*100:.1f}%")
             print(f"Validation - Loss: {validationLoss:.4f}, Accuracy: {validationAccuracy*100:.1f}%")
-            print(f"ΔAccuracy: {(validationAccuracy-previousAccuracy)*100:.1f} Train-Validation diff: {(avgTrainAccuracy-validationAccuracy)*100:.1f}")
+            CUI.important(f"ΔAccuracy: {(validationAccuracy-previousAccuracy)*100:.1f} Train-Validation diff: {(avgTrainAccuracy-validationAccuracy)*100:.1f}")
             
             timeSpent = round(time.time()-startTime)
 
@@ -244,7 +243,7 @@ def train():
         except KeyboardInterrupt:
             print("Stopping training...")
             break
-    
+    CUI.force_stop_progress()
     if bestWeights == None:
         CUI.warning("At least one epoch has to finish for results!")
         exit()
@@ -255,7 +254,7 @@ def train():
     __save_model(model,dataPath)
 
     testAccuracy, testLoss = __eval_model(testLoader,model,criterion)
-    print(f"Test - Loss: {testLoss:.4f}, Accuracy: {testAccuracy*100:.1f}%")
+    CUI.important(f"Test - Loss: {testLoss:.6f}, Accuracy: {testAccuracy*100:.5f}%")
 
 
     #__eval_debug_samples(model,spectrum,notes)

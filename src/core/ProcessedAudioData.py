@@ -4,7 +4,6 @@ from numpy import array
 
 class ProcessedAudioData(NamedTuple):
     spectrum: array
-    chroma: array
     onsets: array
     tempo: float
     duration: float
@@ -12,4 +11,5 @@ class ProcessedAudioData(NamedTuple):
     frameDuration: float
 
     loudest: float
+    origTempo: float
 
