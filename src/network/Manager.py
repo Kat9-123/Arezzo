@@ -22,5 +22,5 @@ def get_model_output(data):
     output = model(data)
     print(output)
     #print(torch.round(output,decimals=1).tolist())
-    pred = (output > 0.5).float()
+    pred = (output > CONFIG["ADVANCED_OPTIONS"]["note_detection_threshold"]).float()
     return pred

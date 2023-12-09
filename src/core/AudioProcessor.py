@@ -12,7 +12,7 @@ import math
 
 SPECTRUM_DB_CUTOFF = -50
 CHROMA_CUTOFF = 0.2#0.9
-ONSET_TEMPORAL_LAG = 2#4
+ONSET_TEMPORAL_LAG = 3#4
 
 TEMPO_BOUNDRY = 140
 
@@ -141,7 +141,7 @@ def __get_tempo(y,sampleRate):
     print(tempo,tempoBeat)
 
     
-    tempo = math.floor(tempoBeat)
+    tempo = math.floor((tempoBeat+tempo)/2)
 
 
 

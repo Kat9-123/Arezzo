@@ -8,6 +8,7 @@ import librosa
 import numpy as np
 
 import network.Manager as netManager
+from core.Constants import *
 
 
 #https://en.wikipedia.org/wiki/Chroma_feature
@@ -94,6 +95,8 @@ def __get_note_to_row_cache():
             note = chroma + str(octave)
             cachedNoteRows[note] = __note_to_row(note,freqs)
 
+    cachedNoteRows[note] = __note_to_row("C8",freqs)
+
     return cachedNoteRows
 
 
@@ -107,6 +110,13 @@ def __delete_queued_notes(notes: list,queue: list):
 
 
 def __get_volume(note,frame,processedAudioData):
+    if note == "A3":
+        print(note, [processedAudioData.spectrum[cachedNoteRows[note]-2,frame],
+                    processedAudioData.spectrum[cachedNoteRows[note]-1,frame],
+                    processedAudioData.spectrum[cachedNoteRows[note],frame],
+                    processedAudioData.spectrum[cachedNoteRows[note]+1,frame],
+                    processedAudioData.spectrum[cachedNoteRows[note]+2,frame]])
+
     return processedAudioData.spectrum[cachedNoteRows[note],frame]
 
 def __process_frame(currentNotes: list,finishedNotes: list,frame: int,processedAudioData):
@@ -137,11 +147,11 @@ def __get_notes_at_frame(currentNotes: list,finishedNotes: list,frame: int,proce
             newStrength = __get_volume(curNoteObj.note,frame-AudioProcessor.ONSET_TEMPORAL_LAG,processedAudioData)
             
             avgStrength = curNoteObj.get_average_strength()
-            print(newStrength,avgStrength, (newStrength - avgStrength))
-
+            print(curNoteObj.note,newStrength,avgStrength, (newStrength - avgStrength))
+            print(curNoteObj._NoteObj__lifetimeStrengths)
 
             # Not a repeat note 
-            if (newStrength - avgStrength) < -8:
+            if (newStrength - avgStrength) < -1:
                 playingNotes.remove(curNoteObj.note)
                 continue
 
@@ -179,7 +189,7 @@ def __get_notes_at_frame(currentNotes: list,finishedNotes: list,frame: int,proce
 
 
 def __model_get_notes(processedAudioData,frame):
-    data = processedAudioData.spectrum[0:6222,frame]
+    data = processedAudioData.spectrum[0:SPECTRUM_SIZE,frame]
     modelOutput = netManager.get_model_output(data)
 
 

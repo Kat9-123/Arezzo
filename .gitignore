@@ -3,7 +3,9 @@ learning/audio/
 learning/spectra/
 learning/midi
 screenshots/
+output/
 temp/
+testing/results/
 src/launch/bin/
 src/launch/obj/
 learning/MAESTRO/
