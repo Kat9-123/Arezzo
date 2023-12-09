@@ -3,6 +3,8 @@ import core.Utils as Utils
 from core.Configurator import CONFIG
 import core.MIDIManager as MIDIManager
 import os
+from pathlib import Path
+
 
 
 def generate_midi_file(notes,tempo,outputName) -> None:
@@ -14,7 +16,6 @@ def generate_midi_file(notes,tempo,outputName) -> None:
 
     CUI.progress("Generating MIDI")
 
-    # write it to disk
 
     if not CONFIG["ADVANCED_OPTIONS"]["output_cleanly"]:
         midiPath = f"output\\midi\\{outputName}.mid"
@@ -44,7 +45,8 @@ def __generate_sheetmusic_musescore(midiPath: str,outputName: str) -> None:
     if not CONFIG["ADVANCED_OPTIONS"]["output_cleanly"]:
         outputPath = f"output\\sheet music\\"
     else:
-        outputPath = f""
+        path = Path(os.getcwd())
+        outputPath = path.parent.absolute() + "\\"
     
 
     command = f'"{museScorePath}" -o "{outputPath}{outputName}.{exportType}" "{midiPath}"'

@@ -27,8 +27,8 @@ try:
     import testing.Tester as Tester
     import network.Trainer as NetTrainer
     import network.TrainingDataProcessor as TrainingDataProcessor
-
-
+    import os
+    import sys
 
 
 except ModuleNotFoundError:
@@ -72,7 +72,7 @@ def main() -> None:
         Tester.test()
         return
 
-
+    
     # Standard mode.
     Transcriber.transcribe(CONFIG["ARGS"]["audio"])
 
