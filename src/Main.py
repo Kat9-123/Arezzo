@@ -56,7 +56,6 @@ except ModuleNotFoundError:
 
 def main() -> None:
     
-    Utils.confirm_temp() # Make sure temp folder exists
 
     if mode == Modes.PROCESS_TRAINING_DATA:
         CUI.important("Processing training data...")
@@ -92,6 +91,11 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+   # try:
     main()
+   # except Exception as e:
+    #    CUI.force_stop_progress(succesful=False)
+    #    CUI.warning(e)
+        
     CUI.notify()
 

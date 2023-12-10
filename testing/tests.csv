@@ -1,9 +1,15 @@
-ORIGINAL        ,COMPARE         ,TEMPO ,KEY     ,TIME ,MIN. SCORE
-PWS_TEST_1b.wav ,PWS_TEST_1.mid  ,   80 ,A minor ,4/4  ,        85
-PWS_TEST_2.wav  ,PWS_TEST_2.mid  ,  120 ,C Major ,4/4  ,        95
-PWS_TEST_4b.wav ,PWS_TEST_4.mid  ,   92 ,E minor ,3/4  ,        95
-PWS_TEST_6.wav  ,PWS_TEST_6.mid  ,   94 ,D major ,4/4  ,        85
-PWS_TEST_8.wav  ,PWS_TEST_8.mid  ,   92 ,C major ,4/4  ,        85
-PWS_TEST_9.wav  ,PWS_TEST_9.mid  ,  130 ,C minor ,4/4  ,        75
-PWS_TEST_11.wav ,PWS_TEST_11.mid ,  120 ,D minor ,4/4  ,        75
-PWS_TEST_12.wav ,PWS_TEST_12.mid ,   86 ,A minor ,2/2  ,        75
+ORIGINAL                      ,COMPARE                       ,TEMPO ,KEY      ,TIME ,MIN. SCORE
+4 voice homophony A.wav       ,4 voice homophony A.mid       ,   80 ,A minor  ,4/4  ,        85
+C major melody A.wav          ,C major melody.mid            ,  120 ,C major  ,4/4  ,        95
+E minor melody B.wav          ,E minor melody.mid            ,   92 ,E minor  ,3/4  ,        95
+2 voice homophony.wav         ,2 voice homophony.mid         ,   94 ,D major  ,4/4  ,        85
+4 voice homophony short.wav   ,4 voice homophony short.mid   ,   92 ,C major  ,4/4  ,        85
+Two-three chain.wav           ,Two-three chain.mid           ,  130 ,C minor  ,4/4  ,        75
+Bach contrapunctus 1.wav      ,Bach contrapunctus 1.mid      ,  120 ,D minor  ,4/4  ,        75
+Invention.wav                 ,Invention.mid                 ,   86 ,A minor  ,2/2  ,        75
+Chromatic.wav                 ,Chromatic.mid                 ,  120 ,C major  ,4/4  ,        95
+Bach French suite 5 MIDI.mp3  ,Bach French suite 5 MIDI.mid  ,   80 ,G major  ,4/4  ,        75
+Fugue exposition 3 voices.mp3 ,Fugue exposition 3 voices.mid ,  120 ,C minor  ,4/4  ,        75
+Beethoven.mp3                 ,Beethoven.mid                 ,  120 ,Db major ,4/4  ,        95
+Passacaglia progression A.mp3 ,Passacaglia progression A.mid ,   90 ,Cs minor ,4/4  ,        75
+Passacaglia progression B.mp3 ,Passacaglia progression B.mid ,   90 ,Cs minor ,4/4  ,        75

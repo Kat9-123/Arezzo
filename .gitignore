@@ -3,9 +3,10 @@ learning/audio/
 learning/spectra/
 learning/midi
 screenshots/
-output/
+output/midi_local/
+output/sheet music_local/
 temp/
-testing/results/
+testing/results_local/
 src/launch/bin/
 src/launch/obj/
 learning/MAESTRO/

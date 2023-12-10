@@ -1,5 +1,0 @@
-FILE                  ,NOTES ,TEMPO O ,TEMPO G ,TEMPO S ,KEY O   ,KEY G    ,KEY S ,TIME O ,TIME G ,TIME S ,TOTAL ,MIN. SCORE
-audio\PWS_TEST_1b.wav ,83%   ,     80 ,     80 ,100%    ,A minor ,A major  ,50%   ,4/4    ,4/4    ,100%   ,84%   ,80%
-audio\PWS_TEST_4b.wav ,24%   ,     92 ,     91 ,99%     ,E minor ,E minor  ,100%  ,3/4    ,3/4    ,100%   ,39%   ,95%
-audio\PWS_TEST_6.wav  ,100%  ,     94 ,     94 ,100%    ,D major ,F# minor ,0%    ,4/4    ,4/4    ,100%   ,95%   ,95%
-audio\PWS_TEST_12.wav ,63%   ,     86 ,     86 ,100%    ,A minor ,C major  ,75%   ,2/2    ,3/4    ,0%     ,64%   ,80%

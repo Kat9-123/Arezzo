@@ -19,7 +19,7 @@ from transcription.ProcessedMusic import ProcessedMusic
 
 
 
-def transcribe(path,*,testMode=False,tempoOverride=-1) -> (list,float):
+def transcribe(path,*,saveSheetMusic=True,tempoOverride=-1) -> (list,float):
     startTime = time.perf_counter()
 
     
@@ -30,8 +30,7 @@ def transcribe(path,*,testMode=False,tempoOverride=-1) -> (list,float):
    # CUI.print_colour(f"Processing {path}",CUI.GREEN,end="\n\n")
     
 
-    if not testMode:
-        Graphing.create_plot(rows=2)
+    Graphing.create_plot(rows=2)
 
 
     processedAudioData = AudioProcessor.process_audio(path,tempoOverride=tempoOverride)
@@ -50,11 +49,11 @@ def transcribe(path,*,testMode=False,tempoOverride=-1) -> (list,float):
                                     key=key,
                                     timeSig=timeSig)
 
-    if not testMode:
-        SheetMusicGenerator.generate_midi_file(notes,processedAudioData.tempo,outputName)
+    if saveSheetMusic:
+        SheetMusicGenerator.generate_sheet_music(notes,processedAudioData.tempo,outputName)
 
-    if not testMode:
-        Graphing.save_plot(outputName)
+
+    Graphing.save_plot(outputName)
 
 
 
@@ -64,9 +63,7 @@ def transcribe(path,*,testMode=False,tempoOverride=-1) -> (list,float):
     duration = time.perf_counter() - startTime
     perSecondOfAudioDuration = duration/processedAudioData.duration
 
-    if CONFIG["ADVANCED_OPTIONS"]["clear_temp"]:
-        for file in os.listdir("temp\\"):
-            os.remove(f"temp\\{file}")
+
     
     CUI.newline()
    
@@ -74,6 +71,6 @@ def transcribe(path,*,testMode=False,tempoOverride=-1) -> (list,float):
     CUI.important(f"\nDone. Processing {round(processedAudioData.duration,3)} seconds of audio took {round(duration, 3)} seconds.\n")
 
 
-    if not testMode:
-        Graphing.show_plot()
+
+    Graphing.show_plot()
     return processedMusic

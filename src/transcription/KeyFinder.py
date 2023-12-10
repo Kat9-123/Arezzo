@@ -7,7 +7,7 @@ import cui.CUI as CUI
 
 KEY_NAMES = [
     "C major",
-    "C# major",
+    "Db major",
     "D major",
     "Eb major", # D# Major
     "E major",

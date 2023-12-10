@@ -22,9 +22,9 @@ def test():
             continue
         
 
-        path = "audio\\" + row[0].replace(' ','')
-        comparePath = "testing\\" + row[1].replace(' ','')
-        origTempo = float(row[2].replace(' ',''))
+        path = "audio\\" + row[0]
+        comparePath = "testing\\" + row[1]
+        origTempo = float(row[2])
         
         origKeySig = row[3]
 
@@ -32,14 +32,15 @@ def test():
         while origKeySig[-1] == ' ':
             origKeySig = origKeySig[:-1]
         
+        origKeySig = origKeySig.replace("s","#")
 
 
-        origTimeSig = row[4].replace(' ','')
+        origTimeSig = row[4]
 
-        minScore = round(float(row[5].replace(' ','')))
+        minScore = round(float(row[5]))
 
         
-        processedMusic = Transcriber.transcribe(path,testMode=True,tempoOverride=origTempo)
+        processedMusic = Transcriber.transcribe(path,saveSheetMusic=CONFIG["ADVANCED_OPTIONS"]["test_save_sheet_music"],tempoOverride=origTempo)
 
     
         score = Scoring.score(processedMusic,origTempo,origKeySig,origTimeSig,comparePath)
@@ -66,7 +67,7 @@ def test():
         if score.totalScore < origScore:
             colour = CUI.RED
         
-        CUI.print_colour(f"{path:<30} {score.noteScore:<6} {score.tempoScore:<6} {score.keyScore:<6} {score.timeScore:<6} {score.totalScore:<6} {origScore:<6}",colour,end="\n")
+        CUI.print_colour(f"{path:<36} {score.noteScore:<6} {score.tempoScore:<6} {score.keyScore:<6} {score.timeScore:<6} {score.totalScore:<6} {origScore:<6}",colour,end="\n")
         data += f"{path},{score.noteScore}%,{score.tempoOrig},{score.tempoGen},{score.tempoScore}%,{score.keyOrig},{score.keyGen},{score.keyScore}%,{score.timeOrig},{score.timeGen},{score.timeScore}%,{score.totalScore}%,{origScore}%\n"
 
     data = data[:-1]

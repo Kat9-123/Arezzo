@@ -16,7 +16,7 @@
               //"--net",
              //"MAESTROTEST"
             //"POLY4-88-R.wav",
-              "-nFINAL"
+              "--test"
 
               //"POLY4-88-R.csd"
            //  "HOMO4-88.csd"

@@ -2,10 +2,10 @@
 
 
 [OPTIONS]
-# 0 -> Crotchets
-# 1 -> Quavers
-# 2 -> Semiquavers
-# 3 -> Demisemiquavers
+# 0 -> Crotchets (Quarters)
+# 1 -> Quavers  (Eighths)
+# 2 -> Semiquavers (Sixteenths)
+# 3 -> Demisemiquavers (Thirtyseconds)
 # etc.
 note_depth = 2
 
@@ -14,7 +14,7 @@ export_type = "pdf" # pdf or png
 
 
 [ENVIRONMENT]
-musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
+musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe" # Use double backslash!
 
 
 
@@ -25,22 +25,22 @@ musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe"
 
 [ADVANCED_OPTIONS]
 onset_to_beat_lag = 0.06
-model = "FINAL.mdl"
+model = "FINALFINAL.mdl"
 training_device = "cuda"
 use_cuda_if_available = true
 key_profile = "data\\Krumhansl-Kessler.csv"
 
 output_cleanly = false
 clear_temp = false
-note_detection_threshold = 1 #0.5
+note_detection_threshold = 0.5 #0.5
 
-
+test_save_sheet_music = true
 
 
 [DEBUG]
-generate_sheet_music = false
+generate_sheet_music = true
 graphing = false
 save_model = true
 show_network_graphs = true
 spin = true
-blanket_disable_debug_print = true
+blanket_disable_debug_print = false

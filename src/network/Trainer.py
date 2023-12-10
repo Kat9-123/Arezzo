@@ -27,7 +27,7 @@ TRAIN_VALIDATION_TEST_SPLIT = [0.65,0.3,0.05]
 SUBSET_SPLIT = [0.13,0.06,0.01,0.8]
 
 
-EPOCH_COUNT = 10000
+EPOCH_COUNT = 1000
 BATCH_SIZE = 35
 NOISE_DEVIATION = 2.5
 
@@ -119,7 +119,7 @@ def train():
 
     dataset = SpectrumDataset(dataPath,DEVICE)
 
-    trainDataset, validationDataset, testDataset,_ = torch.utils.data.random_split(dataset, SUBSET_SPLIT)
+    trainDataset, validationDataset, testDataset = torch.utils.data.random_split(dataset, TRAIN_VALIDATION_TEST_SPLIT)
 
     # Creating data indices for training and validation splits:
     trainLoader = torch.utils.data.DataLoader(trainDataset, batch_size=BATCH_SIZE, 

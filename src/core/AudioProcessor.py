@@ -41,6 +41,7 @@ def process_audio(audioPath,tempoOverride=-1):
     CUI.progress(f"Loading {audioPath}",spin=True)
 
     y, samplingRate = librosa.load(audioPath)
+   # y *= 1.1
 
     duration = librosa.get_duration(y=y, sr=samplingRate)
 
@@ -72,6 +73,8 @@ def process_audio(audioPath,tempoOverride=-1):
     CUI.diagnostic("Frame Duration",pointDuration * 1000, "ms")
     CUI.diagnostic("Softest",spectrum.min(), "db")
     CUI.diagnostic("Loudest",spectrum.max(),"db")
+    CUI.diagnostic("MEAN",spectrum.mean(), "db")
+
 
 
    # onsetTimes = librosa.frames_to_time(onsets,sr=samplingRate,hop_length=HOP_LENGTH,n_fft=N_FFT)  * (120/60)
@@ -111,8 +114,6 @@ def __get_spectrum(stft,samplingRate):
     #                       librosa.decompose.nn_filter(spectrum,
     #                                                   aggregate=np.median,
      #                                                  metric='cosine'))
-
-    #spectrum[spectrum < SPECTRUM_DB_CUTOFF] = 0
 
 
     Graphing.specshow(spectrum,samplingRate,xType="s",yType="log")
