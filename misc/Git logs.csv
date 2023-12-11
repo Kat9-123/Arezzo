@@ -1,0 +1,105 @@
+07/10 09:46-Initial commit
+07/11 09:38-Initial commit
+07/11 13:56-Basic tests - 8
+07/19 16:50-Small changes
+07/20 22:49-Debug screenshots - 0.25
+07/20 22:50-Requirements
+07/21 00:46-Octave detection - 2
+07/21 16:18-First complete test - 4
+07/21 17:36-Tests - 0.5
+07/21 23:41-UI, Fixed homophony, attempt at polyphony
+07/21 23:45-Comment - 2.75
+07/23 20:30-Refactoring and other changes -  1.5
+07/23 20:32-Refactoring and other changes - 1.5
+07/24 22:29-Refactoring and output changes
+07/24 22:29-Forgot time - 1.5
+07/24 23:50-New note detection algorithm - 1.25
+07/26 00:56-More polyphony experiments. Better homophony - 2
+07/26 16:17-Time grid snapping tests - 0.5
+07/27 20:34-More tests - 0.75
+07/27 23:45-Further tests - 1.75
+07/27 23:47-Further tests - 1.75
+07/28 00:19-UI improvements - 0.5
+07/31 00:27-Refactoring and minor UI changes - 0.5
+08/05 21:13-Refactoring - 1
+08/06 18:13-Updated requirements.txt - 0
+08/16 22:44-Refactoring - 0.25
+08/18 00:17-Many fixes and improvements - 2
+08/18 19:23-Rewrote NoteGenerator. Stil pretty bad though - 2
+08/20 01:07-More NoteGenerator changes - 2
+08/20 22:12-Attempt at better note discardment - 1.25
+08/21 22:24-Rewrote NoteGenerator, more tests required - 2.25
+08/23 23:36-Correct homophony support, better beat alignment, improvements - 3
+08/24 22:00-Scoring system, further experiments & started volume change - 1.5
+08/24 22:00--
+08/25 17:10-Volume experiments - 0.25
+08/27 23:09-Rewrote strength system, many improvements, started new octave system - 3.5
+08/28 13:12-Many tests, research, improvements. - 2.25
+08/30 22:51-Machine Learning was sadly not effective - 7
+09/04 12:22-Fixes - 0
+09/04 22:37-Refactoring and tests - 1
+09/08 12:32-Minor changes and refactoring - 0.5
+09/08 21:49-Started octave improvements - 1.5
+09/08 21:51--
+09/08 23:03-Note detection changes - 1
+09/11 18:46-Preparations for more changes, and partial rewrite
+09/11 20:40-Frame processor rewrite, tests. - 1.25
+09/12 11:49-Attempts to get homophony working again - 0.5
+09/14 15:23-Fixed homophony, changed note detection, added testing. - 1.5
+09/17 11:16-Started UX, configuration files, arguments, etc. - 1
+09/18 11:32-Small changes to config parsing - 0.5
+09/26 20:18--
+09/26 21:16--
+09/26 23:04-ML finally working. Refactoring - 2
+09/27 08:43-index on main: 5d140be Small changes to config parsing - 0.5
+09/27 15:59-Refactoring - 1.5
+09/27 20:44-Bach experiments - 0.25
+09/28 11:26-Time signature - 0
+09/28 11:35-Showcase - 0.25
+09/28 12:29-Refactoring - 0.5
+09/30 16:46-Started on NoteGenerator rewrites - 1.25
+09/30 18:11-Flowchart and some restructuring - 1
+09/30 20:48-Full pipeline functional - 1
+09/30 22:07-Config restructuring - 0.75
+10/03 22:48-Refactoring and key recoginition - 1
+10/05 12:16-Refactoring and time signature - 0.75
+10/10 12:50-Minor refactoring and restructuring - 0.5
+10/12 20:34-Minor changes - 0
+10/13 12:47-Testing improvements - 0.25
+10/15 00:04-Refactoring, CUI improvements, QOL, tempo and cqt experiments - 2.5
+10/17 21:06-Major refactoring, some setup for large tests - 2
+10/18 12:24-Readme - 0
+10/18 21:13-Icon - 0
+10/22 12:18-More major refacotring and started trainingdataprocessor changes - 2
+10/22 13:41-Trainingdata processing refactoring, more preparations for large datasets - 1
+11/07 12:39-Minor TimeSigFinder changes - 0.25
+11/07 21:02-Real training data experiments - 0.5
+11/07 21:39-Tried to fix training data processor, still isn't working - 0.5
+11/13 10:41-Fixed trainingdata processor, painfully slow though. - 0.5
+11/14 16:14-Full trainingdata processing pipeline should work - 1
+11/14 21:51-Many structure changes and integration of key and time sig finders - 1.5
+11/15 10:02--
+11/27 11:08-Scoring & Testing refactoring and executable - 1
+11/27 12:43-Test results csv - 0.5
+11/28 07:58--
+11/28 11:23-Automatic module imports
+11/28 11:24-Forgot time - 0.5
+11/28 15:21-Support for multi file processing - 0.75
+11/30 13:08-Full support for folders as dataset - 3.5
+11/30 21:37-First trails with maestro subset - 0.5
+12/01 10:21-Trainer rewrite - 0.75
+12/01 10:57-Testing additions, refactoring and flowchart changes - 0.75
+12/01 12:50-Refactoring and project cleanup - 0.75
+12/02 16:31-Many experiments and changes - 3
+12/02 16:32--
+12/03 20:04-Major tests, refactoring, graphing, data processor changes - 2.5
+12/06 11:37-Small fixes and launch changes - 0.5
+12/06 11:52-Launch finally fixed - 0.25
+12/07 19:23-The MAESTRO dataset isn't working. Tests with randomly generated data are promising - 0.75
+12/07 21:43-Cleanup - 0.25
+12/07 22:24-New random experiments, very promising - 0.5
+12/09 19:52-A LOT of tests and optimisations, random midi generator changes & new networks trained and changes. It finally works! - 3
+12/09 22:15-A lot of polishing, UX improvements, refactoring - 2.5
+12/09 22:16-Minor preparations for clean output - 0.25
+12/10 15:06-Final optimised test results. - 4.5
+12/11 13:27-Cleanup and some refactoring. EXE fix with spaces in patha and support for midi export - 1
