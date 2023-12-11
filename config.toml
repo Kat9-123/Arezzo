@@ -30,7 +30,7 @@ training_device = "cuda"
 use_cuda_if_available = true
 key_profile = "data\\Krumhansl-Kessler.csv"
 
-output_cleanly = false
+output_cleanly = true
 clear_temp = false
 note_detection_threshold = 0.5 #0.5
 

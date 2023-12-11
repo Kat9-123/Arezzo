@@ -77,11 +77,6 @@ def process_audio(audioPath,tempoOverride=-1):
 
 
 
-   # onsetTimes = librosa.frames_to_time(onsets,sr=samplingRate,hop_length=HOP_LENGTH,n_fft=N_FFT)  * (120/60)
-   # onsetTimes -= onsetTimes[0]
-
-   # for i in onsetTimes:
-   #     print(Utils.snap_to_beat(i))
     origTempo = tempo
     if tempoOverride != -1:
         tempo = tempoOverride
@@ -110,11 +105,6 @@ def __get_spectrum(stft,samplingRate):
 
     spectrum = librosa.amplitude_to_db(stft)
 
-    #spectrum = np.minimum(spectrum,
-    #                       librosa.decompose.nn_filter(spectrum,
-    #                                                   aggregate=np.median,
-     #                                                  metric='cosine'))
-
 
     Graphing.specshow(spectrum,samplingRate,xType="s",yType="log")
 
@@ -125,18 +115,8 @@ def __get_spectrum(stft,samplingRate):
 
 def __get_tempo(y,sampleRate):
     """Estimate tempo"""
-    #print(librosa.beat.beat_track(y=y,sr=sampleRate))
-  # onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
-   # print(librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate,
-   #                            aggregate=None))
 
-
-   # onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
-   # 
-    #rawTempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sampleRate)
-   # print(rawTempo)
     tempo, beats = librosa.beat.beat_track(y=y,sr=sampleRate)
-    #print(tempo)
     first_beat_time, last_beat_time = librosa.frames_to_time((beats[0],beats[-1]),sr=sampleRate,n_fft=N_FFT)
 
     tempoBeat = 60/((last_beat_time-first_beat_time)/(len(beats)-1))
@@ -165,27 +145,29 @@ def __get_onset(y,stft,sampleRate,frameCount):
     D = stft
     D[D < SPECTRUM_DB_CUTOFF] = 0
     times = librosa.times_like(D,sr=sampleRate)
-    onset_env = librosa.onset.onset_strength(y=y, sr=sampleRate)
-    onset_frames = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sampleRate)
+    onsetEnv = librosa.onset.onset_strength(y=y, sr=sampleRate)
+    onsetFrames = librosa.onset.onset_detect(onset_envelope=onsetEnv, sr=sampleRate)
 
 
-    Graphing.polygon(times,2 + onset_env / onset_env.max(),xLabel="",yLabel="Strength & Onsets")
+    Graphing.polygon(times,2 + onsetEnv / onsetEnv.max(),xLabel="",yLabel="Strength & Onsets")
     
 
-    Graphing.vLines(times[onset_frames],0,onset_env.max(),colour="b")
+    Graphing.vLines(times[onsetFrames],0,onsetEnv.max(),colour="b")
 
 
-    onset_frames += ONSET_TEMPORAL_LAG
-  ##  for x in range(len(onset_frames)):
-    #    val = onset_frames[x] + ONSET_TEMPORAL_LAG
-   #     if val < frameCount:
-    #        onset_frames[x] = val
 
-    Graphing.vLines(times[onset_frames],0,onset_env.max(),colour="r")
+    for x in range(len(onsetFrames)):
+        val = onsetFrames[x] + ONSET_TEMPORAL_LAG
+        # Don't add lag if the result would be greater than the frame count
+        if val >= frameCount:
+            continue
+        onsetFrames[x] = val
+
+    Graphing.vLines(times[onsetFrames],0,onsetEnv.max(),colour="r")
     
 
     
-    return onset_frames
+    return onsetFrames
 
 
 

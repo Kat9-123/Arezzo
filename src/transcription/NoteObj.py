@@ -1,5 +1,4 @@
 import numpy as np
-import cui.CUI as CUI
 from core.ProcessedAudioData import ProcessedAudioData
 import core.Utils as Utils
 
@@ -63,7 +62,7 @@ class NoteObj:
         if not isFinal:
             self.duration = Utils.snap_to_beat((offsetEndFrame - offsetStartFrame)  * (tempo/60) * frameDuration)
         else:
-            self.duration = 2
+            self.duration = 2 # Final note is 2 beats long
         
         #CUI.print_colour(f"{self.note} {round(self.start,4)} {round(self.duration,4)}                                \n",CUI.CYAN)
     

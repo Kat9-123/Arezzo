@@ -20,7 +20,7 @@ def setup_trained_model():
 def get_model_output(data):
     data = torch.tensor(data,dtype=torch.float32)
     output = model(data)
-    print(output)
+    #print(output)
     #print(torch.round(output,decimals=1).tolist())
     pred = (output > CONFIG["ADVANCED_OPTIONS"]["note_detection_threshold"]).float()
     return pred

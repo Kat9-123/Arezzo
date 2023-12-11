@@ -43,10 +43,11 @@ def relative_key_check(a: str,b: str) -> bool:
     indexA = KEY_NAMES.index(a)
     indexB = KEY_NAMES.index(b)
 
+    # Get which key is major and which is minor
     major = min(indexA,indexB)
     minor = max(indexA,indexB)
 
-
+    # Some math hacks to compare them
     minor += 3
     minor %= 12
 
@@ -55,13 +56,13 @@ def relative_key_check(a: str,b: str) -> bool:
 CHROMAS = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
 
-def __average(x):
+def __mean(x):
     return sum(x)/len(x)
 
 
 
 def __get_profiles() -> None:
-    """Load the profile specified by ADVANCED_OPTIONS.KEY_PROFILE"""
+    """Load the profile specified by ADVANCED_OPTIONS.key_profile"""
     majorProfile = []
     minorProfile = []
     
@@ -91,8 +92,8 @@ def __pearson_correlation(x,y):
     n = len(x) # Should be 12
 
 
-    xAvg = __average(x)
-    yAvg = __average(y)
+    xAvg = __mean(x)
+    yAvg = __mean(y)
 
     numerator = 0
 
@@ -135,9 +136,6 @@ def guess_key(noteObjs) -> str:
         i = CHROMAS.index(chroma)
 
         chromaDurations[i] += noteObj.duration
-
-
-    
 
 
 

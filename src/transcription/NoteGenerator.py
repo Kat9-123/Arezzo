@@ -35,28 +35,22 @@ def get_notes(processedAudioData):
     cachedNoteRows = __get_note_to_row_cache()
 
     CUI.debug(cachedNoteRows)
-   # freqs = 
     CUI.newline()
     CUI.progress("Generating Notes")
     #print(__note_to_row("C9"))
 
-    #spectrumRowCache = __cache_note_to_spectrum_row()
-    #UI.diagnostic("Cached Spectrum Rows", str(spectrumRowCache))
     CUI.diagnostic("Onsets", str(processedAudioData.onsets))
 
 
     frameCount = processedAudioData.spectrum.shape[1]
 
-    #start = onsets[0]
-   # for x in range(len(onsets)):
-    #    onsets[x] -= start
 
 
     notes = []
     currentNotes = []
     for frame in range(processedAudioData.onsets[0],processedAudioData.onsets[-1]+1):
         notes = __process_frame(currentNotes,notes,frame,processedAudioData)
-        #__model_get_notes(processedAudioData,currentFrame)
+
 
     CUI.force_stop_progress()
     return notes
@@ -114,6 +108,8 @@ def __get_volume(note,frame,processedAudioData):
 
     return processedAudioData.spectrum[cachedNoteRows[note],frame]
 
+
+
 def __process_frame(currentNotes: list,finishedNotes: list,frame: int,processedAudioData):
     
     if frame in processedAudioData.onsets:
@@ -129,15 +125,18 @@ def __process_frame(currentNotes: list,finishedNotes: list,frame: int,processedA
 
 def __get_notes_at_frame(currentNotes: list,finishedNotes: list,frame: int,processedAudioData) -> list:
     CUI.diagnostic("Frame",frame)
+
+    # Notes playing at the current frame
     playingNotes = __model_get_notes(processedAudioData,frame)
 
 
     noteDeletionQueue = []
 
-
+    # Loop through the notes that were already playing
     for curNoteObj in currentNotes:
 
-
+        # If the note that was already playing is till playing, check if
+        # it is the same note held, or the same note repeated
         if curNoteObj.note in playingNotes:
             
             newStrength = __get_volume(curNoteObj.note,frame-AudioProcessor.ONSET_TEMPORAL_LAG,processedAudioData)
@@ -145,16 +144,15 @@ def __get_notes_at_frame(currentNotes: list,finishedNotes: list,frame: int,proce
             avgStrength = curNoteObj.get_average_strength()
             strengthDiff = (newStrength - avgStrength)
             CUI.debug((curNoteObj.note,newStrength,avgStrength, strengthDiff),debugControl=False)
-            #print(curNoteObj._NoteObj__lifetimeStrengths)
 
-            # Not a repeat note 
+            # The note was probably held
             if strengthDiff < -1:
                 playingNotes.remove(curNoteObj.note)
                 CUI.print_colour(f"-- {curNoteObj.note} ({strengthDiff:.2f})",CUI.YELLOW,end="\n")
                 continue
 
         
-        # curNote wasnt found, and should be ended
+        # curNote is no longer playing and should be finished
         curNoteObj.finish_note(frame)
         CUI.print_colour(f"<- {curNoteObj}",CUI.YELLOW,end="\n")
        # print(curNoteObj, curNoteObj.get_average_strength())
@@ -165,11 +163,12 @@ def __get_notes_at_frame(currentNotes: list,finishedNotes: list,frame: int,proce
     CUI.newline()
     currentNotes = __delete_queued_notes(currentNotes,noteDeletionQueue)
 
+
     for newNote in playingNotes:
         currentNotes.append(NoteObj(newNote,frame,processedAudioData))
 
 
-    # Final note check
+    # Return if not final onset
     if frame != processedAudioData.onsets[-1]:
         return finishedNotes
     

@@ -18,6 +18,9 @@ int main(int argc, char *argv[])
         // Arguments are seperated by a single space
         bufferSize++;
 
+        // Quotes will be added on both ends of the argument
+        bufferSize += 2;
+
         bufferSize += strlen(argv[i]);
     }
 
@@ -41,7 +44,11 @@ int main(int argc, char *argv[])
 
     for(int arg=1; arg<argc; arg++)
     {
+        // A bit weird to do it like this, but it
+        // is very clear what is happening
         command[pos] = ' ';
+        pos++;
+        command[pos] = '"';
         pos++;
 
         for(int c=0; c<strlen(argv[arg]); c++)
@@ -49,6 +56,8 @@ int main(int argc, char *argv[])
             command[pos] = argv[arg][c];
             pos++;
         }
+        command[pos] = '"';
+        pos++;
     }
 
 

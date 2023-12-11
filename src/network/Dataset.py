@@ -19,20 +19,20 @@ class SpectrumDataset(Dataset):
     device = ""
 
     fileSizes: list = []
-    files: list = []
+    fileStreams: list = []
 
 
 
     def __get_info(self,path):
-        f = open(path, "rb")
+        fileStream = open(path, "rb")
 
-        header = f.read(CSD_HEADER_SIZE)
+        header = fileStream.read(CSD_HEADER_SIZE)
         
 
     
         headerArray = np.frombuffer(header,dtype=np.uint16)
 
-        return f,SpectrumCompressor.retrieve_header(headerArray)
+        return fileStream,SpectrumCompressor.retrieve_header(headerArray)
 
     def __init__(self, _path,_device):
         self.device = _device
@@ -40,19 +40,19 @@ class SpectrumDataset(Dataset):
 
         if os.path.isdir(f"learning\\spectra\\{_path}"):
             self.path = f"learning\\spectra\\{_path}"
-            files = sorted(os.listdir(self.path))
+            filePaths = sorted(os.listdir(self.path))
             
             
         else:
             path, file = os.path.split(_path)
-            files = [file]
+            filePaths = [file]
             self.path = f"learning\\spectra\\{path}"
             
             #self.noteCount, self.spectrumSize, self.size = self.__get_info(self.path)
             #self.singleFile = True
     
-        for file in files:
-            fileHandler,(noteCount,spectrumSize,fileSize) = self.__get_info(f"{self.path}\\{file}")
+        for file in filePaths:
+            fileStream,(noteCount,spectrumSize,fileSize) = self.__get_info(f"{self.path}\\{file}")
             if noteCount != NOTE_COUNT:
                 raise Exception(f"Note count of {file} ({noteCount}) does not match expected value ({NOTE_COUNT})")
             if spectrumSize != SPECTRUM_SIZE:
@@ -60,7 +60,7 @@ class SpectrumDataset(Dataset):
 
             self.fileSizes.append(fileSize)
             self.size += fileSize
-            self.files.append(fileHandler)
+            self.fileStreams.append(fileStream)
         print(self.fileSizes)
         #self.noteCount, self.spectrumSize, self.size = 
     
@@ -94,7 +94,7 @@ class SpectrumDataset(Dataset):
 
         notesIndex += idx*(math.ceil(NOTE_COUNT/16)*2)
 
-        f = self.files[fileIndex]
+        f = self.fileStreams[fileIndex]
         f.seek(spectrumIndex)
         rawSpectrum = f.read(SPECTRUM_SIZE*2)
         f.seek(notesIndex)

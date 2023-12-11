@@ -25,6 +25,8 @@ def transcribe(path,*,saveSheetMusic=True,tempoOverride=-1) -> (list,float):
     
 
     Manager.setup_trained_model()
+
+
     outputName = f"{str(int(time.time()))}_{os.path.basename(path)}"
 
    # CUI.print_colour(f"Processing {path}",CUI.GREEN,end="\n\n")

@@ -26,11 +26,6 @@ def generate_filepath_handle_duplicates(basePath: str) -> str:
 
 
 
-def __round_in_base(num,base):
-    num *= base
-    num = round(num)
-    return num / float(base)
-
 def snap_to_beat(time: float) -> float:
     """Takes a rough estimate for beat alignment, and snaps it to the beat."""
     time += CONFIG["ADVANCED_OPTIONS"]["onset_to_beat_lag"]

@@ -7,7 +7,6 @@ output/midi_local/
 output/sheet music_local/
 temp/
 testing/results_local/
-src/launch/bin/
 src/launch/obj/
 learning/MAESTRO/
 

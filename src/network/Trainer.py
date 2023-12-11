@@ -66,23 +66,6 @@ def __save_model(model,dataPath) -> None:
 
 
 
-def __eval_debug_samples(model,spectra,notes):
-    for i in range(20):
-        out = model(spectra[i].to(DEVICE))
-        for x in range(len(out)):
-            if out[x] > 0.5:
-                print(x)
-        print("TARGET")
-
-        for x in range(len(notes[i])):
-            if notes[i][x] > 0.5:
-                print(x)
-        
-        print(__accuracy(out,notes[i].to(DEVICE)))
-
-
-
-
 def __generate_noise(batchSize):
     
     return (torch.rand((batchSize,Constants.SPECTRUM_SIZE)) * (NOISE_DEVIATION*2)) - NOISE_DEVIATION
@@ -121,7 +104,8 @@ def train():
 
     trainDataset, validationDataset, testDataset = torch.utils.data.random_split(dataset, TRAIN_VALIDATION_TEST_SPLIT)
 
-    # Creating data indices for training and validation splits:
+
+
     trainLoader = torch.utils.data.DataLoader(trainDataset, batch_size=BATCH_SIZE, 
                                                     shuffle=True)
     validationLoader = torch.utils.data.DataLoader(validationDataset, batch_size=BATCH_SIZE,
@@ -260,12 +244,12 @@ def train():
     #__eval_debug_samples(model,spectrum,notes)
 
 
-    # Plot the loss and accuracy
+    # Plot the cost and accuracy
     plt.plot(trainLossHist, label="train")
     plt.plot(validationLossHist, label="validation")
     plt.axhline(y = testLoss, color = 'r', linestyle = 'dashed',label="test")  
     plt.xlabel("Epochs")
-    plt.ylabel("Loss")
+    plt.ylabel("Cost")
     plt.legend()
     plt.show()
 

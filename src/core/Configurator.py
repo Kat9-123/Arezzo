@@ -44,6 +44,9 @@ def __parse_args():
                         
                         help="""Specify the model to be used when processing the audio""")
     
+    parser.add_argument("-o", "--outtype",dest="outFileType",type=str,metavar=".PDF/.PNG/.MIDI",default=".pdf",
+                        help="""Specify output file type.""")
+    
 
 
     return(parser.parse_args())
@@ -72,6 +75,10 @@ def get_configuration() -> None:
     CONFIG["ARGS"] = {}
 
     CONFIG["ARGS"]["audio"] = args.path
+
+    CONFIG["ARGS"]["out_type"] = args.outFileType
+
+
 
     if args.network:
         s = args.network.lower()
