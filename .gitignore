@@ -9,6 +9,7 @@ temp/
 testing/results_local/
 src/launch/obj/
 learning/MAESTRO/
+models/models_local
 
 *.tags
 

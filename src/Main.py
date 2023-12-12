@@ -26,7 +26,6 @@ try:
 
 
     from core.Configurator import CONFIG, Modes, mode
-    import core.Utils as Utils
 
     import transcription.Transcriber as Transcriber
     import testing.Tester as Tester
@@ -86,7 +85,6 @@ def main() -> None:
 
 
 
-    
 
 
 

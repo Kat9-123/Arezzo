@@ -9,6 +9,7 @@ from core.Configurator import CONFIG
 TEST_RESULTS_FOLDER = "testing\\results\\"
 
 
+
 def test():
 
 
@@ -22,11 +23,11 @@ def test():
             continue
         
 
-        path = "audio\\" + row[0]
-        comparePath = "testing\\" + row[1]
-        origTempo = float(row[2])
+        path = "audio\\" + row[0].strip()
+        comparePath = "testing\\" + row[1].strip()
+        origTempo = float(row[2].strip())
         
-        origKeySig = row[3]
+        origKeySig = row[3].strip()
 
 
         while origKeySig[-1] == ' ':
@@ -35,9 +36,9 @@ def test():
         origKeySig = origKeySig.replace("s","#")
 
 
-        origTimeSig = row[4]
+        origTimeSig = row[4].strip()
 
-        minScore = round(float(row[5]))
+        minScore = round(float(row[5].strip()))
 
         
         processedMusic = Transcriber.transcribe(path,saveSheetMusic=CONFIG["ADVANCED_OPTIONS"]["test_save_sheet_music"],tempoOverride=origTempo)
@@ -52,7 +53,7 @@ def test():
 
     CUI.important("FINAL SCORES")
 
-    CUI.print_colour(f"{'FILE':<30} {'NOTES':<6} {'TEMPO':<6} {'KEY':<6} {'TIME':<6} {'TOTAL':<6} {'MIN. SCORE':<6}",CUI.WHITE,end="\n")
+    CUI.print_colour(f"{'FILE':<36} {'NOTES':<6} {'TEMPO':<6} {'KEY':<6} {'TIME':<6} {'TOTAL':<6} {'MIN. SCORE':<6}",CUI.WHITE,end="\n")
 
     data = "FILE,NOTES,TEMPO O,TEMPO G,TEMPO S,KEY O,KEY G, KEY S,TIME O,TIME G,TIME S,TOTAL,MIN. SCORE\n"
 

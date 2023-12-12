@@ -25,16 +25,16 @@ musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe" # Use do
 
 [ADVANCED_OPTIONS]
 onset_to_beat_lag = 0.06
-model = "FINALFINAL.mdl"
+model = "ArezzoRandom.mdl"
 training_device = "cuda"
 use_cuda_if_available = true
 key_profile = "data\\Krumhansl-Kessler.csv"
 
-output_cleanly = true
+output_cleanly = false
 clear_temp = false
 note_detection_threshold = 0.5 #0.5
 
-test_save_sheet_music = true
+test_save_sheet_music = false
 
 
 [DEBUG]

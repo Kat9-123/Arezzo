@@ -5,9 +5,13 @@ import math
 import torch
 
 from torch.utils.data import Dataset
+
+import cui.CUI as CUI
 import network.SpectrumCompressor as SpectrumCompressor
 from core.Constants import *
 
+
+SPECTRA_PATH = "learning\\spectra\\"
 
 
 class SpectrumDataset(Dataset):
@@ -38,15 +42,15 @@ class SpectrumDataset(Dataset):
         self.device = _device
 
 
-        if os.path.isdir(f"learning\\spectra\\{_path}"):
-            self.path = f"learning\\spectra\\{_path}"
+        if os.path.isdir(f"{SPECTRA_PATH}{_path}"):
+            self.path = f"{SPECTRA_PATH}{_path}"
             filePaths = sorted(os.listdir(self.path))
             
             
         else:
             path, file = os.path.split(_path)
             filePaths = [file]
-            self.path = f"learning\\spectra\\{path}"
+            self.path = f"{SPECTRA_PATH}{path}"
             
             #self.noteCount, self.spectrumSize, self.size = self.__get_info(self.path)
             #self.singleFile = True
@@ -61,11 +65,7 @@ class SpectrumDataset(Dataset):
             self.fileSizes.append(fileSize)
             self.size += fileSize
             self.fileStreams.append(fileStream)
-        print(self.fileSizes)
-        #self.noteCount, self.spectrumSize, self.size = 
-    
-        
-        # CHECK SIZE MATCH
+        CUI.debug(self.fileSizes)
 
     def __len__(self):
         return self.size
@@ -76,6 +76,8 @@ class SpectrumDataset(Dataset):
         totalSize = 0
         fileIndex = 0
         idx = 0
+
+        # Find the correct file to read
         for i,size in enumerate(self.fileSizes):
             
             if totalSize + size > globalIndex:
@@ -84,7 +86,7 @@ class SpectrumDataset(Dataset):
                 break
             totalSize += size
 
-        spectrumIndex = CSD_HEADER_SIZE
+        spectrumIndex = CSD_HEADER_SIZE # Skip the header
         spectrumIndex += idx*SPECTRUM_SIZE * 2 # Each spectrum element is 2 bytes
 
 
@@ -94,11 +96,12 @@ class SpectrumDataset(Dataset):
 
         notesIndex += idx*(math.ceil(NOTE_COUNT/16)*2)
 
-        f = self.fileStreams[fileIndex]
-        f.seek(spectrumIndex)
-        rawSpectrum = f.read(SPECTRUM_SIZE*2)
-        f.seek(notesIndex)
-        rawNotes = f.read(math.ceil(NOTE_COUNT/16)*2)
+        fileStream = self.fileStreams[fileIndex]
+        fileStream.seek(spectrumIndex)
+        rawSpectrum = fileStream.read(SPECTRUM_SIZE*2)
+
+        fileStream.seek(notesIndex)
+        rawNotes = fileStream.read(math.ceil(NOTE_COUNT/16)*2)
 
 
         spectrumArray = np.frombuffer(rawSpectrum,dtype=np.uint16)
@@ -109,11 +112,10 @@ class SpectrumDataset(Dataset):
 
         spectrum = torch.tensor(spectrum, dtype=torch.float32)
         notes = torch.tensor(notes, dtype=torch.float32)
-        #spectrum = torch.tensor(spectrum, dtype=torch.float32)
-        #notes = torch.tensor(notes, dtype=torch.float32)
+
         return spectrum, notes
     
 
     def __del__(self):
-        for file in self.files:
-            file.close()
+        for fileStream in self.fileStreams:
+            fileStream.close()

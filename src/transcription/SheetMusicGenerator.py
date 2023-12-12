@@ -28,7 +28,7 @@ def __save_midi(midiPath,midiName,outDir):
     CUI.important("MIDI saved to: {outpath}")
     
 
-def generate_sheet_music(notes,tempo,outputName) -> None:
+def generate_sheet_music(notes,tempo,outputName,key,timeSig) -> None:
     """Takes a list of note objects, and a tempo and creates a MIDI file."""
 
     if not CONFIG["DEBUG"]["generate_sheet_music"]:
@@ -62,7 +62,7 @@ def generate_sheet_music(notes,tempo,outputName) -> None:
 
     midiPath = f"temp\\{outputName}.mid"
 
-    MIDIManager.write_midi(notes,tempo,midiPath)
+    MIDIManager.write_midi(notes,tempo,midiPath,key,timeSig)
 
     CUI.diagnostic("MIDI",midiPath)
 
@@ -116,9 +116,9 @@ def __generate_sheetmusic_musescore(midiPath: str,outputName: str,baseOutDir,out
     if CONFIG["ADVANCED_OPTIONS"]["output_cleanly"]:
         outputDir = baseOutDir
     else:
-        outputDir = f"{baseOutDir}\\sheet music"
+        outputDir = f"{baseOutDir}\\sheet music\\"
 
-    command = f'"{museScorePath}" -o "{outputDir}{outputName}.{outType}" "{midiPath}"'
+    command = f'"{museScorePath}" -o "{outputDir}{outputName}{outType}" "{midiPath}"'
 
     Utils.sys_call(command)
 

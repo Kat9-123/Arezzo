@@ -3,6 +3,7 @@ import csv
 
 from core.Configurator import CONFIG
 import cui.CUI as CUI
+from midiutil.MidiFile import SHARPS,FLATS,MAJOR,MINOR
 
 
 KEY_NAMES = [
@@ -36,6 +37,18 @@ KEY_NAMES = [
 
 
 ]
+
+
+
+
+
+def convert_to_mido_key(key):
+    suffix = ""
+    if key[-5:] == "minor":
+        suffix = "m"
+    root = key[:-6]
+
+    return root + suffix
 
 
 def relative_key_check(a: str,b: str) -> bool:
@@ -162,5 +175,6 @@ def guess_key(noteObjs) -> str:
     key = KEY_NAMES[iGreatest]
 
     CUI.important(f"Key: {key} ({round(greatest,2)})")
+
 
     return key

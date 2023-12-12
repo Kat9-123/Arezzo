@@ -42,7 +42,7 @@ def transcribe(path,*,saveSheetMusic=True,tempoOverride=-1) -> (list,float):
 
     notes = NoteGenerator.get_notes(processedAudioData)
 
-    key = KeyFinder.guess_key(notes)
+    key= KeyFinder.guess_key(notes)
     CUI.newline()
     timeSig = TimeSigFinder.guess_time_signature(notes)
 
@@ -52,7 +52,7 @@ def transcribe(path,*,saveSheetMusic=True,tempoOverride=-1) -> (list,float):
                                     timeSig=timeSig)
 
     if saveSheetMusic:
-        SheetMusicGenerator.generate_sheet_music(notes,processedAudioData.tempo,outputName)
+        SheetMusicGenerator.generate_sheet_music(notes,processedAudioData.tempo,outputName,key,timeSig)
 
 
     Graphing.save_plot(outputName)
