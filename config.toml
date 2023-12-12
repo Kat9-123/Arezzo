@@ -32,7 +32,7 @@ key_profile = "data\\Krumhansl-Kessler.csv"
 
 output_cleanly = false
 clear_temp = false
-note_detection_threshold = 0.5 #0.5
+note_detection_threshold = 2 #0.5
 
 test_save_sheet_music = false
 
@@ -40,7 +40,7 @@ test_save_sheet_music = false
 [DEBUG]
 generate_sheet_music = true
 graphing = false
-save_model = true
+save_model = false
 show_network_graphs = true
 spin = true
 blanket_disable_debug_print = false
