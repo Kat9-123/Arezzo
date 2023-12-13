@@ -1,6 +1,6 @@
-import numpy as np
-from core.ProcessedAudioData import ProcessedAudioData
 import core.Utils as Utils
+
+import numpy as np
 
 # 2 -> Semiquavers
 # 3 -> Demisemiquavers

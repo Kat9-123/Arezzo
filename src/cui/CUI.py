@@ -1,11 +1,13 @@
-"""Module that handles Console User Interface"""
+"""Module that handles the Console User Interface"""
 
 
 import cui.Progress as Progress
-import os
 from core.Constants import *
-
 from core.Configurator import CONFIG
+
+import os
+
+
 
 
 ## https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124
@@ -50,7 +52,7 @@ def init():
     # Hide console cursor
     print(HIDE_CONSOLE_CURSOR, end="")
 
-    #os.system(f"title Arezzo - {VERSION}")
+
 
 
 
@@ -91,6 +93,7 @@ def important(text,*,end="\n"):
 
 
 def progress(value,*,spin=False,finishedText=""):
+    """Create a spinner"""
     if finishedText == "":
         finishedText = value
     Progress.progress(value,spin,finishedText)

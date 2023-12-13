@@ -25,10 +25,11 @@ def test():
 
         path = "audio\\" + row[0].strip()
         comparePath = "testing\\" + row[1].strip()
+    
         origTempo = float(row[2].strip())
-        
-        origKeySig = row[3].strip()
 
+
+        origKeySig = row[3].strip()
 
         while origKeySig[-1] == ' ':
             origKeySig = origKeySig[:-1]

@@ -1,7 +1,8 @@
-import os
 import cui.CUI as CUI
 from core.Configurator import CONFIG
+
 from subprocess import Popen
+import os
 
 def sys_call(command: str) -> None:
     """System call wrapper with diagnostic print."""
@@ -9,9 +10,12 @@ def sys_call(command: str) -> None:
     Popen(command, shell=True).wait()
 
 
-
 def generate_filepath_handle_duplicates(basePath: str) -> str:
-
+    """Generate file paths like:
+    test.txt;
+    test (1).txt;
+    test (2).txt
+    in case of duplicates"""
     baseName, extension = basePath.split('.')
     path = basePath
     i = 0

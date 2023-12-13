@@ -1,7 +1,10 @@
+from core.Configurator import CONFIG
+from network.Network import Network
 
 import torch
-from network.Network import Network
-from core.Configurator import CONFIG
+
+
+
 
 model = None
 
@@ -22,5 +25,5 @@ def get_model_output(data):
     output = model(data)
     #print(output)
 
-    pred = (output > CONFIG["ADVANCED_OPTIONS"]["note_detection_threshold"]).float()
+    pred = (output > CONFIG["OPTIONS"]["note_detection_threshold"]).float()
     return pred

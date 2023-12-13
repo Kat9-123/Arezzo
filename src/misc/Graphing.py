@@ -1,9 +1,9 @@
-
+from core.Configurator import CONFIG
 import cui.CUI as CUI
 
 import librosa
 import matplotlib.pyplot as plt
-from core.Configurator import CONFIG
+
 
 plot = None
 
@@ -28,12 +28,12 @@ def specshow(data,samplingRate:int, xType:str = None, yType:str = None,xLabel:st
 
 
 
-def create_plot(rows):
+def create_plot():
     "Initialise the matplotlib plot"
     global plot
     if not CONFIG["DEBUG"]["graphing"]:
         return
-    fig, plot = plt.subplots(nrows=SIZE,sharex=True)
+    _, plot = plt.subplots(nrows=SIZE,sharex=True)
     #wm = plt.get_current_fig_manager()
     #wm.window.state('zoomed')
 

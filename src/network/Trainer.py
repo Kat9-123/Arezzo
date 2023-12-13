@@ -14,7 +14,6 @@ import time
 from network.Network import Network
 
 from core.Configurator import CONFIG
-#import SpectrumCompressor
 import core.Constants as Constants
 import core.Utils as Utils
 from network.Dataset import SpectrumDataset
@@ -174,7 +173,8 @@ def train():
 
                     optimizer.step()
 
-                    # compute and store metrics
+
+
                     accuracy = __accuracy(prediction,noteBatch.to(DEVICE))
 
 
@@ -187,7 +187,7 @@ def train():
                     bar.update()
             # Set model in evaluation mode and run through the validation set
             CUI.progress("Validating", spin=True)
-            #print("Validating...",end="\r")
+
             avgTrainLoss = np.mean(trainLoss)
             avgTrainAccuracy = np.mean(trainAccuracy)
 
@@ -198,8 +198,6 @@ def train():
 
 
             validationAccuracy,validationLoss = __eval_model(validationLoader,model,criterion)
-
-
 
 
 
@@ -239,9 +237,6 @@ def train():
 
     testAccuracy, testLoss = __eval_model(testLoader,model,criterion)
     CUI.important(f"Test - Loss: {testLoss:.6f}, Accuracy: {testAccuracy*100:.5f}%")
-
-
-    #__eval_debug_samples(model,spectrum,notes)
 
 
     # Plot the cost and accuracy

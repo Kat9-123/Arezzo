@@ -1,9 +1,10 @@
+from core.Configurator import CONFIG
+import cui.CUI as CUI
+
 from math import sqrt
 import csv
 
-from core.Configurator import CONFIG
-import cui.CUI as CUI
-from midiutil.MidiFile import SHARPS,FLATS,MAJOR,MINOR
+
 
 
 KEY_NAMES = [

@@ -1,15 +1,14 @@
-
-import os
-import numpy as np
-import math
-import torch
-
 from torch.utils.data import Dataset
+
 
 import cui.CUI as CUI
 import network.SpectrumCompressor as SpectrumCompressor
 from core.Constants import *
 
+import os
+import numpy as np
+import math
+import torch
 
 SPECTRA_PATH = "learning\\spectra\\"
 
@@ -77,7 +76,7 @@ class SpectrumDataset(Dataset):
         fileIndex = 0
         idx = 0
 
-        # Find the correct file to read
+        # Find the correct file and index in that file to read 
         for i,size in enumerate(self.fileSizes):
             
             if totalSize + size > globalIndex:
@@ -86,17 +85,17 @@ class SpectrumDataset(Dataset):
                 break
             totalSize += size
 
+
         spectrumIndex = CSD_HEADER_SIZE # Skip the header
         spectrumIndex += idx*SPECTRUM_SIZE * 2 # Each spectrum element is 2 bytes
 
-
-
-
         notesIndex = CSD_HEADER_SIZE + SPECTRUM_SIZE*self.fileSizes[fileIndex]*2
-
         notesIndex += idx*(math.ceil(NOTE_COUNT/16)*2)
 
+
+
         fileStream = self.fileStreams[fileIndex]
+
         fileStream.seek(spectrumIndex)
         rawSpectrum = fileStream.read(SPECTRUM_SIZE*2)
 

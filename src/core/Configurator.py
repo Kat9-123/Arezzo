@@ -16,7 +16,7 @@ class Modes(Enum):
     PROCESS_TRAINING_DATA = 1
     PROCESS_MULTIPLE_TRAINING_DATA = 2
     TRAIN = 3
-    TEST_MULTIPLE = 4
+    TEST = 4
     
 
 def __parse_args():
@@ -98,7 +98,7 @@ def get_configuration() -> None:
 
     elif args.test:
         s = args.test.lower()
-        mode = Modes.TEST_MULTIPLE
+        mode = Modes.TEST
         if s.endswith(".csv"):
             CONFIG["ARGS"]["test"] = args.test
         else:

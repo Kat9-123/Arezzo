@@ -1,14 +1,15 @@
-
 import core.AudioProcessor as AudioProcessor
 from transcription.NoteObj import NoteObj
 
 import cui.CUI as CUI
 
+import network.Manager as netManager
+from core.Constants import *
+
+
 import librosa
 import numpy as np
 
-import network.Manager as netManager
-from core.Constants import *
 
 
 #https://en.wikipedia.org/wiki/Chroma_feature
@@ -37,13 +38,9 @@ def get_notes(processedAudioData):
     CUI.debug(cachedNoteRows)
     CUI.newline()
     CUI.progress("Generating Notes")
-    #print(__note_to_row("C9"))
+
 
     CUI.diagnostic("Onsets", str(processedAudioData.onsets))
-
-
-    frameCount = processedAudioData.spectrum.shape[1]
-
 
 
     notes = []
@@ -77,10 +74,10 @@ def __get_note_to_row_cache():
             CUI.warning("Row corresponding to note not found!")
             return 0
 
-    # UI.diagnostic("NOTE_TO_ROW","{} => {}".format(note,smallestRow))
+
         return smallestRow
     
-    #librosa.fft_frequencies(sr=AudioProcessor.samplingRate,n_fft=AudioProcessor.N_FFT)
+
     freqs = np.arange(0, 1 + AudioProcessor.N_FFT / 2) * AudioProcessor.samplingRate / AudioProcessor.N_FFT
     
     cachedNoteRows = {}
@@ -193,7 +190,7 @@ def __model_get_notes(processedAudioData,frame):
 
 
     notes = []
-    #print(modelOutput.tolist())
+
     for x,i in enumerate((modelOutput.tolist())):
         if i == 0:
             continue

@@ -6,63 +6,9 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/Main.py",
             "args":[
-                //"--net",
-                //"1.csd"
-                //"audio\\PWS_TEST_1b.wav",
-               // "--net",
-               // "1.csd",
-              ///"PWS_TEST_12.wav"
-              //"MAESTROTEST",
-              //"--net",
-             //"MAESTROTEST"
-            //"POLY4-88-R.wav",
 
-              "--net",
-              "FINAL"
+                "--test"
 
-              //"POLY4-88-R.csd"
-           //  "HOMO4-88.csd"
-             // "SHORT.mp3"
-            // "--net",
-             // "MAESTROTEST"
-             // "-t"
-              //  "audio\\PWS_TEST_1b.wav"
-             // "--net",
-              //"MAESTROTEST"
-               // "-nMAESTRO1.csd"
-               // "HOMO4-88.mp3",
-             //  "--net",
-                //"homo\\HOMO4-88.midi"\
-
-
-               // "-nMAESTRO.csd"
-               // "MAESTRO.mp3",
-                //"--net",
-                //"music\\MAESTRO.midi"
-                
-               //"audio\\PWS_TEST_1b.wav"
-               //"-nHOMO4-88.csd"
-               // "-n1.csd"
-               /*
-  
-               "1.mp3",
-               //"audio\\PWS_TEST_1b.wav"
-               //"-nHOMO4-88.csd"
-              // "-nM1.csd"
-             //  
-               //"M1.mp3",
-               //"--net",
-               //"M1.mid"
-
-
-              // "-nHOMO2-88.csd"
-               "HOMO4-88.mp3",
-               "--net",
-                "homo\\HOMO4-88.midi"
-               
-               
-               //"MAESTRO1b.mp3"
-               */
                 
             ],
             "justMyCode": true,

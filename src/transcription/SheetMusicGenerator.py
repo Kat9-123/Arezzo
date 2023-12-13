@@ -2,6 +2,7 @@ import cui.CUI as CUI
 import core.Utils as Utils
 from core.Configurator import CONFIG
 import core.MIDIManager as MIDIManager
+
 import os
 from pathlib import Path
 

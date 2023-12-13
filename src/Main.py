@@ -71,7 +71,7 @@ def main() -> None:
         NetTrainer.train()
         return
 
-    elif mode == Modes.TEST_MULTIPLE:
+    elif mode == Modes.TEST:
         CUI.important("Testing...")
         Tester.test()
         return

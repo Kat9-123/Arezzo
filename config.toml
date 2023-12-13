@@ -2,6 +2,8 @@
 
 
 [OPTIONS]
+note_detection_threshold = 0.5 #0.5
+
 # 0 -> Crotchets (Quarters)
 # 1 -> Quavers  (Eighths)
 # 2 -> Semiquavers (Sixteenths)
@@ -9,7 +11,7 @@
 # etc.
 note_depth = 2
 
-export_type = "pdf" # pdf or png
+
 
 
 
@@ -25,14 +27,15 @@ musescore4_path = "C:\\Program Files\\MuseScore 4\\bin\\MuseScore4.exe" # Use do
 
 [ADVANCED_OPTIONS]
 onset_to_beat_lag = 0.06
+onset_frame_lag = 3
 model = "ArezzoRandom.mdl"
 training_device = "cuda"
 use_cuda_if_available = true
 key_profile = "data\\Krumhansl-Kessler.csv"
 
-output_cleanly = false
-clear_temp = false
-note_detection_threshold = 2 #0.5
+output_cleanly = true
+clear_temp = true
+
 
 test_save_sheet_music = false
 
@@ -40,7 +43,7 @@ test_save_sheet_music = false
 [DEBUG]
 generate_sheet_music = true
 graphing = false
-save_model = false
+save_model = true
 show_network_graphs = true
 spin = true
-blanket_disable_debug_print = false
+blanket_disable_debug_print = true

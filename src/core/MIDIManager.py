@@ -1,5 +1,4 @@
 import pretty_midi
-from midiutil.MidiFile import *
 import librosa
 import transcription.KeyFinder as KeyFinder
 import mido
@@ -25,7 +24,6 @@ class TemporaryMIDIMessage():
 
 
 def write_midi(notes,tempo,path,key,timeSig) -> None:
-    """Takes a list of note objects, and a tempo and creates a MIDI file."""
 
 
     earliestStartTime = __get_earliest_start_time(notes)
@@ -36,38 +34,45 @@ def write_midi(notes,tempo,path,key,timeSig) -> None:
     track = mido.MidiTrack()
     mid.tracks.append(track)
 
-    timeNumerator = int(timeSig[0])
-    timeDenominator = 4
+    track.append(mido.Message('program_change', program=1, time=0)) # Set to piano
+
+    timeNumerator = int(timeSig.split('/')[0])
+    timeDenominator = int(timeSig.split('/')[1])
 
     midiTempo = mido.bpm2tempo(tempo,(timeNumerator,timeDenominator))
 
-    track.append(mido.Message('program_change', program=1, time=0))
+    
     track.append(mido.MetaMessage('set_tempo', tempo=midiTempo))
+
+    track.append(mido.MetaMessage('time_signature', numerator=timeNumerator,denominator=timeDenominator))
 
 
     midoKey = KeyFinder.convert_to_mido_key(key)
     track.append(mido.MetaMessage('key_signature', key=midoKey))
 
-    track.append(mido.MetaMessage('time_signature', numerator=timeNumerator,denominator=timeDenominator))
 
 
     temporaryMIDIMessages = []
 
-
+    # MIDI works with delta time, time between messages. The notes
+    # store time in absolute terms AND they are not chronologically ordered
+    # thats why we need this mess to create the midi messages
     for note in notes:
         
 
 
         midi = librosa.note_to_midi(note.note)
-        start = (note.start - earliestStartTime) / (tempo/60)
-        end = start + (note.duration / (tempo/60))
+        startSeconds = (note.start - earliestStartTime) / (tempo/60)
+        endSeconds = start + (note.duration / (tempo/60))
         
-        start = mido.second2tick(start,mid.ticks_per_beat,midiTempo)
-        end = mido.second2tick(end,mid.ticks_per_beat,midiTempo)
+        start = mido.second2tick(startSeconds,mid.ticks_per_beat,midiTempo)
+        end = mido.second2tick(endSeconds,mid.ticks_per_beat,midiTempo)
 
         temporaryMIDIMessages.append(TemporaryMIDIMessage("note_on",midi,start))
         temporaryMIDIMessages.append(TemporaryMIDIMessage("note_off",midi,end))
     currentTime = 0
+
+    # O(n^2) my beloved
     while len(temporaryMIDIMessages) != 0:
         
         smallestDeltaTime = 1_000_000_000

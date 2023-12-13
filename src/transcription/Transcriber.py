@@ -1,8 +1,3 @@
-import time
-import os
-
-
-from core.Configurator import CONFIG
 import misc.Graphing as Graphing
 import core.AudioProcessor as AudioProcessor
 import transcription.NoteGenerator as NoteGenerator
@@ -11,13 +6,13 @@ import cui.CUI as CUI
 import transcription.SheetMusicGenerator as SheetMusicGenerator
 import network.Manager as Manager
 
-
 import transcription.KeyFinder as KeyFinder
 import transcription.TimeSigFinder as TimeSigFinder
 
 from transcription.ProcessedMusic import ProcessedMusic
 
-
+import time
+import os
 
 def transcribe(path,*,saveSheetMusic=True,tempoOverride=-1) -> (list,float):
     startTime = time.perf_counter()

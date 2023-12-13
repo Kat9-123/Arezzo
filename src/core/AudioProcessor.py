@@ -1,17 +1,14 @@
 import misc.Graphing as Graphing
 from core.ProcessedAudioData import ProcessedAudioData
 import cui.CUI as CUI
+from core.Configurator import CONFIG
 
 import librosa
 import numpy as np
-import math
 
 
 
 
-
-SPECTRUM_DB_CUTOFF = -50
-CHROMA_CUTOFF = 0.2#0.9
 ONSET_TEMPORAL_LAG = 3#4
 
 TEMPO_BOUNDRY = 140
@@ -43,12 +40,14 @@ def process_audio(audioPath,tempoOverride=-1):
     y, samplingRate = librosa.load(audioPath)
    # y *= 1.1
 
-    duration = librosa.get_duration(y=y, sr=samplingRate)
+    CUI.progress("Processing audio",spin=True)
 
+    duration = librosa.get_duration(y=y, sr=samplingRate)
+    
 
     stft = np.abs(librosa.stft(y,n_fft=N_FFT,win_length=WINDOW_LENGTH,hop_length=HOP_LENGTH))
 
-    CUI.progress("Processing audio",spin=True)
+    
 
 
 
@@ -60,7 +59,7 @@ def process_audio(audioPath,tempoOverride=-1):
 
     onsets = __get_onset(y,stft, samplingRate,frameCount)
 
-    pointDuration = duration/frameCount
+    frameDuration = duration/frameCount
 
 
     tempo = __get_tempo(y,samplingRate)
@@ -70,7 +69,7 @@ def process_audio(audioPath,tempoOverride=-1):
     CUI.diagnostic("Tempo",tempo, "bpm")    
     CUI.diagnostic("Frame Count",frameCount)
     CUI.diagnostic("Duration",duration, "s")
-    CUI.diagnostic("Frame Duration",pointDuration * 1000, "ms")
+    CUI.diagnostic("Frame Duration",frameDuration * 1000, "ms")
     CUI.diagnostic("Softest",spectrum.min(), "db")
     CUI.diagnostic("Loudest",spectrum.max(),"db")
     CUI.diagnostic("MEAN",spectrum.mean(), "db")
@@ -87,7 +86,7 @@ def process_audio(audioPath,tempoOverride=-1):
                                             tempo=tempo,
                                             duration=duration,
                                             frameCount=frameCount,
-                                            frameDuration=pointDuration,
+                                            frameDuration=frameDuration,
                                             loudest=spectrum.max(),
                                             origTempo=origTempo)
 
@@ -143,7 +142,6 @@ def __get_tempo(y,sampleRate):
 def __get_onset(y,stft,sampleRate,frameCount):
 
     D = stft
-    D[D < SPECTRUM_DB_CUTOFF] = 0
     times = librosa.times_like(D,sr=sampleRate)
     onsetEnv = librosa.onset.onset_strength(y=y, sr=sampleRate)
     onsetFrames = librosa.onset.onset_detect(onset_envelope=onsetEnv, sr=sampleRate)
@@ -157,7 +155,7 @@ def __get_onset(y,stft,sampleRate,frameCount):
 
 
     for x in range(len(onsetFrames)):
-        val = onsetFrames[x] + ONSET_TEMPORAL_LAG
+        val = onsetFrames[x] + CONFIG["ADVANCED_OPTIONS"]["onset_frame_lag"]
         # Don't add lag if the result would be greater than the frame count
         if val >= frameCount:
             continue

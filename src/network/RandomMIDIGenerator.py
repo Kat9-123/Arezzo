@@ -1,4 +1,4 @@
-# Messy helper script that generates random MIDI files
+"""Messy helper script that generate random midi files. Not connected to the project"""
 from midiutil.MidiFile import MIDIFile
 import random
 import numpy as np

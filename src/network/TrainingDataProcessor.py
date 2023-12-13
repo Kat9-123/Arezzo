@@ -1,5 +1,4 @@
 import numpy as np
-import time
 import math
 import os
 
@@ -18,6 +17,9 @@ MIDI_PATH = "learning\\midi\\"
 SPECTRA_PATH = "learning\\spectra\\"
 
 
+# The onset function isnt perfect, and it would be impossible for the network to
+# make a prediction if the onset is too early, so we add a short delay since
+# a slightly late onset shouldnt matter
 ADDED_DELAY = 0.05
 
 def __is_note_playing_at_time(time: float,noteStart: float,noteEnd: float) -> bool:
@@ -42,7 +44,9 @@ def process_multiple():
             raise Exception(f"Couldn't find midi file matching {audioFile}")
 
 
-        __generate(f"{AUDIO_PATH}{CONFIG['ARGS']['audio']}\\{audioFile}",midiPath,f"{SPECTRA_PATH}{CONFIG['ARGS']['audio']}\\{audioFile.split('.')[0]}")
+        __generate(f"{AUDIO_PATH}{CONFIG['ARGS']['audio']}\\{audioFile}",
+                   midiPath,
+                   f"{SPECTRA_PATH}{CONFIG['ARGS']['audio']}\\{audioFile.split('.')[0]}")
 
 
 def process_single():

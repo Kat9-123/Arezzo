@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include<unistd.h>
+#include <unistd.h>
 
 const char FILE_NAME[] = "Arezzo.bat";
 
@@ -44,8 +44,7 @@ int main(int argc, char *argv[])
 
     for(int arg=1; arg<argc; arg++)
     {
-        // A bit weird to do it like this, but it
-        // is very clear what is happening
+        // Its a bit weird to do it like this, but whatever
         command[pos] = ' ';
         pos++;
         command[pos] = '"';

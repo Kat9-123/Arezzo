@@ -1,5 +1,7 @@
-from torch import nn
 from core.Constants import *
+
+from torch import nn
+
 
 
 class Network(nn.Module):
