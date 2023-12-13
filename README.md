@@ -1,4 +1,4 @@
-![Arezzo logo](misc/icon.png)
+![Arezzo logo](misc/iconsmall.png)
 # Arezzo
 Arezzo is a simple transcriber for polyphonic piano music. Named after the father of modern day music notation, Guido d'Arezzo.
 
