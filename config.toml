@@ -2,7 +2,7 @@
 
 
 [OPTIONS]
-note_detection_threshold = 1.5#0.5
+note_detection_threshold = 0.5#0.5
 
 # 0 -> Crotchets (Quarters)
 # 1 -> Quavers  (Eighths)
@@ -33,8 +33,8 @@ training_device = "cuda"
 use_cuda_if_available = true
 key_profile = "data\\Krumhansl-Kessler.csv"
 
-output_cleanly = false
-clear_temp = false
+output_cleanly = true
+clear_temp = true
 
 
 test_save_sheet_music = false
@@ -45,5 +45,3 @@ generate_sheet_music = true
 graphing = false
 save_model = true
 show_network_graphs = true
-spin = true
-blanket_disable_debug_print = true

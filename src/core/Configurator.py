@@ -1,6 +1,7 @@
 import argparse
 from enum import Enum
 import tomli
+import cui.CUI as CUI
 
 
 CONFIG_FILE = "config.toml"
@@ -91,6 +92,7 @@ def get_configuration() -> None:
             CONFIG["ARGS"]["midi"] = args.network
             mode = Modes.PROCESS_TRAINING_DATA
             if CONFIG["ARGS"]["audio"] == "" or CONFIG["ARGS"]["audio"].endswith(".mid") or CONFIG["ARGS"]["audio"].endswith(".midi"):
+                CUI.force_stop_progress(succesful=False)
                 raise Exception("Invalid usage. Please pass the audio file or folder BEFORE the network argument")
         elif '.' not in s:
             mode = Modes.PROCESS_MULTIPLE_TRAINING_DATA
@@ -107,7 +109,10 @@ def get_configuration() -> None:
 
     else:
         if args.path == "":
+            CUI.force_stop_progress(succesful=False)
             raise Exception("Invalid usage. To transcribe please pass an audio file as an argument or drag it onto Arezzo.exe/.bat. For other options use -h or --help")
+        
+
         mode = Modes.GENERATE_SHEETMUSIC
 
     if args.model:

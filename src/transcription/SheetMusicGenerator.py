@@ -26,7 +26,7 @@ def __save_midi(midiPath,midiName,outDir):
 
     outPath = f"{outDir}{midiName}.mid"
     os.rename(midiPath,outPath)
-    CUI.important("MIDI saved to: {outpath}")
+    CUI.important(f"MIDI saved to: {outPath}")
     
 
 def generate_sheet_music(notes,tempo,outputName,key,timeSig) -> None:
@@ -98,8 +98,7 @@ def __generate_sheetmusic_musescore(midiPath: str,outputName: str,baseOutDir,out
 
     # If the user doesn't have musecore
     if not os.path.isfile(museScorePath):
-        CUI.warning("""MuseScore4 was not found. If you do want to use it, 
-                    please install it and confirm that ENVIRONMENT.musescore4_path in config.toml is correct""")
+        CUI.warning("""MuseScore4 was not found. If you do want to use it,\nplease install it and confirm that ENVIRONMENT.musescore4_path in config.toml is correct""")
         
         CUI.newline()
         

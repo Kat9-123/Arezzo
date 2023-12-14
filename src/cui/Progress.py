@@ -1,7 +1,8 @@
 import cui.CUI as CUI
 import threading
 import time
-from core.Configurator import CONFIG
+
+SPIN_ENABLED = True
 
 
 FRAMES = [
@@ -33,7 +34,7 @@ def progress(text,spin=False,finishedText="") -> None:
     __finish(currentFinishedText)
     currentFinishedText = finishedText
 
-    if spin and CONFIG["DEBUG"]["spin"]:
+    if spin and SPIN_ENABLED:
         __start_spinning(text)
         return
 

@@ -10,19 +10,20 @@
 
 
 try:
-    # The first thing we do is load the config. Because we do this
-    # before initialising anything else, the global var CONFIG can
-    # just be imported directly by other scripts
-    import core.Configurator as cfg
-    cfg.get_configuration()
 
 
-    
+
+    # CUI doesn't use any other modules, so it is save to import first
     import cui.CUI as CUI
     CUI.init()
 
     CUI.progress("Initialising",spin=True)
 
+    # The first thing we do is load the config. Because we do this
+    # before initialising anything else, the global var CONFIG can
+    # just be imported directly by other scripts
+    import core.Configurator as cfg
+    cfg.get_configuration()
 
 
     from core.Configurator import CONFIG, Modes, mode
@@ -47,7 +48,8 @@ except ModuleNotFoundError:
     if not CUI.yesno():
         exit()
     CUI.important("Attempting to install dependencies...")
-    Popen("pip install -r requirements.txt", shell=True).wait()
+    Popen("py -m pip install -r requirements.txt", shell=True).wait()
+    CUI.notify()
     exit()
 
 

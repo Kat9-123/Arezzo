@@ -3,10 +3,13 @@
 
 import cui.Progress as Progress
 from core.Constants import *
-from core.Configurator import CONFIG
+
 
 import os
 
+
+
+BLANKET_DISABLE_DEBUG_PRINT = True
 
 
 
@@ -70,7 +73,7 @@ def warning(value):
 
 
 def debug(value,*,end="\n",debugControl=True):
-    if debugControl and not CONFIG["DEBUG"]["blanket_disable_debug_print"]:
+    if debugControl and not BLANKET_DISABLE_DEBUG_PRINT:
         print_colour(value,colour=WHITE,end=end)
 
 def print_colour(text,colour,*,end="",debugControl=True):
