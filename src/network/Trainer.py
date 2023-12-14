@@ -145,91 +145,93 @@ def train():
     startTime = time.time()
     previousAccuracy = 0.0
     for epoch in range(EPOCH_COUNT):
-        try:
+        #try:
 
-            trainLoss = np.zeros(batchesPerEpoch)
-            trainAccuracy = np.zeros(batchesPerEpoch)
-            # set model in training mode and run through each batch
-            model.train()
-            with tqdm.trange(batchesPerEpoch, unit="batch", mininterval=0,ascii=True) as bar:
-                bar.set_description(f"Epoch {epoch}")
+        trainLoss = np.zeros(batchesPerEpoch)
+        trainAccuracy = np.zeros(batchesPerEpoch)
+        # set model in training mode and run through each batch
+        model.train()
+        with tqdm.trange(batchesPerEpoch, unit="batch", mininterval=0,ascii=True) as bar:
+            bar.set_description(f"Epoch {epoch}")
 
-                for i,(spectrumBatch, noteBatch) in enumerate(trainLoader):
-
-
-
-                    # Add some noise to help prevent overfitting, and to hopefully give better results
-                    noise = __generate_noise(len(spectrumBatch))
-
-                    # Forward
-                    prediction = model((spectrumBatch + noise).to(DEVICE))
-
-                    # Derivatives
-                    loss = criterion(prediction.to(DEVICE), noteBatch.to(DEVICE))
-
-                    # Backward
-                    optimizer.zero_grad()
-                    loss.backward()
-
-                    optimizer.step()
+            for i,(spectrumBatch, noteBatch) in enumerate(trainLoader):
 
 
 
-                    accuracy = __accuracy(prediction,noteBatch.to(DEVICE))
+                # Add some noise to help prevent overfitting, and to hopefully give better results
+                noise = __generate_noise(len(spectrumBatch))
 
+                # Forward
+                prediction = model((spectrumBatch + noise).to(DEVICE))
 
-                    trainLoss[i] = float(loss)
-                    trainAccuracy[i] = float(accuracy)
-                    bar.set_postfix(
-                        loss=f"{float(loss):5.4f}",
-                        acc=f"{float(accuracy):5.2f}",
-                    )
-                    bar.update()
-            # Set model in evaluation mode and run through the validation set
-            CUI.progress("Validating", spin=True)
+                # Derivatives
+                loss = criterion(prediction.to(DEVICE), noteBatch.to(DEVICE))
 
-            avgTrainLoss = np.mean(trainLoss)
-            avgTrainAccuracy = np.mean(trainAccuracy)
+                # Backward
+                optimizer.zero_grad()   
+                loss.backward()
 
-
-            trainLossHist.append(avgTrainLoss)
-            trainAccuracyHist.append(avgTrainAccuracy)
+                optimizer.step()
 
 
 
-            validationAccuracy,validationLoss = __eval_model(validationLoader,model,criterion)
+                accuracy = __accuracy(prediction,noteBatch.to(DEVICE))
+
+
+                trainLoss[i] = float(loss)
+                trainAccuracy[i] = float(accuracy)
+                bar.set_postfix(
+                    loss=f"{float(loss):5.4f}",
+                    acc=f"{float(accuracy):5.2f}",
+                )
+                bar.update()
+        # Validationg
+        CUI.progress("Validating", spin=True)
+
+        avgTrainLoss = np.mean(trainLoss)
+        avgTrainAccuracy = np.mean(trainAccuracy)
+
+
+        trainLossHist.append(avgTrainLoss)
+        trainAccuracyHist.append(avgTrainAccuracy)
+
+
+
+        validationAccuracy,validationLoss = __eval_model(validationLoader,model,criterion)
 
 
 
 
-            validationLossHist.append(validationLoss)
-            validationAccuracyHist.append(validationAccuracy)
+        validationLossHist.append(validationLoss)
+        validationAccuracyHist.append(validationAccuracy)
 
-            if validationAccuracy > bestAccuracy:
-                bestAccuracy = validationAccuracy
-                bestWeights = copy.deepcopy(model.state_dict())
-            CUI.force_stop_progress()
+        if validationAccuracy > bestAccuracy:
+            bestAccuracy = validationAccuracy
+            bestWeights = copy.deepcopy(model.state_dict())
+        CUI.force_stop_progress()
 
 
-            print(f"Epoch {epoch}              ")
-            print(f"     Train - Loss: {avgTrainLoss:.4f}, Accuracy: {avgTrainAccuracy*100:.1f}%")
-            print(f"Validation - Loss: {validationLoss:.4f}, Accuracy: {validationAccuracy*100:.1f}%")
-            CUI.important(f"ΔAccuracy: {(validationAccuracy-previousAccuracy)*100:.1f} Train-Validation diff: {(avgTrainAccuracy-validationAccuracy)*100:.1f}")
-            
-            timeSpent = round(time.time()-startTime)
+        print(f"Epoch {epoch}              ")
+        print(f"     Train - Loss: {avgTrainLoss:.4f}, Accuracy: {avgTrainAccuracy*100:.1f}%")
+        print(f"Validation - Loss: {validationLoss:.4f}, Accuracy: {validationAccuracy*100:.1f}%")
+        CUI.important(f"ΔAccuracy: {(validationAccuracy-previousAccuracy)*100:.1f} Train-Validation diff: {(avgTrainAccuracy-validationAccuracy)*100:.1f}")
+        
+        timeSpent = round(time.time()-startTime)
 
-            print(f"Time spent: {str(datetime.timedelta(seconds=timeSpent))}, Time per epoch: {str(datetime.timedelta(seconds=round(timeSpent/(epoch+1))))}")
-            print()
-            previousAccuracy = validationAccuracy
+        print(f"Time spent: {str(datetime.timedelta(seconds=timeSpent))}, Time per epoch: {str(datetime.timedelta(seconds=round(timeSpent/(epoch+1))))}")
+        print()
+        previousAccuracy = validationAccuracy
 
-        except KeyboardInterrupt:
-            print("Stopping training...")
-            break
-    CUI.force_stop_progress()
+        #except KeyboardInterrupt:
+        #    continue
+        #    print("Stopping training...")
+    #CUI.force_stop_progress(succesful=False)
+    
     if bestWeights == None:
         CUI.warning("At least one epoch has to finish for results!")
         exit()
 
+    CUI.notify()
     # Restore best model
     model.load_state_dict(bestWeights)
 

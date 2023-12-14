@@ -9,7 +9,6 @@ import numpy as np
 
 
 
-ONSET_TEMPORAL_LAG = 3#4
 
 TEMPO_BOUNDRY = 140
 

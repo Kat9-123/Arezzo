@@ -20,24 +20,25 @@ class Modes(Enum):
     
 
 def __parse_args():
-    parser = argparse.ArgumentParser(prog="TEST",description='Automatic polyphonic piano music transcription in Python.',
+    parser = argparse.ArgumentParser(prog="Arezzo",description='Arezzo: Automatic polyphonic piano music transcription in Python.',
                                      epilog=f"For more advanced options, please see {CONFIG_FILE}")
 
     parser.add_argument('path', type=str,
-                    help='Path of the AUDIO file to be processed. A folder containing only audio files will also be accepted', nargs='?',default="")
+                    help='Path of the AUDIO file to be processed.', nargs='?',default="")
     
 
     parser.add_argument("-c",'--cfg','--config', type=str,
-                    help=f"Path to a ---.toml file. Default is {CONFIG_FILE}",
+                    help=f"Path to a .toml file. Default is {CONFIG_FILE}",
                     dest="config", default=CONFIG_FILE,metavar="CONFIG")
     
     parser.add_argument("-n","--net","--network",dest="network",type=str,metavar=".MIDI/.CSD/DIR",
                         
                         help="""If a .csd file is passed, it will train the network on that. Otherwise it will
-                        generate a new .csd using the audio and midi file specified. You can also pass a folder containing only MIDI files""")
+                        generate a new .csd using the audio and midi file specified. You can also pass a folder containing only MIDI files, 
+                        matching audio files will be found automatically in the specified audio folder""")
     
     parser.add_argument("-t","--test", dest="test",type=str,metavar=".MIDI/.CSV",const=TESTS,
-                        help=f"""Activates test mode. If a CSV is passed, it will use the files specified. 
+                        help=f"""Activates test mode. If a CSV is passed, it will use that. 
                         If no arg is passed it will default to {TESTS}""",nargs="?")
 
     parser.add_argument("-m","--model",dest="model",type=str,metavar=".MDL",
@@ -90,7 +91,7 @@ def get_configuration() -> None:
             CONFIG["ARGS"]["midi"] = args.network
             mode = Modes.PROCESS_TRAINING_DATA
             if CONFIG["ARGS"]["audio"] == "" or CONFIG["ARGS"]["audio"].endswith(".mid") or CONFIG["ARGS"]["audio"].endswith(".midi"):
-                raise Exception("Invalid usage. Please pass the audio file BEFORE the network argument")
+                raise Exception("Invalid usage. Please pass the audio file or folder BEFORE the network argument")
         elif '.' not in s:
             mode = Modes.PROCESS_MULTIPLE_TRAINING_DATA
             CONFIG["ARGS"]["midi"] = args.network
