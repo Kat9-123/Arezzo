@@ -7,6 +7,9 @@ Arezzo is a simple transcriber for polyphonic piano music. Named after the fathe
 
 **This is a school project**
 
+![Flowchart](misc/flowchartFINAL.png)
+
+
 ## Usage
 You will need MuseScore4 for sheet music generation, otherwise a MIDI file will be generated and saved.
 
