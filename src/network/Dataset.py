@@ -1,14 +1,15 @@
-from torch.utils.data import Dataset
-
-
 import cui.CUI as CUI
 import network.SpectrumCompressor as SpectrumCompressor
 from core.Constants import *
 
+
+from torch.utils.data import Dataset
+import torch
+
 import os
 import numpy as np
 import math
-import torch
+
 
 SPECTRA_PATH = "learning\\spectra\\"
 

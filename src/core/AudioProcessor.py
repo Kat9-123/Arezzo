@@ -34,7 +34,6 @@ def process_audio(audioPath,tempoOverride=-1):
     """Takes the audio at the path and returns a spectrum, chroma classification, onsets, 
        estimated tempo and the duration of the file."""
     global samplingRate
-    Graphing.create_plot(rows=3)
     CUI.progress(f"Loading {audioPath}",spin=True)
 
     y, samplingRate = librosa.load(audioPath)
@@ -91,6 +90,7 @@ def process_audio(audioPath,tempoOverride=-1):
                                             origTempo=origTempo)
 
 
+    Graphing.show_plot()
 
     return processedAudioData
 

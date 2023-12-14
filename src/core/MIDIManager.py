@@ -63,7 +63,7 @@ def write_midi(notes,tempo,path,key,timeSig) -> None:
 
         midi = librosa.note_to_midi(note.note)
         startSeconds = (note.start - earliestStartTime) / (tempo/60)
-        endSeconds = start + (note.duration / (tempo/60))
+        endSeconds = startSeconds + (note.duration / (tempo/60))
         
         start = mido.second2tick(startSeconds,mid.ticks_per_beat,midiTempo)
         end = mido.second2tick(endSeconds,mid.ticks_per_beat,midiTempo)
