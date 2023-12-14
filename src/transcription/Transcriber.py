@@ -27,11 +27,10 @@ def transcribe(path,*,saveSheetMusic=True,tempoOverride=-1) -> (list,float):
    # CUI.print_colour(f"Processing {path}",CUI.GREEN,end="\n\n")
     
 
-    Graphing.create_plot(rows=2)
+    Graphing.create_plot()
 
 
     processedAudioData = AudioProcessor.process_audio(path,tempoOverride=tempoOverride)
-    Graphing.show_plot()
 
 
 
