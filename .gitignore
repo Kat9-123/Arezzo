@@ -1,14 +1,11 @@
 # Project-specific
-learning/audio/
-learning/spectra/
-learning/midi
 screenshots/spectra
 output/midi_local/
 output/sheet music_local/
 temp/
 testing/results_local/
 src/launch/obj/
-learning/MAESTRO/
+
 models/models_local
 
 *.tags
