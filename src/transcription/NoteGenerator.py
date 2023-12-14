@@ -5,6 +5,7 @@ import cui.CUI as CUI
 
 import network.Manager as netManager
 from core.Constants import *
+from core.Configurator import CONFIG
 
 
 import librosa
@@ -113,7 +114,7 @@ def __process_frame(currentNotes: list,finishedNotes: list,frame: int,processedA
         return __get_notes_at_frame(currentNotes,finishedNotes,frame,processedAudioData)
 
     for noteObj in currentNotes:
-        strength = __get_volume(noteObj.note,frame-AudioProcessor.ONSET_TEMPORAL_LAG,processedAudioData)
+        strength = __get_volume(noteObj.note,frame-CONFIG["ADVANCED_OPTIONS"]["onset_frame_lag"],processedAudioData)
         noteObj.add_strength(strength)
 
     return finishedNotes
@@ -136,7 +137,7 @@ def __get_notes_at_frame(currentNotes: list,finishedNotes: list,frame: int,proce
         # it is the same note held, or the same note repeated
         if curNoteObj.note in playingNotes:
             
-            newStrength = __get_volume(curNoteObj.note,frame-AudioProcessor.ONSET_TEMPORAL_LAG,processedAudioData)
+            newStrength = __get_volume(curNoteObj.note,frame-CONFIG["ADVANCED_OPTIONS"]["onset_frame_lag"],processedAudioData)
             
             avgStrength = curNoteObj.get_average_strength()
             strengthDiff = (newStrength - avgStrength)
